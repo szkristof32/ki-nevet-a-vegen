@@ -9,5 +9,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	engine_run();
+
 	engine_shutdown();
 }
