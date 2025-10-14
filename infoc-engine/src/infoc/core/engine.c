@@ -1,6 +1,8 @@
 #include "engine.h"
 
 #include "infoc/core/window.h"
+#include "infoc/core/layers.h"
+#include "infoc/core/darray.h"
 
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
@@ -12,6 +14,8 @@ typedef struct engine_t
 	arena_allocator_t allocator;
 	window_t window;
 	context_t context;
+
+	layer_stack_t layer_stack;
 
 	bool running;
 } engine_t;
@@ -41,6 +45,13 @@ bool engine_initialise()
 		return false;
 	}
 
+	success = layer_stack_create(&s_engine.layer_stack);
+	if (!success)
+	{
+		fprintf(stderr, "Failed to create layer stack!\n");
+		return false;
+	}
+
 	s_engine.running = true;
 
 	return true;
@@ -48,6 +59,13 @@ bool engine_initialise()
 
 void engine_shutdown()
 {
+	for (size_t i = 0; i < darray_count(s_engine.layer_stack.layers); i++)
+	{
+		layer_t* layer = &s_engine.layer_stack.layers[i];
+		if (layer->on_detach)
+			layer->on_detach();
+	}
+
 	context_destroy(&s_engine.context);
 	window_destroy(&s_engine.window);
 	arena_allocator_destroy(&s_engine.allocator);
@@ -58,15 +76,32 @@ void engine_run()
 {
 	while (s_engine.running)
 	{
+		float delta = 0.0f;
+		
 		window_update(&s_engine.window);
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		for (size_t i = 0; i < darray_count(s_engine.layer_stack.layers); i++)
+		{
+			layer_t* layer = &s_engine.layer_stack.layers[i];
+			if (layer->on_update)
+				layer->on_update(delta);
+		}
+
 		context_swap(&s_engine.context);
 
 		s_engine.running = !window_should_close(&s_engine.window);
 	}
+}
+
+void engine_attach_layer(layer_t* layer)
+{
+	layer_stack_push_layer(&s_engine.layer_stack, layer);
+
+	if (layer->on_attach)
+		layer->on_attach();
 }
 
 arena_allocator_t* engine_get_allocator()

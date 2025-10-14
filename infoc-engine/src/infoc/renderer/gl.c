@@ -6,8 +6,8 @@
 
 #undef bool
 
-typedef void (APIENTRYP pfn_glClear)(GLbitfield);
-typedef void (APIENTRYP pfn_glClearColor)(GLfloat, GLfloat, GLfloat, GLfloat);
+typedef void (*pfn_glClear)(GLbitfield);
+typedef void (*pfn_glClearColor)(GLfloat, GLfloat, GLfloat, GLfloat);
 
 typedef struct gl_t
 {
