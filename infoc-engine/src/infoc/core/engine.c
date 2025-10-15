@@ -7,10 +7,6 @@
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
 
-// TODO: temporary
-#include "infoc/renderer/buffers.h"
-#include "infoc/renderer/vertex_array.h"
-
 #include <string.h>
 
 typedef struct engine_t
@@ -78,25 +74,6 @@ void engine_shutdown()
 
 void engine_run()
 {
-	float data[] = {
-		-0.5f, 0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f
-	};
-
-	vertex_buffer_t vertex_buffer;
-	vertex_buffer_create(data, sizeof(data), &vertex_buffer);
-
-	vertex_array_t vertex_array;
-	vertex_array_create(&vertex_array);
-
-	vertex_array_bind(&vertex_array);
-	vertex_buffer_bind(&vertex_buffer);
-
-	vertex_array_add_attribute(&vertex_array, vertex_attribute_type_float3);
-	vertex_array_bake_layout(&vertex_array);
-
 	while (s_engine.running)
 	{
 		float delta = 0.0f;
@@ -112,8 +89,6 @@ void engine_run()
 			if (layer->on_update)
 				layer->on_update(delta);
 		}
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		context_swap(&s_engine.context);
 

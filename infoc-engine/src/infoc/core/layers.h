@@ -7,6 +7,7 @@ typedef struct layer_t
 	void (*on_attach)();
 	void (*on_detach)();
 	void (*on_update)(float timestep);
+	void* internal_state;
 } layer_t;
 
 typedef struct layer_stack_t

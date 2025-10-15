@@ -1,6 +1,6 @@
-#include "infoc/core/engine.h"
+#include "game_layer.h"
 
-static void on_attach();
+#include "infoc/core/engine.h"
 
 int main(int argc, char** argv)
 {
@@ -11,16 +11,10 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	layer_t layer = { 0 };
-	layer.on_attach = on_attach;
-	engine_attach_layer(&layer);
+	layer_t game_layer = game_layer_create();
+	engine_attach_layer(&game_layer);
 
 	engine_run();
 
 	engine_shutdown();
-}
-
-void on_attach()
-{
-	printf("On attach\n");
 }
