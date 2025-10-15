@@ -6,6 +6,7 @@
 
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
+#include "infoc/renderer/buffers.h"
 
 #include <string.h>
 
@@ -74,6 +75,16 @@ void engine_shutdown()
 
 void engine_run()
 {
+	float data[] = {
+		-0.5f, 0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f
+	};
+
+	vertex_buffer_t vertex_buffer;
+	vertex_buffer_create(data, sizeof(data), &vertex_buffer);
+
 	while (s_engine.running)
 	{
 		float delta = 0.0f;

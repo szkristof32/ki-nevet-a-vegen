@@ -32,5 +32,27 @@ typedef enum GLbitfield
 	GL_COLOR_BUFFER_BIT = 0x00004000,
 } GLbitfield;
 
+typedef enum GLenum
+{
+	GL_ARRAY_BUFFER = 0x8892,
+	GL_ELEMENT_ARRAY_BUFFER = 0x8893,
+	GL_UNIFORM_BUFFER = 0x8A11,
+
+	GL_STREAM_DRAW = 0x88E0,
+	GL_STREAM_READ = 0x88E1,
+	GL_STREAM_COPY = 0x88E2,
+	GL_STATIC_DRAW = 0x88E4,
+	GL_STATIC_READ = 0x88E5,
+	GL_STATIC_COPY = 0x88E6,
+	GL_DYNAMIC_DRAW = 0x88E8,
+	GL_DYNAMIC_READ = 0x88E9,
+	GL_DYNAMIC_COPY = 0x88EA,
+} GLenum;
+
 void glClear(GLbitfield mask);
 void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+void glCreateBuffers(GLsizei n, GLuint* buffers);
+void glDeleteBuffers(GLsizei n, GLuint* buffers);
+void glBindBuffer(GLenum target, GLuint buffer);
+void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
+void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void* data);
