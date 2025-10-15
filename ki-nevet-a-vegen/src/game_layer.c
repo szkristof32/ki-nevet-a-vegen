@@ -4,6 +4,7 @@
 
 #include "infoc/renderer/buffers.h"
 #include "infoc/renderer/vertex_array.h"
+#include "infoc/renderer/shader.h"
 
 // TODO: maybe should be abstracted away
 #include "infoc/renderer/gl.h"
@@ -15,6 +16,7 @@ typedef struct game_layer_t
 {
 	vertex_array_t vertex_array;
 	vertex_buffer_t vertex_buffer;
+	shader_t shader;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -50,9 +52,13 @@ void game_on_attach()
 
 	vertex_array_add_attribute(&s_game_layer->vertex_array, vertex_attribute_type_float3);
 	vertex_array_bake_layout(&s_game_layer->vertex_array);
+
+	shader_create("assets/shaders/basic_shader.vert", "assets/shaders/basic_shader.frag", &s_game_layer->shader);
 }
 
 void game_on_update(float timestep)
 {
+	shader_use(&s_game_layer->shader);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

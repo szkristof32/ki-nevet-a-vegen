@@ -60,6 +60,10 @@ typedef enum GLenum
 	GL_DYNAMIC_DRAW = 0x88E8,
 	GL_DYNAMIC_READ = 0x88E9,
 	GL_DYNAMIC_COPY = 0x88EA,
+
+	GL_FRAGMENT_SHADER = 0x8B30,
+	GL_VERTEX_SHADER = 0x8B31,
+	GL_COMPUTE_SHADER = 0x91B9,
 } GLenum;
 
 void glClear(GLbitfield mask);
@@ -76,3 +80,13 @@ void glEnableVertexAttribArray(GLuint index);
 void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 void glDrawArrays(GLenum mode, GLint first, GLsizei count);
+GLuint glCreateProgram();
+void glDeleteProgram(GLuint program);
+GLuint glCreateShader(GLenum shaderType);
+void glDeleteShader(GLuint shader);
+void glAttachShader(GLuint program, GLuint shader);
+void glDetachShader(GLuint program, GLuint shader);
+void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length);
+void glCompileShader(GLuint shader);
+void glLinkProgram(GLuint program);
+void glUseProgram(GLuint program);

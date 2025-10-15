@@ -20,6 +20,17 @@ typedef void (*pfn_glEnableVertexAttribArray)(GLuint);
 typedef void (*pfn_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void*);
 typedef void (*pfn_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const void*);
 typedef void (*pfn_glDrawArrays)(GLenum, GLint, GLsizei);
+typedef GLuint (*pfn_glCreateProgram)();
+typedef void (*pfn_glDeleteProgram)(GLuint program);
+typedef GLuint (*pfn_glCreateShader)(GLenum shaderType);
+typedef void (*pfn_glDeleteShader)(GLuint shader);
+typedef void (*pfn_glAttachShader)(GLuint program, GLuint shader);
+typedef void (*pfn_glDetachShader)(GLuint program, GLuint shader);
+typedef void (*pfn_glShaderSource)(GLuint shader, GLsizei count, const GLchar** string, const GLint* length);
+typedef void (*pfn_glCompileShader)(GLuint shader);
+typedef void (*pfn_glLinkProgram)(GLuint program);
+typedef void (*pfn_glUseProgram)(GLuint program);
+
 
 typedef struct gl_t
 {
@@ -37,6 +48,16 @@ typedef struct gl_t
 	pfn_glVertexAttribPointer glVertexAttribPointer;
 	pfn_glVertexAttribIPointer glVertexAttribIPointer;
 	pfn_glDrawArrays glDrawArrays;
+	pfn_glCreateProgram glCreateProgram;
+	pfn_glDeleteProgram glDeleteProgram;
+	pfn_glCreateShader glCreateShader;
+	pfn_glDeleteShader glDeleteShader;
+	pfn_glAttachShader glAttachShader;
+	pfn_glDetachShader glDetachShader;
+	pfn_glShaderSource glShaderSource;
+	pfn_glCompileShader glCompileShader;
+	pfn_glLinkProgram glLinkProgram;
+	pfn_glUseProgram glUseProgram;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -69,6 +90,17 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glVertexAttribPointer);
 	LOAD_OPENGL_PROC(glVertexAttribIPointer);
 	LOAD_OPENGL_PROC(glDrawArrays);
+	LOAD_OPENGL_PROC(glDrawArrays);
+	LOAD_OPENGL_PROC(glCreateProgram);
+	LOAD_OPENGL_PROC(glDeleteProgram);
+	LOAD_OPENGL_PROC(glCreateShader);
+	LOAD_OPENGL_PROC(glDeleteShader);
+	LOAD_OPENGL_PROC(glAttachShader);
+	LOAD_OPENGL_PROC(glDetachShader);
+	LOAD_OPENGL_PROC(glShaderSource);
+	LOAD_OPENGL_PROC(glCompileShader);
+	LOAD_OPENGL_PROC(glLinkProgram);
+	LOAD_OPENGL_PROC(glUseProgram);
 
 	return true;
 }
@@ -148,4 +180,54 @@ void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei strid
 void glDrawArrays(GLenum mode, GLint first, GLsizei count)
 {
 	s_opengl->glDrawArrays(mode, first, count);
+}
+
+GLuint glCreateProgram()
+{
+	return s_opengl->glCreateProgram();
+}
+
+void glDeleteProgram(GLuint program)
+{
+	s_opengl->glDeleteProgram(program);
+}
+
+GLuint glCreateShader(GLenum shaderType)
+{
+	return s_opengl->glCreateShader(shaderType);
+}
+
+void glDeleteShader(GLuint shader)
+{
+	s_opengl->glDeleteShader(shader);
+}
+
+void glAttachShader(GLuint program, GLuint shader)
+{
+	s_opengl->glAttachShader(program, shader);
+}
+
+void glDetachShader(GLuint program, GLuint shader)
+{
+	s_opengl->glDetachShader(program, shader);
+}
+
+void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length)
+{
+	s_opengl->glShaderSource(shader, count, string, length);
+}
+
+void glCompileShader(GLuint shader)
+{
+	s_opengl->glCompileShader(shader);
+}
+
+void glLinkProgram(GLuint program)
+{
+	s_opengl->glLinkProgram(program);
+}
+
+void glUseProgram(GLuint program)
+{
+	s_opengl->glUseProgram(program);
 }
