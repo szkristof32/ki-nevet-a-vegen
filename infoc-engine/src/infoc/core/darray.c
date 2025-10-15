@@ -40,7 +40,7 @@ void* _darray_push(void* array, const void* value_ptr)
 
 	if (header->count >= header->capacity)
 	{
-		array = _darray_resize(array, (size_t)(header->capacity * 1.5f));
+		array = _darray_resize(array, header->capacity * 2);
 		header = (darray_t*)((uint8_t*)array - header_size);
 	}
 

@@ -34,6 +34,19 @@ typedef enum GLbitfield
 
 typedef enum GLenum
 {
+	GL_TRIANGLES = 0x0004,
+	GL_TRIANGLE_STRIP = 0x0005,
+	GL_TRIANGLE_FAN = 0x0006,
+
+	GL_BYTE = 0x1400,
+	GL_UNSIGNED_BYTE = 0x1401,
+	GL_SHORT = 0x1402,
+	GL_UNSIGNED_SHORT = 0x1403,
+	GL_INT = 0x1404,
+	GL_UNSIGNED_INT = 0x1405,
+	GL_FLOAT = 0x1406,
+	GL_DOUBLE = 0x1407,
+
 	GL_ARRAY_BUFFER = 0x8892,
 	GL_ELEMENT_ARRAY_BUFFER = 0x8893,
 	GL_UNIFORM_BUFFER = 0x8A11,
@@ -56,3 +69,10 @@ void glDeleteBuffers(GLsizei n, GLuint* buffers);
 void glBindBuffer(GLenum target, GLuint buffer);
 void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void* data, GLenum usage);
 void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void* data);
+void glCreateVertexArrays(GLsizei n, GLuint* arrays);
+void glDeleteVertexArrays(GLsizei n, GLuint* arrays);
+void glBindVertexArray(GLuint array);
+void glEnableVertexAttribArray(GLuint index);
+void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
+void glDrawArrays(GLenum mode, GLint first, GLsizei count);

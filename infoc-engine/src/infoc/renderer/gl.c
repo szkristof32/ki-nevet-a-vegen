@@ -13,6 +13,13 @@ typedef void (*pfn_glDeleteBuffers)(GLsizei, GLuint*);
 typedef void (*pfn_glBindBuffer)(GLenum, GLuint);
 typedef void (*pfn_glNamedBufferData)(GLuint, GLsizeiptr, const void*, GLenum);
 typedef void (*pfn_glNamedBufferSubData)(GLuint, GLintptr, GLsizeiptr, const void*);
+typedef void (*pfn_glCreateVertexArrays)(GLsizei, GLuint*);
+typedef void (*pfn_glDeleteVertexArrays)(GLsizei, GLuint*);
+typedef void (*pfn_glBindVertexArray)(GLuint);
+typedef void (*pfn_glEnableVertexAttribArray)(GLuint);
+typedef void (*pfn_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void*);
+typedef void (*pfn_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const void*);
+typedef void (*pfn_glDrawArrays)(GLenum, GLint, GLsizei);
 
 typedef struct gl_t
 {
@@ -23,6 +30,13 @@ typedef struct gl_t
 	pfn_glBindBuffer glBindBuffer;
 	pfn_glNamedBufferData glNamedBufferData;
 	pfn_glNamedBufferSubData glNamedBufferSubData;
+	pfn_glCreateVertexArrays glCreateVertexArrays;
+	pfn_glDeleteVertexArrays glDeleteVertexArrays;
+	pfn_glBindVertexArray glBindVertexArray;
+	pfn_glEnableVertexAttribArray glEnableVertexAttribArray;
+	pfn_glVertexAttribPointer glVertexAttribPointer;
+	pfn_glVertexAttribIPointer glVertexAttribIPointer;
+	pfn_glDrawArrays glDrawArrays;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -48,6 +62,13 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glBindBuffer);
 	LOAD_OPENGL_PROC(glNamedBufferData);
 	LOAD_OPENGL_PROC(glNamedBufferSubData);
+	LOAD_OPENGL_PROC(glCreateVertexArrays);
+	LOAD_OPENGL_PROC(glDeleteVertexArrays);
+	LOAD_OPENGL_PROC(glBindVertexArray);
+	LOAD_OPENGL_PROC(glEnableVertexAttribArray);
+	LOAD_OPENGL_PROC(glVertexAttribPointer);
+	LOAD_OPENGL_PROC(glVertexAttribIPointer);
+	LOAD_OPENGL_PROC(glDrawArrays);
 
 	return true;
 }
@@ -92,4 +113,39 @@ void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void* data, GLenum 
 void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void* data)
 {
 	s_opengl->glNamedBufferSubData(buffer, offset, size, data);
+}
+
+void glCreateVertexArrays(GLsizei n, GLuint* arrays)
+{
+	s_opengl->glCreateVertexArrays(n, arrays);
+}
+
+void glDeleteVertexArrays(GLsizei n, GLuint* arrays)
+{
+	s_opengl->glDeleteVertexArrays(n, arrays);
+}
+
+void glBindVertexArray(GLuint array)
+{
+	s_opengl->glBindVertexArray(array);
+}
+
+void glEnableVertexAttribArray(GLuint index)
+{
+	s_opengl->glEnableVertexAttribArray(index);
+}
+
+void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer)
+{
+	s_opengl->glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer)
+{
+	s_opengl->glVertexAttribIPointer(index, size, type, stride, pointer);
+}
+
+void glDrawArrays(GLenum mode, GLint first, GLsizei count)
+{
+	s_opengl->glDrawArrays(mode, first, count);
 }
