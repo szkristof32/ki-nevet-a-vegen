@@ -20,6 +20,7 @@ typedef void (*pfn_glEnableVertexAttribArray)(GLuint);
 typedef void (*pfn_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void*);
 typedef void (*pfn_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const void*);
 typedef void (*pfn_glDrawArrays)(GLenum, GLint, GLsizei);
+typedef void (*pfn_glDrawElements)(GLenum mode, GLsizei count, GLenum type, const void* indices);
 typedef GLuint (*pfn_glCreateProgram)();
 typedef void (*pfn_glDeleteProgram)(GLuint program);
 typedef GLuint (*pfn_glCreateShader)(GLenum shaderType);
@@ -30,7 +31,6 @@ typedef void (*pfn_glShaderSource)(GLuint shader, GLsizei count, const GLchar** 
 typedef void (*pfn_glCompileShader)(GLuint shader);
 typedef void (*pfn_glLinkProgram)(GLuint program);
 typedef void (*pfn_glUseProgram)(GLuint program);
-
 
 typedef struct gl_t
 {
@@ -48,7 +48,8 @@ typedef struct gl_t
 	pfn_glVertexAttribPointer glVertexAttribPointer;
 	pfn_glVertexAttribIPointer glVertexAttribIPointer;
 	pfn_glDrawArrays glDrawArrays;
-	pfn_glCreateProgram glCreateProgram;
+	pfn_glDrawElements glDrawElements;
+pfn_glCreateProgram glCreateProgram;
 	pfn_glDeleteProgram glDeleteProgram;
 	pfn_glCreateShader glCreateShader;
 	pfn_glDeleteShader glDeleteShader;
@@ -90,7 +91,7 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glVertexAttribPointer);
 	LOAD_OPENGL_PROC(glVertexAttribIPointer);
 	LOAD_OPENGL_PROC(glDrawArrays);
-	LOAD_OPENGL_PROC(glDrawArrays);
+	LOAD_OPENGL_PROC(glDrawElements);
 	LOAD_OPENGL_PROC(glCreateProgram);
 	LOAD_OPENGL_PROC(glDeleteProgram);
 	LOAD_OPENGL_PROC(glCreateShader);
@@ -180,6 +181,11 @@ void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei strid
 void glDrawArrays(GLenum mode, GLint first, GLsizei count)
 {
 	s_opengl->glDrawArrays(mode, first, count);
+}
+
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
+{
+	s_opengl->glDrawElements(mode, count, type, indices);
 }
 
 GLuint glCreateProgram()

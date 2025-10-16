@@ -80,6 +80,7 @@ void glEnableVertexAttribArray(GLuint index);
 void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 void glDrawArrays(GLenum mode, GLint first, GLsizei count);
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices);
 GLuint glCreateProgram();
 void glDeleteProgram(GLuint program);
 GLuint glCreateShader(GLenum shaderType);

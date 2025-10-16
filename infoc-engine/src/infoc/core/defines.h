@@ -10,3 +10,5 @@ typedef uint8_t bool;
 #define kilobytes(x)	(x*1024)
 #define megabytes(x)	(kilobytes(x)*1024)
 #define gigabytes(x)	(megabytes(x)*1024)
+
+#define countof(arr)	(sizeof(arr)/sizeof(arr[0]))

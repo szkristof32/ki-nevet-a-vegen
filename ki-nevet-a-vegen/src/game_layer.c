@@ -16,6 +16,7 @@ typedef struct game_layer_t
 {
 	vertex_array_t vertex_array;
 	vertex_buffer_t vertex_buffer;
+	index_buffer_t index_buffer;
 	shader_t shader;
 } game_layer_t;
 
@@ -43,12 +44,19 @@ void game_on_attach()
 		0.5f, 0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f
 	};
+	uint32_t indices[] = {
+		0, 1, 2,
+		2, 1, 3
+	};
 
 	vertex_array_create(&s_game_layer->vertex_array);
 	vertex_array_bind(&s_game_layer->vertex_array);
 
 	vertex_buffer_create(data, sizeof(data), &s_game_layer->vertex_buffer);
 	vertex_buffer_bind(&s_game_layer->vertex_buffer);
+
+	index_buffer_create(indices, countof(indices), &s_game_layer->index_buffer);
+	index_buffer_bind(&s_game_layer->index_buffer);
 
 	vertex_array_add_attribute(&s_game_layer->vertex_array, vertex_attribute_type_float3);
 	vertex_array_bake_layout(&s_game_layer->vertex_array);
@@ -60,5 +68,5 @@ void game_on_update(float timestep)
 {
 	shader_use(&s_game_layer->shader);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 }

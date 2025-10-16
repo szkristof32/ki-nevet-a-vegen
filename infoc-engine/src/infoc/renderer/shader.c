@@ -11,10 +11,22 @@ static uint32_t _shader_create_shader(const char* file_path, uint32_t stage);
 
 bool shader_create(const char* vertex_path, const char* fragment_path, shader_t* out_shader)
 {
+	memset(out_shader, 0, sizeof(shader_t));
+
 	out_shader->program_handle = glCreateProgram();
+	if (out_shader->program_handle == 0)
+	{
+		fprintf(stderr, "Failed to create shader program!\n");
+		return false;
+	}
 
 	uint32_t vertex_shader = _shader_create_shader(vertex_path, GL_VERTEX_SHADER);
 	uint32_t fragment_shader = _shader_create_shader(fragment_path, GL_FRAGMENT_SHADER);
+	if (vertex_shader == 0 || fragment_shader == 0)
+	{
+		fprintf(stderr, "Failed to create either of the shader stages!\n");
+		return false;
+	}
 
 	glAttachShader(out_shader->program_handle, vertex_shader);
 	glAttachShader(out_shader->program_handle, fragment_shader);
