@@ -46,7 +46,7 @@ uint32_t _shader_create_shader(const char* file_path, uint32_t stage)
 	uint32_t shader = glCreateShader(stage);
 
 	char* source = file_utils_read_file(file_path);
-	glShaderSource(shader, 1, &source, NULL);
+	glShaderSource(shader, 1, (const char**)&source, NULL);
 	glCompileShader(shader);
 	free(source);
 

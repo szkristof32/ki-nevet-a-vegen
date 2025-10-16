@@ -5,9 +5,7 @@
 bool opengl_init();
 void opengl_shutdown();
 
-typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
-typedef unsigned int GLbitfield;
 typedef void GLvoid;
 typedef signed char GLbyte;
 typedef short GLshort;

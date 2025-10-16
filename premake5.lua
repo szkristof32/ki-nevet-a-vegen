@@ -16,6 +16,9 @@ workspace "ki-nevet-a-vegen"
 		runtime "release"
 		optimize "full"
 
+	filter "action:gmake"
+		buildoptions { "-Wall", "-Werror" }
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "infoc-engine"
