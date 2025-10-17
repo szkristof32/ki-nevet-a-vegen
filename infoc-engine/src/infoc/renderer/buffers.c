@@ -70,3 +70,41 @@ void index_buffer_set_data(index_buffer_t* buffer, const uint32_t* data, size_t 
 {
 	glNamedBufferSubData(buffer->buffer_handle, 0, index_count * sizeof(uint32_t), data);
 }
+
+bool uniform_buffer_create(const void* data, size_t size, uniform_buffer_t* out_buffer)
+{
+	memset(out_buffer, 0, sizeof(uniform_buffer_t));
+
+	glCreateBuffers(1, &out_buffer->buffer_handle);
+	if (out_buffer->buffer_handle == 0)
+	{
+		fprintf(stderr, "Failed to create uniform buffer!\n");
+		return false;
+	}
+
+	glNamedBufferData(out_buffer->buffer_handle, size, NULL, GL_STATIC_DRAW);
+	glNamedBufferSubData(out_buffer->buffer_handle, 0, size, data);
+
+	return true;
+}
+
+void uniform_buffer_destroy(uniform_buffer_t* buffer)
+{
+	glDeleteBuffers(1, &buffer->buffer_handle);
+	memset(buffer, 0, sizeof(uniform_buffer_t));
+}
+
+void uniform_buffer_bind(const uniform_buffer_t* buffer)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, buffer->buffer_handle);
+}
+
+void uniform_buffer_bind_base(const uniform_buffer_t* buffer, uint32_t binding_point)
+{
+	glBindBufferBase(GL_UNIFORM_BUFFER, binding_point, buffer->buffer_handle);
+}
+
+void uniform_buffer_set_data(uniform_buffer_t* buffer, const void* data, size_t size)
+{
+	glNamedBufferSubData(buffer->buffer_handle, 0, size, data);
+}

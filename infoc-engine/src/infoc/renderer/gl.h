@@ -91,3 +91,4 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const G
 void glCompileShader(GLuint shader);
 void glLinkProgram(GLuint program);
 void glUseProgram(GLuint program);
+void glBindBufferBase(GLenum target, GLuint index, GLuint buffer);

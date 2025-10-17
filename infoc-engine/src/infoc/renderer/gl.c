@@ -21,9 +21,9 @@ typedef void (*pfn_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsi
 typedef void (*pfn_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const void*);
 typedef void (*pfn_glDrawArrays)(GLenum, GLint, GLsizei);
 typedef void (*pfn_glDrawElements)(GLenum mode, GLsizei count, GLenum type, const void* indices);
-typedef GLuint (*pfn_glCreateProgram)();
+typedef GLuint(*pfn_glCreateProgram)();
 typedef void (*pfn_glDeleteProgram)(GLuint program);
-typedef GLuint (*pfn_glCreateShader)(GLenum shaderType);
+typedef GLuint(*pfn_glCreateShader)(GLenum shaderType);
 typedef void (*pfn_glDeleteShader)(GLuint shader);
 typedef void (*pfn_glAttachShader)(GLuint program, GLuint shader);
 typedef void (*pfn_glDetachShader)(GLuint program, GLuint shader);
@@ -31,6 +31,7 @@ typedef void (*pfn_glShaderSource)(GLuint shader, GLsizei count, const GLchar** 
 typedef void (*pfn_glCompileShader)(GLuint shader);
 typedef void (*pfn_glLinkProgram)(GLuint program);
 typedef void (*pfn_glUseProgram)(GLuint program);
+typedef void (*pfn_glBindBufferBase)(GLenum target, GLuint index, GLuint buffer);
 
 typedef struct gl_t
 {
@@ -49,7 +50,7 @@ typedef struct gl_t
 	pfn_glVertexAttribIPointer glVertexAttribIPointer;
 	pfn_glDrawArrays glDrawArrays;
 	pfn_glDrawElements glDrawElements;
-pfn_glCreateProgram glCreateProgram;
+	pfn_glCreateProgram glCreateProgram;
 	pfn_glDeleteProgram glDeleteProgram;
 	pfn_glCreateShader glCreateShader;
 	pfn_glDeleteShader glDeleteShader;
@@ -59,6 +60,7 @@ pfn_glCreateProgram glCreateProgram;
 	pfn_glCompileShader glCompileShader;
 	pfn_glLinkProgram glLinkProgram;
 	pfn_glUseProgram glUseProgram;
+	pfn_glBindBufferBase glBindBufferBase;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -102,6 +104,7 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glCompileShader);
 	LOAD_OPENGL_PROC(glLinkProgram);
 	LOAD_OPENGL_PROC(glUseProgram);
+	LOAD_OPENGL_PROC(glBindBufferBase);
 
 	return true;
 }
@@ -236,4 +239,9 @@ void glLinkProgram(GLuint program)
 void glUseProgram(GLuint program)
 {
 	s_opengl->glUseProgram(program);
+}
+
+void glBindBufferBase(GLenum target, GLuint index, GLuint buffer)
+{
+	s_opengl->glBindBufferBase(target, index, buffer);
 }
