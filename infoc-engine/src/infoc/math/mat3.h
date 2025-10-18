@@ -7,7 +7,7 @@ typedef struct mat3
 	vec3 rows[3];
 } mat3;
 
-mat3 mat3_identity()
+inline mat3 mat3_identity()
 {
 	mat3 result = { 0 };
 	result.rows[0].x = 1.0f;
@@ -16,7 +16,7 @@ mat3 mat3_identity()
 	return result;
 }
 
-mat3 mat3_mul(mat3 a, mat3 b)
+inline mat3 mat3_mul(mat3 a, mat3 b)
 {
 	mat3 result = { 0 };
 	result.rows[0].x = a.rows[0].x * b.rows[0].x + a.rows[1].x * b.rows[0].y + a.rows[2].x * b.rows[0].z;
@@ -32,7 +32,7 @@ mat3 mat3_mul(mat3 a, mat3 b)
 	return result;
 }
 
-mat3 mat3_transpose(mat3 matrix)
+inline mat3 mat3_transpose(mat3 matrix)
 {
 	mat3 result = { 0 };
 	result.rows[0].x = matrix.rows[0].x;
@@ -48,11 +48,16 @@ mat3 mat3_transpose(mat3 matrix)
 	return result;
 }
 
-mat3 mat3_scale(mat3 matrix, float scale)
+inline mat3 mat3_scale(mat3 matrix, float scale)
 {
 	matrix.rows[0] = vec3_scale(matrix.rows[0], scale);
 	matrix.rows[1] = vec3_scale(matrix.rows[1], scale);
 	matrix.rows[2] = vec3_scale(matrix.rows[2], scale);
 
 	return matrix;
+}
+
+inline bool mat3_eq(mat3 a, mat3 b)
+{
+	return vec3_eq(a.rows[0], b.rows[0]) && vec3_eq(a.rows[1], b.rows[1]) && vec3_eq(a.rows[2], b.rows[2]);
 }

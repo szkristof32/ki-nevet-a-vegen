@@ -6,6 +6,7 @@
 
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
+#include "infoc/renderer/static_renderer.h"
 
 #include <string.h>
 
@@ -52,6 +53,13 @@ bool engine_initialise()
 		return false;
 	}
 
+	success = static_renderer_init();
+	if (!success)
+	{
+		fprintf(stderr, "Failed to initialise static renderer!\n");
+		return false;
+	}
+	
 	s_engine.running = true;
 
 	return true;
@@ -66,6 +74,7 @@ void engine_shutdown()
 			layer->on_detach();
 	}
 
+	static_renderer_shutdown();
 	context_destroy(&s_engine.context);
 	window_destroy(&s_engine.window);
 	arena_allocator_destroy(&s_engine.allocator);
@@ -83,12 +92,16 @@ void engine_run()
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		static_renderer_begin_frame();
+
 		for (size_t i = 0; i < darray_count(s_engine.layer_stack.layers); i++)
 		{
 			layer_t* layer = &s_engine.layer_stack.layers[i];
 			if (layer->on_update)
 				layer->on_update(delta);
 		}
+
+		static_renderer_end_frame();
 
 		context_swap(&s_engine.context);
 

@@ -38,6 +38,8 @@ typedef enum GLenum
 	GL_TRIANGLE_STRIP = 0x0005,
 	GL_TRIANGLE_FAN = 0x0006,
 
+	GL_DONT_CARE = 0x1100,
+
 	GL_BYTE = 0x1400,
 	GL_UNSIGNED_BYTE = 0x1401,
 	GL_SHORT = 0x1402,
@@ -64,8 +66,21 @@ typedef enum GLenum
 	GL_FRAGMENT_SHADER = 0x8B30,
 	GL_VERTEX_SHADER = 0x8B31,
 	GL_COMPUTE_SHADER = 0x91B9,
+
+	GL_DEBUG_SEVERITY_HIGH = 0x9146,
+	GL_DEBUG_SEVERITY_MEDIUM = 0x9147,
+	GL_DEBUG_SEVERITY_LOW = 0x9148,
+	GL_DEBUG_SEVERITY_NOTIFICATION = 0x826B,
+
+	GL_DEBUG_OUTPUT = 0x92E0,
+	GL_DEBUG_OUTPUT_SYNCHRONOUS = 0x8242,
 } GLenum;
 
+typedef void (*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+
+void glEnable(GLenum cap);
+void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+void glDebugMessageCallback(GLDEBUGPROC callback, const void* userParam);
 void glClear(GLbitfield mask);
 void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 void glCreateBuffers(GLsizei n, GLuint* buffers);

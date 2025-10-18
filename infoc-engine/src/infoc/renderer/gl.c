@@ -3,9 +3,13 @@
 #include "infoc/core/engine.h"
 
 #include <SDL3/SDL.h>
+#include <stdio.h>
 
 #undef bool
 
+typedef void (*pfn_glEnable)(GLenum cap);
+typedef void (*pfn_glDebugMessageControl)(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+typedef void (*pfn_glDebugMessageCallback)(GLDEBUGPROC callback, const void* userParam);
 typedef void (*pfn_glClear)(GLbitfield);
 typedef void (*pfn_glClearColor)(GLfloat, GLfloat, GLfloat, GLfloat);
 typedef void (*pfn_glCreateBuffers)(GLsizei, GLuint*);
@@ -35,6 +39,9 @@ typedef void (*pfn_glBindBufferBase)(GLenum target, GLuint index, GLuint buffer)
 
 typedef struct gl_t
 {
+	pfn_glEnable glEnable;
+	pfn_glDebugMessageControl glDebugMessageControl;
+	pfn_glDebugMessageCallback glDebugMessageCallback;
 	pfn_glClear glClear;
 	pfn_glClearColor glClearColor;
 	pfn_glCreateBuffers glCreateBuffers;
@@ -67,6 +74,8 @@ static gl_t* s_opengl;
 
 #define LOAD_OPENGL_PROC(proc) s_opengl->proc = (pfn_##proc)SDL_GL_GetProcAddress(#proc)
 
+static void opengl_debug(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+
 bool opengl_init()
 {
 	arena_allocator_t* allocator = engine_get_allocator();
@@ -79,6 +88,9 @@ bool opengl_init()
 
 	SDL_GL_LoadLibrary("opengl32");
 
+	LOAD_OPENGL_PROC(glEnable);
+	LOAD_OPENGL_PROC(glDebugMessageControl);
+	LOAD_OPENGL_PROC(glDebugMessageCallback);
 	LOAD_OPENGL_PROC(glClear);
 	LOAD_OPENGL_PROC(glClearColor);
 	LOAD_OPENGL_PROC(glCreateBuffers);
@@ -106,6 +118,12 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glUseProgram);
 	LOAD_OPENGL_PROC(glBindBufferBase);
 
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(opengl_debug, NULL);
+
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, true);
+
 	return true;
 }
 
@@ -114,6 +132,32 @@ void opengl_shutdown()
 	SDL_GL_UnloadLibrary();
 
 	s_opengl = NULL;
+}
+
+void opengl_debug(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	switch (severity)
+	{
+		case GL_DEBUG_SEVERITY_NOTIFICATION:	printf("[OpenGL notification] %s\n", message); return;
+		case GL_DEBUG_SEVERITY_LOW:				printf("[OpenGL information] %s\n", message); return;
+		case GL_DEBUG_SEVERITY_MEDIUM:			printf("[OpenGL warning] %s\n", message); return;
+		case GL_DEBUG_SEVERITY_HIGH:			fprintf(stderr, "[OpenGL error] %s\n", message); return;
+	}
+}
+
+void glEnable(GLenum cap)
+{
+	s_opengl->glEnable(cap);
+}
+
+void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled)
+{
+	s_opengl->glDebugMessageControl(source, type, severity, count, ids, enabled);
+}
+
+void glDebugMessageCallback(GLDEBUGPROC callback, const void* userParam)
+{
+	s_opengl->glDebugMessageCallback(callback, userParam);
 }
 
 void glClear(GLbitfield mask)
