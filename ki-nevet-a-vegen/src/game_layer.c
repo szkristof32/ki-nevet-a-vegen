@@ -2,7 +2,7 @@
 
 #include "infoc/core/engine.h"
 
-#include "infoc/renderer/mesh.h"
+#include "infoc/renderer/model.h"
 #include "infoc/renderer/static_renderer.h"
 
 static void game_on_attach();
@@ -10,7 +10,7 @@ static void game_on_update(float timestep);
 
 typedef struct game_layer_t
 {
-	mesh_t test_mesh;
+	model_t test_model;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -72,12 +72,14 @@ void game_on_attach()
 		vertex.normal = normals[i];
 		vertex.colour = colours[i];
 
-		mesh_add_vertex(&s_game_layer->test_mesh, &vertex);
+		mesh_add_vertex(&s_game_layer->test_model.mesh, &vertex);
 	}
-	mesh_create(&s_game_layer->test_mesh);
+	mesh_create(&s_game_layer->test_model.mesh);
+
+	texture_create("assets/images/test.bmp", &s_game_layer->test_model.model_texture);
 }
 
 void game_on_update(float timestep)
 {
-	static_renderer_render(&s_game_layer->test_mesh);
+	static_renderer_render(&s_game_layer->test_model);
 }
