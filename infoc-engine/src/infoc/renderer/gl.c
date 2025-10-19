@@ -36,6 +36,12 @@ typedef void (*pfn_glCompileShader)(GLuint shader);
 typedef void (*pfn_glLinkProgram)(GLuint program);
 typedef void (*pfn_glUseProgram)(GLuint program);
 typedef void (*pfn_glBindBufferBase)(GLenum target, GLuint index, GLuint buffer);
+typedef void (*pfn_glCreateTextures)(GLenum target, GLsizei n, GLuint* textures);
+typedef void (*pfn_glDeleteTextures)(GLsizei n, const GLuint* textures);
+typedef void (*pfn_glBindTextureUnit)(GLuint unit, GLuint texture);
+typedef void (*pfn_glTextureStorage2D)(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (*pfn_glTextureSubImage2D)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+typedef void (*pfn_glTextureParameteri)(GLuint texture, GLenum pname, GLint param);
 
 typedef struct gl_t
 {
@@ -68,6 +74,12 @@ typedef struct gl_t
 	pfn_glLinkProgram glLinkProgram;
 	pfn_glUseProgram glUseProgram;
 	pfn_glBindBufferBase glBindBufferBase;
+	pfn_glCreateTextures glCreateTextures;
+	pfn_glDeleteTextures glDeleteTextures;
+pfn_glBindTextureUnit glBindTextureUnit;
+	pfn_glTextureStorage2D glTextureStorage2D;
+	pfn_glTextureSubImage2D glTextureSubImage2D;
+	pfn_glTextureParameteri glTextureParameteri;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -117,6 +129,12 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glLinkProgram);
 	LOAD_OPENGL_PROC(glUseProgram);
 	LOAD_OPENGL_PROC(glBindBufferBase);
+	LOAD_OPENGL_PROC(glCreateTextures);
+	LOAD_OPENGL_PROC(glDeleteTextures);
+	LOAD_OPENGL_PROC(glBindTextureUnit);
+	LOAD_OPENGL_PROC(glTextureStorage2D);
+	LOAD_OPENGL_PROC(glTextureSubImage2D);
+	LOAD_OPENGL_PROC(glTextureParameteri);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -288,4 +306,34 @@ void glUseProgram(GLuint program)
 void glBindBufferBase(GLenum target, GLuint index, GLuint buffer)
 {
 	s_opengl->glBindBufferBase(target, index, buffer);
+}
+
+void glCreateTextures(GLenum target, GLsizei n, GLuint* textures)
+{
+	s_opengl->glCreateTextures(target, n, textures);
+}
+
+void glDeleteTextures(GLsizei n, const GLuint* textures)
+{
+	s_opengl->glDeleteTextures(n, textures);
+}
+
+void glBindTextureUnit(GLuint unit, GLuint texture)
+{
+	s_opengl->glBindTextureUnit(unit, texture);
+}
+
+void glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
+{
+	s_opengl->glTextureStorage2D(texture, levels, internalformat, width, height);
+}
+
+void glTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
+{
+	s_opengl->glTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void glTextureParameteri(GLuint texture, GLenum pname, GLint param)
+{
+	s_opengl->glTextureParameteri(texture, pname, param);
 }

@@ -38,6 +38,8 @@ typedef enum GLenum
 	GL_TRIANGLE_STRIP = 0x0005,
 	GL_TRIANGLE_FAN = 0x0006,
 
+	GL_TEXTURE_2D = 0x0DE1,
+
 	GL_DONT_CARE = 0x1100,
 
 	GL_BYTE = 0x1400,
@@ -48,6 +50,22 @@ typedef enum GLenum
 	GL_UNSIGNED_INT = 0x1405,
 	GL_FLOAT = 0x1406,
 	GL_DOUBLE = 0x1407,
+
+	GL_NEAREST = 0x2600,
+	GL_LINEAR = 0x2601,
+
+	GL_TEXTURE_MAG_FILTER = 0x2800,
+	GL_TEXTURE_MIN_FILTER = 0x2801,
+	GL_TEXTURE_WRAP_S = 0x2802,
+	GL_TEXTURE_WRAP_T = 0x2803,
+
+	GL_REPEAT = 0x2901,
+
+	GL_RGB = 0x1907,
+	GL_RGBA = 0x1908,
+
+	GL_RGB8 = 0x8051,
+	GL_RGBA8 = 0x8058,
 
 	GL_ARRAY_BUFFER = 0x8892,
 	GL_ELEMENT_ARRAY_BUFFER = 0x8893,
@@ -107,3 +125,9 @@ void glCompileShader(GLuint shader);
 void glLinkProgram(GLuint program);
 void glUseProgram(GLuint program);
 void glBindBufferBase(GLenum target, GLuint index, GLuint buffer);
+void glCreateTextures(GLenum target, GLsizei n, GLuint* textures);
+void glDeleteTextures(GLsizei n, const GLuint* textures);
+void glBindTextureUnit(GLuint unit, GLuint texture);
+void glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+void glTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+void glTextureParameteri(GLuint texture, GLenum pname, GLint param);

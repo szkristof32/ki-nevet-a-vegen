@@ -6,6 +6,7 @@
 #include "infoc/math/utilities.h"
 
 #include "shader.h"
+#include "texture.h"
 #include "gl.h"
 
 typedef struct matrices_t
@@ -17,6 +18,7 @@ typedef struct matrices_t
 typedef struct static_renderer_t
 {
 	shader_t shader;
+	texture_t texture;
 
 	matrices_t matrices;
 	uniform_buffer_t matrices_uniform;
@@ -38,6 +40,13 @@ bool static_renderer_init()
 	if (!success)
 	{
 		fprintf(stderr, "Failed to create static shader!\n");
+		return false;
+	}
+
+	success = texture_create("assets/images/test.bmp", &s_static_renderer->texture);
+	if (!success)
+	{
+		fprintf(stderr, "Failed to load image!\n");
 		return false;
 	}
 
@@ -68,6 +77,7 @@ void static_renderer_begin_frame()
 {
 	shader_use(&s_static_renderer->shader);
 	uniform_buffer_bind(&s_static_renderer->matrices_uniform);
+	texture_bind(&s_static_renderer->texture, 0);
 }
 
 void static_renderer_end_frame()
