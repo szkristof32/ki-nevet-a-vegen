@@ -2,6 +2,8 @@
 
 #include "game_object.h"
 
-typedef game_object_t camera_t;
-
-mat4 camera_get_view_matrix(camera_t* camera);
+typedef struct camera_t
+{
+	vec3 position;
+	mat4 view_matrix;
+} camera_t;

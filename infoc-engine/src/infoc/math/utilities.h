@@ -125,3 +125,28 @@ inline mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
 
 	return matrix;
 }
+
+inline mat4 mat4_look_at(vec3 eye, vec3 center, vec3 up)
+{
+	vec3 f = vec3_normalise(vec3_sub(center, eye));
+	vec3 s = vec3_normalise(vec3_cross(f, up));
+	vec3 u = vec3_cross(s, f);
+
+	mat4 result = mat4_identity();
+	result.rows[0].x = s.x;
+	result.rows[0].y = u.x;
+	result.rows[0].z = -f.x;
+	result.rows[1].x = s.y;
+	result.rows[1].y = u.y;
+	result.rows[1].z = -f.y;
+	result.rows[2].x = s.z;
+	result.rows[2].y = u.z;
+	result.rows[2].z = -f.z;
+	result.rows[3].x = -vec3_dot(s, eye);
+	result.rows[3].y = -vec3_dot(u, eye);
+	result.rows[3].z = vec3_dot(f, eye);
+	result.rows[0].w = result.rows[1].w = result.rows[2].w = 0.0f;
+	result.rows[3].w = 1.0f;
+
+	return result;
+}

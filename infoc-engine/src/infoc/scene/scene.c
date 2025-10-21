@@ -9,7 +9,7 @@ void scene_create(scene_t* out_scene)
 	memset(out_scene, 0, sizeof(scene_t));
 
 	out_scene->game_objects = darray_create(game_object_t);
-	out_scene->camera.transform.scale = vec3_scalar(1.0f);
+	out_scene->camera.view_matrix = mat4_identity();
 }
 
 void scene_destroy(scene_t* scene)

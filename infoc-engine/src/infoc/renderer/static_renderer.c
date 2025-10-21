@@ -95,7 +95,7 @@ void static_renderer_end_frame()
 
 void static_renderer_set_camera(camera_t* camera)
 {
-	s_static_renderer->matrices.view = camera_get_view_matrix(camera);
+	s_static_renderer->matrices.view = camera->view_matrix;
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
 }
 
