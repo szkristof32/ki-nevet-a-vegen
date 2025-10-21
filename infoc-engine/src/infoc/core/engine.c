@@ -3,6 +3,7 @@
 #include "infoc/core/window.h"
 #include "infoc/core/layers.h"
 #include "infoc/core/darray.h"
+#include "infoc/core/input.h"
 
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
@@ -46,6 +47,13 @@ bool engine_initialise()
 		return false;
 	}
 
+	success = input_initialise();
+	if (!success)
+	{
+		fprintf(stderr, "Failed to initialise input!\n");
+		return false;
+	}
+
 	success = layer_stack_create(&s_engine.layer_stack);
 	if (!success)
 	{
@@ -75,6 +83,8 @@ void engine_shutdown()
 	}
 
 	static_renderer_shutdown();
+	layer_stack_destroy(&s_engine.layer_stack);
+	input_shutdown();
 	context_destroy(&s_engine.context);
 	window_destroy(&s_engine.window);
 	arena_allocator_destroy(&s_engine.allocator);
@@ -87,6 +97,7 @@ void engine_run()
 	{
 		float delta = 0.0f;
 
+		input_update();
 		window_update(&s_engine.window);
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);

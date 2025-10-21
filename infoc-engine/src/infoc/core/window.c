@@ -1,6 +1,7 @@
 #include "window.h"
 
 #include "infoc/core/engine.h"
+#include "infoc/core/input.h"
 
 #include <SDL3/SDL.h>
 #include <string.h>
@@ -60,15 +61,52 @@ void window_destroy(window_t* window)
 	memset(window, 0, sizeof(window_t));
 }
 
+static uint32_t _mouse_button_index(uint8_t button)
+{
+	switch (button)
+	{
+		case SDL_BUTTON_LEFT:	return 0;
+		case SDL_BUTTON_RIGHT:	return 1;
+		case SDL_BUTTON_MIDDLE:	return 2;
+	}
+
+	return -1;
+}
+
 void window_update(const window_t* window)
 {
 	SDL_Event event;
 	if (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_EVENT_QUIT)
+		switch (event.type)
 		{
-			window_internal_t* internal_state = window->internal_state;
-			internal_state->should_close = true;
+			case SDL_EVENT_QUIT:
+			{
+				window_internal_t* internal_state = window->internal_state;
+				internal_state->should_close = true;
+				break;
+			}
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+			{
+				SDL_MouseButtonEvent mouse_event = *(SDL_MouseButtonEvent*)&event;
+				input_click_listener(_mouse_button_index(mouse_event.button), mouse_event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+				break;
+			}
+			case SDL_EVENT_MOUSE_MOTION:
+			{
+				SDL_MouseMotionEvent mouse_event = *(SDL_MouseMotionEvent*)&event;
+				float x = (float)mouse_event.x / (float)window->width;
+				float y = (float)mouse_event.y / (float)window->height;
+				input_move_listener(x, y);
+				break;
+			}
+			case SDL_EVENT_MOUSE_WHEEL:
+			{
+				SDL_MouseWheelEvent mouse_event = *(SDL_MouseWheelEvent*)&event;
+				input_scroll_listener((float)mouse_event.x, (float)mouse_event.y);
+				break;
+			}
 		}
 	}
 }
