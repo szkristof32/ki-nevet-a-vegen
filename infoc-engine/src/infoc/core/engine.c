@@ -90,7 +90,7 @@ void engine_run()
 		window_update(&s_engine.window);
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		static_renderer_begin_frame();
 

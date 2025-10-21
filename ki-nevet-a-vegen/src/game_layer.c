@@ -5,6 +5,8 @@
 #include "infoc/renderer/model.h"
 #include "infoc/renderer/static_renderer.h"
 
+#include "infoc/utils/obj_loader.h"
+
 static void game_on_attach();
 static void game_on_update(float timestep);
 
@@ -31,50 +33,7 @@ layer_t game_layer_create()
 
 void game_on_attach()
 {
-	vec3 positions[] = {
-		vec3_create(-0.5f, 0.5f, 0.0f),
-		vec3_create(-0.5f, -0.5f, 0.0f),
-		vec3_create(0.5f, 0.5f, 0.0f),
-		vec3_create(0.5f, 0.5f, 0.0f),
-		vec3_create(-0.5f, -0.5f, 0.0f),
-		vec3_create(0.5f, -0.5f, 0.0f)
-	};
-	vec2 uvs[] = {
-		vec2_create(0.0f, 0.0f),
-		vec2_create(0.0f, 1.0f),
-		vec2_create(1.0f, 0.0f),
-		vec2_create(1.0f, 0.0f),
-		vec2_create(0.0f, 1.0f),
-		vec2_create(1.0f, 1.0f)
-	};
-	vec3 normals[] = {
-		vec3_create(0.0f, 0.0f, 1.0f),
-		vec3_create(0.0f, 0.0f, 1.0f),
-		vec3_create(0.0f, 0.0f, 1.0f),
-		vec3_create(0.0f, 0.0f, 1.0f),
-		vec3_create(0.0f, 0.0f, 1.0f),
-		vec3_create(0.0f, 0.0f, 1.0f)
-	};
-	vec4 colours[] = {
-		vec4_create(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4_create(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4_create(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4_create(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4_create(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4_create(1.0f, 0.0f, 1.0f, 1.0f)
-	};
-
-	for (uint32_t i = 0; i < 6; i++)
-	{
-		vertex_t vertex = { 0 };
-		vertex.position = positions[i];
-		vertex.uv = uvs[i];
-		vertex.normal = normals[i];
-		vertex.colour = colours[i];
-
-		mesh_add_vertex(&s_game_layer->test_model.mesh, &vertex);
-	}
-	mesh_create(&s_game_layer->test_model.mesh);
+	obj_loader_load_model("assets/models/pin_placeholder.obj", &s_game_layer->test_model.mesh);
 
 	texture_create("assets/images/test.bmp", &s_game_layer->test_model.model_texture);
 }

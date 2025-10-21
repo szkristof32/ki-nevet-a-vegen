@@ -2,6 +2,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
+#define DARRAY_RESIZE_AMOUNT 1.5f
 
 void* _darray_create(size_t element_size, size_t initial_capacity)
 {
@@ -40,7 +43,7 @@ void* _darray_push(void* array, const void* value_ptr)
 
 	if (header->count >= header->capacity)
 	{
-		array = _darray_resize(array, header->capacity * 2);
+		array = _darray_resize(array, (size_t)ceil(header->capacity * DARRAY_RESIZE_AMOUNT));
 		header = (darray_t*)((uint8_t*)array - header_size);
 	}
 
@@ -56,7 +59,7 @@ void* _darray_resize(void* array, size_t new_count)
 	darray_t* header = (darray_t*)((uint8_t*)array - header_size);
 
 	void* temp = _darray_create(header->element_size, new_count);
-	darray_t* new_header = (darray_t*)((uint8_t*)array - header_size);
+	darray_t* new_header = (darray_t*)((uint8_t*)temp - header_size);
 	new_header->count = header->count;
 
 	memcpy(temp, array, header->count * header->element_size);

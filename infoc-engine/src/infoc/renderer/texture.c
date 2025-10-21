@@ -36,7 +36,7 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTextureSubImage2D(out_texture->texture_handle, 0, 0, 0, out_texture->width, out_texture->height, GL_RGB, GL_UNSIGNED_BYTE, texuture->pixels);
+	glTextureSubImage2D(out_texture->texture_handle, 0, 0, 0, out_texture->width, out_texture->height, GL_BGR, GL_UNSIGNED_BYTE, texuture->pixels);
 
 	SDL_DestroySurface(texuture);
 

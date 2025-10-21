@@ -17,6 +17,7 @@ void* _darray_resize(void* array, size_t new_count);
 
 size_t darray_count(void* array);
 
-#define darray_create(type) (type*)_darray_create(sizeof(type), 10)
+#define DARRAY_INITIAL_CAPACITY 2
+#define darray_create(type) (type*)_darray_create(sizeof(type), DARRAY_INITIAL_CAPACITY)
 #define darray_reserve(type, capacity) _darray_create(sizeof(type), capacity)
 #define darray_push(array, value) { void* temp = &(value); array = _darray_push(array, temp); }

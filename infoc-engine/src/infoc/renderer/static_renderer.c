@@ -51,7 +51,8 @@ bool static_renderer_init()
 
 	s_static_renderer->matrices.projection = mat4_perspective(70.0f, 16.0f / 9.0f, 0.1f, 100.0f);
 	s_static_renderer->matrices.view = mat4_identity();
-	s_static_renderer->matrices.view = mat4_translate_z(s_static_renderer->matrices.view, -4.0f);
+	s_static_renderer->matrices.view = mat4_translate_z(s_static_renderer->matrices.view, -10.0f);
+	s_static_renderer->matrices.view = mat4_rotate_y(s_static_renderer->matrices.view, deg_to_rad(19.0f));
 	s_static_renderer->matrices.view = mat4_rotate_z(s_static_renderer->matrices.view, deg_to_rad(45.0f));
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
 
@@ -66,6 +67,8 @@ void static_renderer_shutdown()
 
 void static_renderer_begin_frame()
 {
+	glEnable(GL_DEPTH_TEST);
+
 	shader_use(&s_static_renderer->shader);
 	uniform_buffer_bind(&s_static_renderer->matrices_uniform);
 }
