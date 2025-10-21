@@ -36,7 +36,6 @@ bool mesh_create(mesh_t* mesh)
 	vertex_array_add_attribute(&mesh->vertex_array, vertex_attribute_type_float3);
 	vertex_array_add_attribute(&mesh->vertex_array, vertex_attribute_type_float2);
 	vertex_array_add_attribute(&mesh->vertex_array, vertex_attribute_type_float3);
-	vertex_array_add_attribute(&mesh->vertex_array, vertex_attribute_type_float4);
 	vertex_array_bake_layout(&mesh->vertex_array);
 
 	success &= index_buffer_create(mesh->indices, darray_count(mesh->indices), &mesh->index_buffer);

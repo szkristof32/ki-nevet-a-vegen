@@ -14,12 +14,20 @@ typedef struct matrices_t
 	mat4 view;
 } matrices_t;
 
+typedef struct object_t
+{
+	mat4 transformation;
+	vec4 colour;
+} object_t;
+
 typedef struct static_renderer_t
 {
 	shader_t shader;
 
 	matrices_t matrices;
 	uniform_buffer_t matrices_uniform;
+
+	uniform_buffer_t object_uniform;
 } static_renderer_t;
 
 static static_renderer_t* s_static_renderer = NULL;
@@ -56,6 +64,14 @@ bool static_renderer_init()
 	s_static_renderer->matrices.view = mat4_rotate_z(s_static_renderer->matrices.view, deg_to_rad(45.0f));
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
 
+	success = uniform_buffer_create(NULL, sizeof(object_t), &s_static_renderer->object_uniform);
+	if (!success)
+	{
+		fprintf(stderr, "Failed to create uniform buffer!\n");
+		return false;
+	}
+	uniform_buffer_bind_base(&s_static_renderer->object_uniform, 1);
+
 	return true;
 }
 
@@ -77,8 +93,20 @@ void static_renderer_end_frame()
 {
 }
 
-void static_renderer_render(model_t* model)
+void static_renderer_set_camera(camera_t* camera)
 {
+	s_static_renderer->matrices.view = camera_get_view_matrix(camera);
+	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
+}
+
+void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 colour)
+{
+	object_t object_uniforms = { 0 };
+	object_uniforms.transformation = transformation_matrix;
+	object_uniforms.colour = colour;
+
+	uniform_buffer_set_data(&s_static_renderer->object_uniform, &object_uniforms, sizeof(object_t));
+
 	mesh_t* mesh = &model->mesh;
 
 	vertex_array_bind(&mesh->vertex_array);

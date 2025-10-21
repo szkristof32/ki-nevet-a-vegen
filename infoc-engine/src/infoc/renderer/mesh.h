@@ -4,7 +4,6 @@
 
 #include "infoc/math/vec2.h"
 #include "infoc/math/vec3.h"
-#include "infoc/math/vec4.h"
 
 #include "vertex_array.h"
 #include "buffers.h"
@@ -14,12 +13,11 @@ typedef struct vertex_t
 	vec3 position;
 	vec2 uv;
 	vec3 normal;
-	vec4 colour;
 } vertex_t;
 
 inline bool vertex_eq(vertex_t* a, vertex_t* b)
 {
-	return vec3_eq(a->position, b->position) && vec2_eq(a->uv, b->uv) && vec3_eq(a->normal, b->normal) && vec4_eq(a->colour, b->colour);
+	return vec3_eq(a->position, b->position) && vec2_eq(a->uv, b->uv) && vec3_eq(a->normal, b->normal);
 }
 
 typedef struct mesh_t

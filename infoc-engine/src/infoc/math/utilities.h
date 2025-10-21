@@ -33,21 +33,27 @@ inline mat4 mat4_perspective(float fov, float aspect_ratio, float near_plane, fl
 
 inline mat4 mat4_translate(mat4 matrix, vec4 vector)
 {
-	vec4 v1 = vec4_mul(matrix.rows[2], vector);
+	vec4 v1 = vec4_scale(matrix.rows[0], vector.x);
+	vec4 v2 = vec4_scale(matrix.rows[1], vector.y);
+	vec4 v3 = vec4_scale(matrix.rows[2], vector.z);
+
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
+	matrix.rows[3] = vec4_add(matrix.rows[3], v2);
+	matrix.rows[3] = vec4_add(matrix.rows[3], v3);
+
 	return matrix;
 }
 
 inline mat4 mat4_translate_x(mat4 matrix, float x)
 {
-	vec4 v1 = vec4_scale(matrix.rows[2], x);
+	vec4 v1 = vec4_scale(matrix.rows[0], x);
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
 	return matrix;
 }
 
 inline mat4 mat4_translate_y(mat4 matrix, float y)
 {
-	vec4 v1 = vec4_scale(matrix.rows[2], y);
+	vec4 v1 = vec4_scale(matrix.rows[1], y);
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
 	return matrix;
 }
@@ -99,4 +105,23 @@ inline mat4 mat4_rotate_z(mat4 matrix, float angle_rad)
 	result.rows[1].y = c;
 
 	return mat4_mul_rot(matrix, result);
+}
+
+inline mat4 mat4_scale_vec3(mat4 matrix, vec3 scalar)
+{
+	matrix.rows[0].x *= scalar.x;
+	matrix.rows[1].y *= scalar.y;
+	matrix.rows[2].z *= scalar.z;
+
+	return matrix;
+}
+
+inline mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
+{
+	matrix.rows[0].x *= scalar.x;
+	matrix.rows[1].y *= scalar.y;
+	matrix.rows[2].z *= scalar.z;
+	matrix.rows[3].w *= scalar.w;
+
+	return matrix;
 }

@@ -78,7 +78,6 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 				vertex.position = vertex_positions[atoi(tokens[0]) - 1];
 				vertex.uv = uv_coords[atoi(tokens[1]) - 1];
 				vertex.normal = normals[atoi(tokens[2]) - 1];
-				vertex.colour = vec4_scalar(1.0f);
 
 				mesh_add_vertex(out_mesh, &vertex);
 			}
