@@ -7,6 +7,7 @@
 
 #include "infoc/renderer/context.h"
 #include "infoc/renderer/gl.h"
+#include "infoc/renderer/texture.h"
 #include "infoc/renderer/static_renderer.h"
 
 #include <string.h>
@@ -18,6 +19,7 @@ typedef struct engine_t
 	context_t context;
 
 	layer_stack_t layer_stack;
+	texture_t default_texture;
 
 	bool running;
 } engine_t;
@@ -46,6 +48,15 @@ bool engine_initialise()
 		fprintf(stderr, "Failed to create context!\n");
 		return false;
 	}
+
+	success = texture_create_empty(1, 1, &s_engine.default_texture);
+	if (!success)
+	{
+		fprintf(stderr, "Failed to create default texture!\n");
+		return false;
+	}
+	uint32_t default_texture_data = 0xffffffff;
+	texture_set_data(&s_engine.default_texture, &default_texture_data);
 
 	success = input_initialise();
 	if (!success)
@@ -131,4 +142,9 @@ void engine_attach_layer(layer_t* layer)
 arena_allocator_t* engine_get_allocator()
 {
 	return &s_engine.allocator;
+}
+
+struct texture_t* engine_get_default_texture()
+{
+	return &s_engine.default_texture;
 }

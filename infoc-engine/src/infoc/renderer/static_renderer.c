@@ -110,7 +110,10 @@ void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 col
 	mesh_t* mesh = &model->mesh;
 
 	vertex_array_bind(&mesh->vertex_array);
-	texture_bind(&model->model_texture, 0);
+	if (texture_is_valid(&model->model_texture))
+		texture_bind(&model->model_texture, 0);
+	else
+		texture_bind(engine_get_default_texture(), 0);
 
 	glDrawElements(GL_TRIANGLES, (uint32_t)mesh->index_count, GL_UNSIGNED_INT, NULL);
 }

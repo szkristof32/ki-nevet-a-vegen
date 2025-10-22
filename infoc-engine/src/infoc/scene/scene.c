@@ -14,6 +14,11 @@ void scene_create(scene_t* out_scene)
 
 void scene_destroy(scene_t* scene)
 {
+	for (uint32_t i = 0; i < darray_count(scene->game_objects); i++)
+	{
+		game_object_destroy(&scene->game_objects[i]);
+	}
+
 	darray_destroy(scene->game_objects);
 	memset(scene, 0, sizeof(game_object_t));
 }

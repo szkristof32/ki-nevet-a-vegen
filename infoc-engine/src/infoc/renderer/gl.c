@@ -76,7 +76,7 @@ typedef struct gl_t
 	pfn_glBindBufferBase glBindBufferBase;
 	pfn_glCreateTextures glCreateTextures;
 	pfn_glDeleteTextures glDeleteTextures;
-pfn_glBindTextureUnit glBindTextureUnit;
+	pfn_glBindTextureUnit glBindTextureUnit;
 	pfn_glTextureStorage2D glTextureStorage2D;
 	pfn_glTextureSubImage2D glTextureSubImage2D;
 	pfn_glTextureParameteri glTextureParameteri;

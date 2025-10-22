@@ -32,3 +32,4 @@ typedef struct mesh_t
 
 void mesh_add_vertex(mesh_t* mesh, vertex_t* vertex);
 bool mesh_create(mesh_t* mesh);
+void mesh_destroy(mesh_t* mesh);

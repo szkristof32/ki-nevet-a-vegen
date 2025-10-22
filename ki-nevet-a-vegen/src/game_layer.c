@@ -11,6 +11,7 @@
 #include "infoc/utils/obj_loader.h"
 
 #include "camera_controller.h"
+#include "board.h"
 
 static void game_on_attach();
 static void game_on_detach();
@@ -20,6 +21,7 @@ typedef struct game_layer_t
 {
 	scene_t scene;
 	camera_controller_t camera_controller;
+	board_t board;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -43,23 +45,18 @@ void game_on_attach()
 {
 	scene_create(&s_game_layer->scene);
 
-	{
-		game_object_t* object = scene_new_object(&s_game_layer->scene);
-		obj_loader_load_model("assets/models/pin_placeholder.obj", &object->model.mesh);
-		texture_create("assets/images/test.bmp", &object->model.model_texture);
-	}
-	{
-		camera_controller_t* controller = &s_game_layer->camera_controller;
+	camera_controller_t* controller = &s_game_layer->camera_controller;
 
-		controller->camera = &s_game_layer->scene.camera;
-		controller->center = vec3_create(0.0f, 2.0f, 0.0f);
-		controller->pitch = 30.0f;
-		controller->distance_from_center = 7.0f;
-	}
+	controller->camera = &s_game_layer->scene.camera;
+	controller->pitch = 30.0f;
+	controller->distance_from_center = 7.0f;
+
+	board_create(&s_game_layer->scene, &s_game_layer->board);
 }
 
 void game_on_detach()
 {
+	board_destroy(&s_game_layer->board);
 	scene_destroy(&s_game_layer->scene);
 }
 

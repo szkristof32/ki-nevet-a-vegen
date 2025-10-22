@@ -45,3 +45,10 @@ bool mesh_create(mesh_t* mesh)
 
 	return success;
 }
+
+void mesh_destroy(mesh_t* mesh)
+{
+	vertex_buffer_destroy(&mesh->vertex_buffer);
+	index_buffer_destroy(&mesh->index_buffer);
+	vertex_array_destroy(&mesh->vertex_array);
+}

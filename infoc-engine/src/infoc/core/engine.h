@@ -12,3 +12,4 @@ void engine_run();
 void engine_attach_layer(layer_t* layer);
 
 arena_allocator_t* engine_get_allocator();
+struct texture_t* engine_get_default_texture();

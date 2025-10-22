@@ -21,3 +21,5 @@ typedef struct game_object_t
 } game_object_t;
 
 mat4 transform_get_model_matrix(transform_t* transform);
+
+void game_object_destroy(game_object_t* object);

@@ -13,3 +13,8 @@ mat4 transform_get_model_matrix(transform_t* transform)
 
 	return matrix;
 }
+
+void game_object_destroy(game_object_t* object)
+{
+	model_destroy(&object->model);
+}

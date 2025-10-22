@@ -10,3 +10,5 @@ typedef struct model_t
 	mesh_t mesh;
 	texture_t model_texture;
 } model_t;
+
+void model_destroy(model_t* model);
