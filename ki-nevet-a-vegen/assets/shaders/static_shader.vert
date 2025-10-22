@@ -26,7 +26,7 @@ layout (binding = 1) uniform Object
 void main()
 {
 	Output.Uv = in_uv;
-	Output.Normal = in_normal;
+	Output.Normal = (object.transformation * vec4(in_normal, 0.0)).xyz;
 	Output.Colour = object.colour;
 
 	gl_Position = matrices.projection * matrices.view * object.transformation * vec4(in_position, 1.0);

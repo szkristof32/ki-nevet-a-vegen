@@ -11,8 +11,15 @@ layout (location = 0) out vec4 out_colour;
 
 layout (binding = 0) uniform sampler2D model_texture;
 
+const vec3 light_direction = vec3(-1.0, -1.0, -0.5);
+
 void main()
 {
+	vec3 light_dir_norm = normalize(light_direction);
+	vec3 to_light_vector = -light_dir_norm;
+	vec3 unit_normal = normalize(Input.Normal);
+	float NdotL = dot(unit_normal, to_light_vector);
+
 	vec4 colour = texture(model_texture, Input.Uv);
-	out_colour = Input.Colour * colour;
+	out_colour = Input.Colour * colour * max(NdotL, 0.1);
 }
