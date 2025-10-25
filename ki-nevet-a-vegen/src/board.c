@@ -35,6 +35,7 @@ bool board_create(scene_t* scene, board_t* out_board)
 			object->colour = colour;
 			object->transform.position = vec3_add(base_position, vec3_create(x_axis * home_size, 0.0f, y_axis * home_size));
 			object->transform.scale = vec3_scalar(0.125f);
+			object->index = (i * 4) + j + 1;
 		}
 	}
 

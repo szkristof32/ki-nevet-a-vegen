@@ -12,12 +12,14 @@ typedef struct matrices_t
 {
 	mat4 projection;
 	mat4 view;
+	uint32_t object_count;
 } matrices_t;
 
 typedef struct object_t
 {
 	mat4 transformation;
 	vec4 colour;
+	uint32_t index;
 } object_t;
 
 typedef struct static_renderer_t
@@ -99,11 +101,17 @@ void static_renderer_set_camera(camera_t* camera)
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
 }
 
-void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 colour)
+void static_renderer_set_object_count(uint32_t count)
+{
+	s_static_renderer->matrices.object_count = count;
+}
+
+void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 colour, uint32_t index)
 {
 	object_t object_uniforms = { 0 };
 	object_uniforms.transformation = transformation_matrix;
 	object_uniforms.colour = colour;
+	object_uniforms.index = index;
 
 	uniform_buffer_set_data(&s_static_renderer->object_uniform, &object_uniforms, sizeof(object_t));
 

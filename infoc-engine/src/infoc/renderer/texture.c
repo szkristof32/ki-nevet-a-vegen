@@ -27,6 +27,7 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 
 	out_texture->width = texuture->w;
 	out_texture->height = texuture->h;
+	out_texture->is_depth = false;
 
 	glTextureStorage2D(out_texture->texture_handle, 1, GL_RGB8, out_texture->width, out_texture->height);
 
@@ -55,8 +56,59 @@ bool texture_create_empty(uint32_t width, uint32_t height, texture_t* out_textur
 
 	out_texture->width = width;
 	out_texture->height = height;
+	out_texture->is_depth = false;
 
 	glTextureStorage2D(out_texture->texture_handle, 1, GL_RGB8, out_texture->width, out_texture->height);
+
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return true;
+}
+
+bool texture_create_format(uint32_t width, uint32_t height, uint32_t format, texture_t* out_texture)
+{
+	memset(out_texture, 0, sizeof(texture_t));
+	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
+	if (out_texture->texture_handle == 0)
+	{
+		fprintf(stderr, "Failed to create texture!\n");
+		return false;
+	}
+
+	out_texture->width = width;
+	out_texture->height = height;
+	out_texture->is_depth = false;
+
+	glTextureStorage2D(out_texture->texture_handle, 1, format, out_texture->width, out_texture->height);
+
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return true;
+}
+
+bool texture_create_depth(uint32_t width, uint32_t height, texture_t* out_texture)
+{
+	memset(out_texture, 0, sizeof(texture_t));
+	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
+	if (out_texture->texture_handle == 0)
+	{
+		fprintf(stderr, "Failed to create texture!\n");
+		return false;
+	}
+
+	out_texture->width = width;
+	out_texture->height = height;
+	out_texture->is_depth = true;
+
+	glTextureStorage2D(out_texture->texture_handle, 1, GL_DEPTH24_STENCIL8, out_texture->width, out_texture->height);
 
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -80,7 +132,8 @@ void texture_bind(const texture_t* texture, uint32_t texture_unit)
 
 void texture_set_data(const texture_t* texture, const void* data)
 {
-	glTextureSubImage2D(texture->texture_handle, 0, 0, 0, texture->width, texture->height, GL_BGR, GL_UNSIGNED_BYTE, data);
+	uint32_t format = texture->is_depth ? GL_DEPTH_STENCIL : GL_RGB;
+	glTextureSubImage2D(texture->texture_handle, 0, 0, 0, texture->width, texture->height, format, GL_UNSIGNED_BYTE, data);
 }
 
 bool texture_is_valid(const texture_t* texture)

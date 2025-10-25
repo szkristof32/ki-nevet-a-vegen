@@ -33,6 +33,15 @@ bool shader_create(const char* vertex_path, const char* fragment_path, shader_t*
 
 	glLinkProgram(out_shader->program_handle);
 
+	uint32_t status;
+	glGetProgramiv(out_shader->program_handle, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE)
+	{
+		char buffer[512];
+		glGetProgramInfoLog(out_shader->program_handle, 512, NULL, buffer);
+		printf(buffer);
+	}
+
 	glDetachShader(out_shader->program_handle, vertex_shader);
 	glDetachShader(out_shader->program_handle, fragment_shader);
 

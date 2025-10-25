@@ -12,6 +12,7 @@ typedef void (*pfn_glDebugMessageControl)(GLenum source, GLenum type, GLenum sev
 typedef void (*pfn_glDebugMessageCallback)(GLDEBUGPROC callback, const void* userParam);
 typedef void (*pfn_glClear)(GLbitfield);
 typedef void (*pfn_glClearColor)(GLfloat, GLfloat, GLfloat, GLfloat);
+typedef void (*pfn_glViewport)(GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void (*pfn_glCreateBuffers)(GLsizei, GLuint*);
 typedef void (*pfn_glDeleteBuffers)(GLsizei, GLuint*);
 typedef void (*pfn_glBindBuffer)(GLenum, GLuint);
@@ -42,6 +43,19 @@ typedef void (*pfn_glBindTextureUnit)(GLuint unit, GLuint texture);
 typedef void (*pfn_glTextureStorage2D)(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void (*pfn_glTextureSubImage2D)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
 typedef void (*pfn_glTextureParameteri)(GLuint texture, GLenum pname, GLint param);
+typedef void (*pfn_glCreateFramebuffers)(GLsizei n, GLuint* framebuffers);
+typedef void (*pfn_glDeleteFramebuffers)(GLsizei n, const GLuint* framebuffers);
+typedef void (*pfn_glBindFramebuffer)(GLenum target, GLuint framebuffer);
+typedef void (*pfn_glNamedFramebufferTexture)(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level);
+typedef GLenum (*pfn_glCheckNamedFramebufferStatus)(GLuint framebuffer, GLenum target);
+typedef void (*pfn_glBlitNamedFramebuffer)(GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+typedef void (*pfn_glDrawBuffers)(GLsizei n, const GLenum* bufs);
+typedef void (*pfn_glGetProgramiv)(GLuint program, GLenum pname, GLint* params);
+typedef void (*pfn_glGetProgramInfoLog)(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+typedef void (*pfn_glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
+typedef void (*pfn_glNamedFramebufferReadBuffer)(GLuint framebuffer, GLenum src);
+typedef void* (*pfn_glMapBuffer)(GLenum target, GLenum access);
+typedef GLboolean(*pfn_glUnmapBuffer)(GLenum target);
 
 typedef struct gl_t
 {
@@ -50,6 +64,7 @@ typedef struct gl_t
 	pfn_glDebugMessageCallback glDebugMessageCallback;
 	pfn_glClear glClear;
 	pfn_glClearColor glClearColor;
+	pfn_glViewport glViewport;
 	pfn_glCreateBuffers glCreateBuffers;
 	pfn_glDeleteBuffers glDeleteBuffers;
 	pfn_glBindBuffer glBindBuffer;
@@ -80,6 +95,19 @@ typedef struct gl_t
 	pfn_glTextureStorage2D glTextureStorage2D;
 	pfn_glTextureSubImage2D glTextureSubImage2D;
 	pfn_glTextureParameteri glTextureParameteri;
+	pfn_glCreateFramebuffers glCreateFramebuffers;
+	pfn_glDeleteFramebuffers glDeleteFramebuffers;
+	pfn_glBindFramebuffer glBindFramebuffer;
+	pfn_glNamedFramebufferTexture glNamedFramebufferTexture;
+	pfn_glCheckNamedFramebufferStatus glCheckNamedFramebufferStatus;
+	pfn_glBlitNamedFramebuffer glBlitNamedFramebuffer;
+	pfn_glDrawBuffers glDrawBuffers;
+	pfn_glGetProgramiv glGetProgramiv;
+	pfn_glGetProgramInfoLog glGetProgramInfoLog;
+	pfn_glReadPixels glReadPixels;
+	pfn_glNamedFramebufferReadBuffer glNamedFramebufferReadBuffer;
+	pfn_glMapBuffer glMapBuffer;
+	pfn_glUnmapBuffer glUnmapBuffer;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -105,6 +133,7 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glDebugMessageCallback);
 	LOAD_OPENGL_PROC(glClear);
 	LOAD_OPENGL_PROC(glClearColor);
+	LOAD_OPENGL_PROC(glViewport);
 	LOAD_OPENGL_PROC(glCreateBuffers);
 	LOAD_OPENGL_PROC(glDeleteBuffers);
 	LOAD_OPENGL_PROC(glBindBuffer);
@@ -135,6 +164,19 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glTextureStorage2D);
 	LOAD_OPENGL_PROC(glTextureSubImage2D);
 	LOAD_OPENGL_PROC(glTextureParameteri);
+	LOAD_OPENGL_PROC(glCreateFramebuffers);
+	LOAD_OPENGL_PROC(glDeleteFramebuffers);
+	LOAD_OPENGL_PROC(glBindFramebuffer);
+	LOAD_OPENGL_PROC(glNamedFramebufferTexture);
+	LOAD_OPENGL_PROC(glCheckNamedFramebufferStatus);
+	LOAD_OPENGL_PROC(glBlitNamedFramebuffer);
+	LOAD_OPENGL_PROC(glDrawBuffers);
+	LOAD_OPENGL_PROC(glGetProgramiv);
+	LOAD_OPENGL_PROC(glGetProgramInfoLog);
+	LOAD_OPENGL_PROC(glReadPixels);
+	LOAD_OPENGL_PROC(glNamedFramebufferReadBuffer);
+	LOAD_OPENGL_PROC(glMapBuffer);
+	LOAD_OPENGL_PROC(glUnmapBuffer);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -186,6 +228,11 @@ void glClear(GLbitfield mask)
 void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
 	s_opengl->glClearColor(red, green, blue, alpha);
+}
+
+void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+	s_opengl->glViewport(x, y, width, height);
 }
 
 void glCreateBuffers(GLsizei n, GLuint* buffers)
@@ -336,4 +383,69 @@ void glTextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffs
 void glTextureParameteri(GLuint texture, GLenum pname, GLint param)
 {
 	s_opengl->glTextureParameteri(texture, pname, param);
+}
+
+void glCreateFramebuffers(GLsizei n, GLuint* framebuffers)
+{
+	s_opengl->glCreateFramebuffers(n, framebuffers);
+}
+
+void glDeleteFramebuffers(GLsizei n, const GLuint* framebuffers)
+{
+	s_opengl->glDeleteFramebuffers(n, framebuffers);
+}
+
+void glBindFramebuffer(GLenum target, GLuint framebuffer)
+{
+	s_opengl->glBindFramebuffer(target, framebuffer);
+}
+
+void glNamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level)
+{
+	s_opengl->glNamedFramebufferTexture(framebuffer, attachment, texture, level);
+}
+
+GLenum glCheckNamedFramebufferStatus(GLuint framebuffer, GLenum target)
+{
+	return s_opengl->glCheckNamedFramebufferStatus(framebuffer, target);
+}
+
+void glBlitNamedFramebuffer(GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter)
+{
+	s_opengl->glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+}
+
+void glDrawBuffers(GLsizei n, const GLenum* bufs)
+{
+	s_opengl->glDrawBuffers(n, bufs);
+}
+
+void glGetProgramiv(GLuint program, GLenum pname, GLint* params)
+{
+	s_opengl->glGetProgramiv(program, pname, params);
+}
+
+void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog)
+{
+	s_opengl->glGetProgramInfoLog(program, bufSize, length, infoLog);
+}
+
+void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels)
+{
+	s_opengl->glReadPixels(x, y, width, height, format, type, pixels);
+}
+
+void glNamedFramebufferReadBuffer(GLuint framebuffer, GLenum src)
+{
+	s_opengl->glNamedFramebufferReadBuffer(framebuffer, src);
+}
+
+void* glMapBuffer(GLenum target, GLenum access)
+{
+	return s_opengl->glMapBuffer(target, access);
+}
+
+GLboolean glUnmapBuffer(GLenum target)
+{
+	return s_opengl->glUnmapBuffer(target);
 }

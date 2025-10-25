@@ -18,6 +18,7 @@ typedef struct game_object_t
 	transform_t transform;
 	model_t model;
 	vec4 colour;
+	uint32_t index;
 } game_object_t;
 
 mat4 transform_get_model_matrix(transform_t* transform);
