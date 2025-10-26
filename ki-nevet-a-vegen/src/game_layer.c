@@ -27,6 +27,7 @@ typedef struct game_layer_t
 	scene_t scene;
 	camera_controller_t camera_controller;
 	board_t board;
+	uint32_t highlighted_object;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -83,7 +84,12 @@ void game_on_update(float timestep)
 	for (uint32_t i = 0; i < darray_count(s_game_layer->scene.game_objects); i++)
 	{
 		game_object_t* object = &s_game_layer->scene.game_objects[i];
-		static_renderer_render(&object->model, transform_get_model_matrix(&object->transform), object->colour, object->index);
+
+		vec4 highlight = vec4_scalar(0.0f);
+		if (i != 0 && i == s_game_layer->highlighted_object)
+			highlight = vec4_scalar(0.2f);
+
+		static_renderer_render(&object->model, transform_get_model_matrix(&object->transform), object->colour, object->index, highlight);
 	}
 
 	framebuffer_unbind(&s_game_layer->framebuffer);
@@ -91,8 +97,8 @@ void game_on_update(float timestep)
 
 	uint32_t x_pos = (uint32_t)(1280.0f * input_get_mouse_x());
 	uint32_t y_pos = 720 - (uint32_t)(720.0f * input_get_mouse_y());
-	vec4 pixel = framebuffer_read_pixel(&s_game_layer->framebuffer, 1, x_pos, y_pos);
+	vec4 pixel = texture_read_pixel(&s_game_layer->framebuffer.colour_attachments[1], x_pos, y_pos);
 	uint32_t hovered_object_index = (uint32_t)((float)darray_count(s_game_layer->scene.game_objects) * pixel.r);
 
-	printf("%.2f, %d\n", pixel.r, hovered_object_index);
+	s_game_layer->highlighted_object = hovered_object_index;
 }

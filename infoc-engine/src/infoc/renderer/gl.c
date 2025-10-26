@@ -55,7 +55,8 @@ typedef void (*pfn_glGetProgramInfoLog)(GLuint program, GLsizei bufSize, GLsizei
 typedef void (*pfn_glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
 typedef void (*pfn_glNamedFramebufferReadBuffer)(GLuint framebuffer, GLenum src);
 typedef void* (*pfn_glMapBuffer)(GLenum target, GLenum access);
-typedef GLboolean(*pfn_glUnmapBuffer)(GLenum target);
+typedef GLboolean (*pfn_glUnmapBuffer)(GLenum target);
+typedef void (*pfn_glGetTextureSubImage)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLsizei bufSize, void* pixels);
 
 typedef struct gl_t
 {
@@ -108,6 +109,7 @@ typedef struct gl_t
 	pfn_glNamedFramebufferReadBuffer glNamedFramebufferReadBuffer;
 	pfn_glMapBuffer glMapBuffer;
 	pfn_glUnmapBuffer glUnmapBuffer;
+	pfn_glGetTextureSubImage glGetTextureSubImage;
 } gl_t;
 
 static gl_t* s_opengl;
@@ -177,6 +179,7 @@ bool opengl_init()
 	LOAD_OPENGL_PROC(glNamedFramebufferReadBuffer);
 	LOAD_OPENGL_PROC(glMapBuffer);
 	LOAD_OPENGL_PROC(glUnmapBuffer);
+	LOAD_OPENGL_PROC(glGetTextureSubImage);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -448,4 +451,9 @@ void* glMapBuffer(GLenum target, GLenum access)
 GLboolean glUnmapBuffer(GLenum target)
 {
 	return s_opengl->glUnmapBuffer(target);
+}
+
+void glGetTextureSubImage(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLsizei bufSize, void* pixels)
+{
+	s_opengl->glGetTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
 }

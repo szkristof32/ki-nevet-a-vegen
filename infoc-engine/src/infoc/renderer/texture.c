@@ -33,7 +33,7 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -139,4 +139,15 @@ void texture_set_data(const texture_t* texture, const void* data)
 bool texture_is_valid(const texture_t* texture)
 {
 	return texture->texture_handle != 0;
+}
+
+vec4 texture_read_pixel(texture_t* texture, uint32_t x, uint32_t y)
+{
+	if (x < 0 || x >= texture->width || y < 0 || y >= texture->height)
+		return vec4_scalar(0);
+
+	vec4 pixel = vec4_scalar(0.0f);
+	glGetTextureSubImage(texture->texture_handle, 0, x, y, 0, 1, 1, 1, GL_RGBA, GL_FLOAT, sizeof(pixel), &pixel);
+
+	return pixel;
 }

@@ -22,15 +22,6 @@ bool framebuffer_create(uint32_t width, uint32_t height, framebuffer_t* out_fram
 	out_framebuffer->height = height;
 	out_framebuffer->colour_attachments = darray_create(texture_t);
 
-	glCreateBuffers(2, out_framebuffer->pbos);
-	if (out_framebuffer->pbos[0] == 0 || out_framebuffer->pbos[1] == 0)
-	{
-		fprintf(stderr, "Failed to create pbos!\n");
-		return false;
-	}
-	glNamedBufferData(out_framebuffer->pbos[0], width * height * sizeof(uint32_t), NULL, GL_STREAM_READ);
-	glNamedBufferData(out_framebuffer->pbos[1], width * height * sizeof(uint32_t), NULL, GL_STREAM_READ);
-
 	return true;
 }
 
@@ -120,33 +111,4 @@ void framebuffer_blit_to_screen(const framebuffer_t* framebuffer, uint32_t scree
 		0, 0, texture->width, texture->height,
 		0, 0, screen_width, screen_height,
 		GL_COLOR_BUFFER_BIT, GL_NEAREST);
-}
-
-#define EXTRACT_RED(colour)		((float)((colour >> 0x03) & 0xff) / 255.0f)
-#define EXTRACT_GREEN(colour)	((float)((colour >> 0x02) & 0xff) / 255.0f)
-#define EXTRACT_BLUE(colour)	((float)((colour >> 0x01) & 0xff) / 255.0f)
-#define EXTRACT_ALPHA(colour)	((float)((colour >> 0x00) & 0xff) / 255.0f)
-
-vec4 framebuffer_read_pixel(framebuffer_t* framebuffer, uint32_t attachment_index, uint32_t x, uint32_t y)
-{
-	if (darray_count(framebuffer->colour_attachments) - 1 > attachment_index)
-		return vec4_scalar(0);
-
-	const texture_t* texture = &framebuffer->colour_attachments[attachment_index];
-	if (x < 0 || x >= texture->width || y < 0 || y >= texture->height)
-		return vec4_scalar(0);
-
-	glNamedFramebufferReadBuffer(framebuffer->framebuffer_handle, GL_COLOR_ATTACHMENT0 + attachment_index);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, framebuffer->pbos[framebuffer->pbo_index]);
-
-	glReadPixels(0, 0, framebuffer->width, framebuffer->height, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	framebuffer->pbo_index = (framebuffer->pbo_index + 1) % 2;
-
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, framebuffer->pbos[framebuffer->pbo_index]);
-	uint8_t* mapped = (uint8_t*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-	uint8_t pixel = mapped[x * framebuffer->width + y];
-	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-
-	return vec4_create(EXTRACT_RED(pixel), EXTRACT_GREEN(pixel), EXTRACT_BLUE(pixel), EXTRACT_ALPHA(pixel));
 }

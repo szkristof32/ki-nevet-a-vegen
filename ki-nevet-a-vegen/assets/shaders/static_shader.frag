@@ -6,6 +6,7 @@ in VertexData
 	vec3 Normal;
 	vec4 Colour;
 	float ObjectIndex;
+	vec4 Highlight;
 } Input;
 
 layout (location = 0) out vec4 out_colour;
@@ -23,7 +24,7 @@ void main()
 	float NdotL = dot(unit_normal, to_light_vector);
 
 	vec4 colour = texture(model_texture, Input.Uv);
-	out_colour = Input.Colour * colour * max(NdotL, 0.1);
+	out_colour = Input.Colour * colour * max(NdotL, 0.1) + Input.Highlight;
 
 	out_id = vec4(Input.ObjectIndex);
 }

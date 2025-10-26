@@ -205,3 +205,4 @@ void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format
 void glNamedFramebufferReadBuffer(GLuint framebuffer, GLenum src);
 void* glMapBuffer(GLenum target, GLenum access);
 GLboolean glUnmapBuffer(GLenum target);
+void glGetTextureSubImage(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLsizei bufSize, void* pixels);

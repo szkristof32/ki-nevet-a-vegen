@@ -23,3 +23,5 @@ void texture_bind(const texture_t* texture, uint32_t texture_unit);
 void texture_set_data(const texture_t* texture, const void* data);
 
 bool texture_is_valid(const texture_t* texture);
+
+vec4 texture_read_pixel(texture_t* texture, uint32_t x, uint32_t y);
