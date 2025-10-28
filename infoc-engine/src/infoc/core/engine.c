@@ -35,7 +35,7 @@ bool engine_initialise()
 		return false;
 	}
 
-	success = window_create(1280, 720, "Ki nevet a vegen?", &s_engine.window);
+	success = window_create(1280, 720, u8"Ne nevessch korán!", &s_engine.window);
 	if (!success)
 	{
 		fprintf(stderr, "Failed to create window!\n");
