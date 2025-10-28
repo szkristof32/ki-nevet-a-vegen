@@ -20,7 +20,7 @@ layout (binding = 0) uniform Matrices
 	uint object_count;
 } matrices;
 
-layout (binding = 1) uniform Object
+layout (std140, binding = 1) uniform Object
 {
 	mat4 transformation;
 	vec4 colour;

@@ -20,6 +20,7 @@ typedef struct object_t
 	mat4 transformation;
 	vec4 colour;
 	uint32_t index;
+	vec3 _padding;
 	vec4 highlight;
 } object_t;
 
