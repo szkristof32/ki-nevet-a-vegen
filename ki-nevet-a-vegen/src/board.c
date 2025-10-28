@@ -12,8 +12,9 @@ bool board_create(scene_t* scene, board_t* out_board)
 
 	out_board->game_object = scene_new_object(scene);
 	obj_loader_load_model("assets/models/board_placeholder.obj", &out_board->game_object->model.mesh);
+	texture_create("assets/images/board.bmp", &out_board->game_object->model.model_texture);
 
-	const float board_size = 15.0f;
+	const float board_size = 18.0f;
 	const float home_size = 1.75f;
 
 	for (uint32_t i = 0; i < 4; i++)
