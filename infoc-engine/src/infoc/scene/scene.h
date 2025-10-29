@@ -12,4 +12,5 @@ typedef struct scene_t
 void scene_create(scene_t* out_scene);
 void scene_destroy(scene_t* scene);
 
-game_object_t* scene_new_object(scene_t* scene);
+game_object_index_t scene_new_object(scene_t* scene);
+game_object_t* scene_get_object(scene_t* scene, game_object_index_t index);

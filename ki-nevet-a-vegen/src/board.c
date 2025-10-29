@@ -16,9 +16,11 @@ bool board_create(scene_t* scene, board_t* out_board)
 {
 	memset(out_board, 0, sizeof(board_t));
 
+	out_board->scene = scene;
 	out_board->game_object = scene_new_object(scene);
-	obj_loader_load_model("assets/models/board_placeholder.obj", &out_board->game_object->model.mesh);
-	texture_create("assets/images/board.bmp", &out_board->game_object->model.model_texture);
+	game_object_t* board_object = scene_get_object(scene, out_board->game_object);
+	obj_loader_load_model("assets/models/board_placeholder.obj", &board_object->model.mesh);
+	texture_create("assets/images/board.bmp", &board_object->model.model_texture);
 
 	for (uint32_t i = 0; i < 4; i++)
 	{
@@ -33,7 +35,8 @@ bool board_create(scene_t* scene, board_t* out_board)
 			float x_axis = (float)(-(j % 3 == 0) + (j % 3 != 0));
 			float y_axis = (float)(-(j % 2 == 0) + (j % 2 != 0));
 
-			game_object_t* object = out_board->piece_objects[i * 4 + j] = scene_new_object(scene);
+			game_object_index_t object_index = out_board->piece_objects[i * 4 + j] = scene_new_object(scene);
+			game_object_t* object = scene_get_object(scene, object_index);
 			obj_loader_load_model("assets/models/piece_placeholder.obj", &object->model.mesh);
 
 			object->colour = colour;
@@ -45,7 +48,8 @@ bool board_create(scene_t* scene, board_t* out_board)
 
 	for (uint32_t i = 0; i < 40; i++)
 	{
-		game_object_t* object = out_board->field_objects[i] = scene_new_object(scene);
+		game_object_index_t object_index = out_board->field_objects[i] = scene_new_object(scene);
+		game_object_t* object = scene_get_object(scene, object_index);
 		obj_loader_load_model("assets/models/board_field_placeholder.obj", &object->model.mesh);
 
 		object->transform.position = _board_get_field_position(i);
@@ -57,6 +61,37 @@ bool board_create(scene_t* scene, board_t* out_board)
 void board_destroy(board_t* board)
 {
 	memset(board, 0, sizeof(board_t));
+}
+
+void board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
+{
+	uint32_t position = -1;
+	for (uint32_t i = 0; i < 40; i++)
+	{
+		if (board->pieces[i].object_index == object_index)
+		{
+			position = i;
+			break;
+		}
+	}
+
+	if (position != -1)
+	{
+		memmove(&board->pieces[position + move], &board->pieces[position], sizeof(piece_t));
+		position += move;
+	}
+	else
+	{
+		uint32_t player_start = player_index * 10;
+		position = player_start + move;
+
+		piece_t* piece = &board->pieces[position];
+		piece->object_index = object_index;
+		piece->player_index = player_index;
+	}
+
+	board->pieces[position].position = position;
+	scene_get_object(board->scene, board->piece_objects[object_index])->transform.position = _board_get_field_position(position);
 }
 
 vec3 _board_get_field_position(uint32_t index)

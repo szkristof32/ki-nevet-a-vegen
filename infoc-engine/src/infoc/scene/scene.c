@@ -23,7 +23,7 @@ void scene_destroy(scene_t* scene)
 	memset(scene, 0, sizeof(game_object_t));
 }
 
-game_object_t* scene_new_object(scene_t* scene)
+game_object_index_t scene_new_object(scene_t* scene)
 {
 	game_object_t object = { 0 };
 	object.transform.scale = vec3_scalar(1.0f);
@@ -31,5 +31,10 @@ game_object_t* scene_new_object(scene_t* scene)
 
 	darray_push(scene->game_objects, object);
 
-	return &scene->game_objects[darray_count(scene->game_objects) - 1];
+	return (game_object_index_t)(darray_count(scene->game_objects) - 1);
+}
+
+game_object_t* scene_get_object(scene_t* scene, game_object_index_t index)
+{
+	return &scene->game_objects[index];
 }

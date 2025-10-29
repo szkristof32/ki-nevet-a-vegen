@@ -36,7 +36,7 @@ void _check_inputs(camera_controller_t* controller)
 		controller->distance_from_center -= zoom_level;
 	}
 
-	if (input_is_mouse_button_down(2))
+	if (input_is_mouse_button_down(mouse_button_middle))
 	{
 		float dx = input_get_mouse_dx();
 		float dy = input_get_mouse_dy();

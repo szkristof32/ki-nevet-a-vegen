@@ -21,6 +21,8 @@ typedef struct game_object_t
 	uint32_t index;
 } game_object_t;
 
+typedef uint32_t game_object_index_t;
+
 mat4 transform_get_model_matrix(transform_t* transform);
 
 void game_object_destroy(game_object_t* object);

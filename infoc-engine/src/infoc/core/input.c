@@ -7,6 +7,8 @@
 typedef struct mouse_t
 {
 	bool buttons_down[3];
+	bool buttons_clicked[3];
+	bool buttons_released[3];
 
 	float x, y;
 	float dx, dy;
@@ -42,6 +44,9 @@ void input_shutdown()
 
 void input_update()
 {
+	memset(s_input->mouse.buttons_clicked, 0, sizeof(s_input->mouse.buttons_clicked));
+	memset(s_input->mouse.buttons_released, 0, sizeof(s_input->mouse.buttons_released));
+
 	s_input->mouse.dx = s_input->mouse.x - s_input->mouse.last_x;
 	s_input->mouse.dy = s_input->mouse.y - s_input->mouse.last_y;
 	s_input->mouse.last_x = s_input->mouse.x;
@@ -58,6 +63,11 @@ void input_move_listener(float x, float y)
 void input_click_listener(int button, bool pressed)
 {
 	s_input->mouse.buttons_down[button] = pressed;
+	
+	if (pressed)
+		s_input->mouse.buttons_clicked[button] = true;
+	else
+		s_input->mouse.buttons_released[button] = true;
 }
 
 void input_scroll_listener(float scroll_x, float scroll_y)
@@ -68,6 +78,16 @@ void input_scroll_listener(float scroll_x, float scroll_y)
 bool input_is_mouse_button_down(uint32_t button)
 {
 	return button < 3 && s_input->mouse.buttons_down[button];
+}
+
+bool input_is_mouse_button_clicked(uint32_t button)
+{
+	return button < 3 && s_input->mouse.buttons_clicked[button];
+}
+
+bool input_is_mouse_button_released(uint32_t button)
+{
+	return button < 3 && s_input->mouse.buttons_released[button];
 }
 
 float input_get_mouse_x()
