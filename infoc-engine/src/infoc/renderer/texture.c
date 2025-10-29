@@ -156,3 +156,14 @@ vec4 texture_read_pixel(texture_t* texture, uint32_t x, uint32_t y)
 
 	return pixel;
 }
+
+uint32_t texture_read_pixel_uint(texture_t* texture, uint32_t x, uint32_t y)
+{
+	if (x < 0 || x >= texture->width || y < 0 || y >= texture->height)
+		return 0;
+
+	uint32_t pixel;
+	glGetTextureSubImage(texture->texture_handle, 0, x, y, 0, 1, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, sizeof(pixel), &pixel);
+
+	return pixel;
+}

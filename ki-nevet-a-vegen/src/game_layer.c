@@ -56,7 +56,7 @@ void game_on_attach()
 {
 	framebuffer_create(1280, 720, &s_game_layer->framebuffer);
 	framebuffer_add_colour_attachment(&s_game_layer->framebuffer);
-	framebuffer_add_colour_attachment(&s_game_layer->framebuffer);
+	framebuffer_add_attachment(&s_game_layer->framebuffer, GL_R32UI);
 	framebuffer_create_depth_attachment(&s_game_layer->framebuffer);
 
 	scene_create(&s_game_layer->scene);
@@ -82,7 +82,6 @@ void game_on_update(float timestep)
 	camera_controller_update(&s_game_layer->camera_controller);
 
 	static_renderer_set_camera(&s_game_layer->scene.camera);
-	static_renderer_set_object_count((uint32_t)darray_count(s_game_layer->scene.game_objects));
 
 	framebuffer_bind(&s_game_layer->framebuffer);
 
@@ -102,8 +101,7 @@ void game_on_update(float timestep)
 
 	uint32_t x_pos = (uint32_t)(1280.0f * input_get_mouse_x());
 	uint32_t y_pos = 720 - (uint32_t)(720.0f * input_get_mouse_y());
-	vec4 pixel = texture_read_pixel(&s_game_layer->framebuffer.colour_attachments[1], x_pos, y_pos);
-	uint32_t hovered_object_index = (uint32_t)((float)darray_count(s_game_layer->scene.game_objects) * pixel.r);
+	uint32_t hovered_object_index = texture_read_pixel_uint(&s_game_layer->framebuffer.colour_attachments[1], x_pos, y_pos);
 
 	s_game_layer->highlighted_object = hovered_object_index;
 }

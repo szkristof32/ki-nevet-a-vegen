@@ -77,6 +77,7 @@ typedef enum GLenum
 	GL_BGRA = 0x80E1,
 
 	GL_R32UI = 0x8236,
+	GL_RED_INTEGER = 0x8D94,
 
 	GL_READ_ONLY = 0x88B8,
 	GL_WRITE_ONLY = 0x88B9,

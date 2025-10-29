@@ -12,7 +12,6 @@ typedef struct matrices_t
 {
 	mat4 projection;
 	mat4 view;
-	uint32_t object_count;
 } matrices_t;
 
 typedef struct object_t
@@ -101,11 +100,6 @@ void static_renderer_set_camera(camera_t* camera)
 {
 	s_static_renderer->matrices.view = camera->view_matrix;
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
-}
-
-void static_renderer_set_object_count(uint32_t count)
-{
-	s_static_renderer->matrices.object_count = count;
 }
 
 void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 colour, uint32_t index, vec4 highlight)

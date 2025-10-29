@@ -26,3 +26,4 @@ void texture_set_data_format(const texture_t* texture, const void* data, uint32_
 bool texture_is_valid(const texture_t* texture);
 
 vec4 texture_read_pixel(texture_t* texture, uint32_t x, uint32_t y);
+uint32_t texture_read_pixel_uint(texture_t* texture, uint32_t x, uint32_t y);

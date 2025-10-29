@@ -9,7 +9,7 @@ out VertexData
 	vec2 Uv;
 	vec3 Normal;
 	vec4 Colour;
-	float ObjectIndex;
+	flat uint ObjectIndex;
 	vec4 Highlight;
 } Output;
 
@@ -17,7 +17,6 @@ layout (binding = 0) uniform Matrices
 {
 	mat4 projection;
 	mat4 view;
-	uint object_count;
 } matrices;
 
 layout (std140, binding = 1) uniform Object
@@ -33,7 +32,7 @@ void main()
 	Output.Uv = in_uv;
 	Output.Normal = (object.transformation * vec4(in_normal, 0.0)).xyz;
 	Output.Colour = object.colour;
-	Output.ObjectIndex = float(object.index) / float(matrices.object_count);
+	Output.ObjectIndex = object.index;
 	Output.Highlight = object.highlight;
 
 	gl_Position = matrices.projection * matrices.view * object.transformation * vec4(in_position, 1.0);
