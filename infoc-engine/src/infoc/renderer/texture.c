@@ -136,6 +136,11 @@ void texture_set_data(const texture_t* texture, const void* data)
 	glTextureSubImage2D(texture->texture_handle, 0, 0, 0, texture->width, texture->height, format, GL_UNSIGNED_BYTE, data);
 }
 
+void texture_set_data_format(const texture_t* texture, const void* data, uint32_t format)
+{
+	glTextureSubImage2D(texture->texture_handle, 0, 0, 0, texture->width, texture->height, format, GL_UNSIGNED_BYTE, data);
+}
+
 bool texture_is_valid(const texture_t* texture)
 {
 	return texture->texture_handle != 0;

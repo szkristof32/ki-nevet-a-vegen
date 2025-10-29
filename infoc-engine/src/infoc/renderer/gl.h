@@ -157,6 +157,7 @@ typedef enum GLenum
 typedef void (*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 void glEnable(GLenum cap);
+void glDisable(GLenum cap);
 void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
 void glDebugMessageCallback(GLDEBUGPROC callback, const void* userParam);
 void glClear(GLbitfield mask);

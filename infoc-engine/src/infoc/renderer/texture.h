@@ -21,6 +21,7 @@ void texture_destroy(texture_t* texture);
 void texture_bind(const texture_t* texture, uint32_t texture_unit);
 
 void texture_set_data(const texture_t* texture, const void* data);
+void texture_set_data_format(const texture_t* texture, const void* data, uint32_t format);
 
 bool texture_is_valid(const texture_t* texture);
 

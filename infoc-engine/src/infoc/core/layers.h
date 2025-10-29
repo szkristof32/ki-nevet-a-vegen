@@ -2,11 +2,16 @@
 
 #include "defines.h"
 
+#include <SDL3/SDL_render.h>
+
+#undef bool
+
 typedef struct layer_t
 {
 	void (*on_attach)();
 	void (*on_detach)();
 	void (*on_update)(float timestep);
+	void (*on_ui_render)(SDL_Renderer* renderer);
 	void* internal_state;
 } layer_t;
 

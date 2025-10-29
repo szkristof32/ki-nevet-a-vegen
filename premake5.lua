@@ -74,7 +74,8 @@ project "ki-nevet-a-vegen"
 	includedirs
 	{
 		"ki-nevet-a-vegen/src",
-		"infoc-engine/src"
+		"infoc-engine/src",
+		"vendor/sdl/include"
 	}
 
 	libdirs

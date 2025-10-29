@@ -8,6 +8,7 @@
 #undef bool
 
 typedef void (*pfn_glEnable)(GLenum cap);
+typedef void (*pfn_glDisable)(GLenum cap);
 typedef void (*pfn_glDebugMessageControl)(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
 typedef void (*pfn_glDebugMessageCallback)(GLDEBUGPROC callback, const void* userParam);
 typedef void (*pfn_glClear)(GLbitfield);
@@ -61,6 +62,7 @@ typedef void (*pfn_glGetTextureSubImage)(GLuint texture, GLint level, GLint xoff
 typedef struct gl_t
 {
 	pfn_glEnable glEnable;
+	pfn_glDisable glDisable;
 	pfn_glDebugMessageControl glDebugMessageControl;
 	pfn_glDebugMessageCallback glDebugMessageCallback;
 	pfn_glClear glClear;
@@ -131,6 +133,7 @@ bool opengl_init()
 	SDL_GL_LoadLibrary("opengl32");
 
 	LOAD_OPENGL_PROC(glEnable);
+	LOAD_OPENGL_PROC(glDisable);
 	LOAD_OPENGL_PROC(glDebugMessageControl);
 	LOAD_OPENGL_PROC(glDebugMessageCallback);
 	LOAD_OPENGL_PROC(glClear);
@@ -211,6 +214,11 @@ void opengl_debug(GLenum source, GLenum type, GLuint id, GLenum severity, GLsize
 void glEnable(GLenum cap)
 {
 	s_opengl->glEnable(cap);
+}
+
+void glDisable(GLenum cap)
+{
+	s_opengl->glDisable(cap);
 }
 
 void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled)

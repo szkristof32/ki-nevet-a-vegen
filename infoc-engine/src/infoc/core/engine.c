@@ -9,6 +9,7 @@
 #include "infoc/renderer/gl.h"
 #include "infoc/renderer/texture.h"
 #include "infoc/renderer/static_renderer.h"
+#include "infoc/renderer/sdl_renderer.h"
 
 #include <string.h>
 
@@ -78,6 +79,13 @@ bool engine_initialise()
 		fprintf(stderr, "Failed to initialise static renderer!\n");
 		return false;
 	}
+
+	success = sdl_renderer_init(&s_engine.context);
+	if (!success)
+	{
+		fprintf(stderr, "Failed to initialise SDL renderer!\n");
+		return false;
+	}
 	
 	s_engine.running = true;
 
@@ -93,6 +101,7 @@ void engine_shutdown()
 			layer->on_detach();
 	}
 
+	sdl_renderer_shutdown();
 	static_renderer_shutdown();
 	layer_stack_destroy(&s_engine.layer_stack);
 	input_shutdown();
@@ -124,6 +133,15 @@ void engine_run()
 		}
 
 		static_renderer_end_frame();
+
+		sdl_renderer_begin_frame();
+		for (size_t i = 0; i < darray_count(s_engine.layer_stack.layers); i++)
+		{
+			layer_t* layer = &s_engine.layer_stack.layers[i];
+			if (layer->on_ui_render)
+				layer->on_ui_render(sdl_renderer_get_handle());
+		}
+		sdl_renderer_end_frame();
 
 		context_swap(&s_engine.context);
 

@@ -16,10 +16,14 @@
 #include "board.h"
 
 #include "infoc/renderer/gl.h"
+#include <SDL3/SDL_render.h>
+
+#undef bool
 
 static void game_on_attach();
 static void game_on_detach();
 static void game_on_update(float timestep);
+static void game_on_ui_render(SDL_Renderer* renderer);
 
 typedef struct game_layer_t
 {
@@ -40,6 +44,7 @@ layer_t game_layer_create()
 	game_layer.on_attach = game_on_attach;
 	game_layer.on_detach = game_on_detach;
 	game_layer.on_update = game_on_update;
+	game_layer.on_ui_render = game_on_ui_render;
 	game_layer.internal_state = arena_allocator_allocate(allocator, sizeof(game_layer_t));
 
 	s_game_layer = (game_layer_t*)game_layer.internal_state;
@@ -101,4 +106,20 @@ void game_on_update(float timestep)
 	uint32_t hovered_object_index = (uint32_t)((float)darray_count(s_game_layer->scene.game_objects) * pixel.r);
 
 	s_game_layer->highlighted_object = hovered_object_index;
+}
+
+void game_on_ui_render(SDL_Renderer* renderer)
+{
+	SDL_SetRenderDrawColorFloat(renderer, 1.0f, 0.5f, 1.0f, 1.0f);
+	SDL_FRect rect = { 0 };
+	rect.x = 20.0f;
+	rect.y = 20.0f;
+	rect.w = 150.0f;
+	rect.h = 50.0f;
+	SDL_RenderFillRect(renderer, &rect);
+
+	SDL_SetRenderScale(renderer, 2.0f, 2.0f);
+	SDL_SetRenderDrawColorFloat(renderer, 1.0f, 1.0f, 1.0f, 1.0f);
+	SDL_RenderDebugText(renderer, 20.0f, 20.0f, "Test");
+	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 }
