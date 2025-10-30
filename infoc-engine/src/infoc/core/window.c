@@ -73,7 +73,7 @@ static uint32_t _mouse_button_index(uint8_t button)
 	return -1;
 }
 
-void window_update(const window_t* window)
+void window_update(window_t* window)
 {
 	SDL_Event event;
 	if (SDL_PollEvent(&event))
@@ -85,6 +85,12 @@ void window_update(const window_t* window)
 				window_internal_t* internal_state = window->internal_state;
 				internal_state->should_close = true;
 				break;
+			}
+			case SDL_EVENT_WINDOW_RESIZED:
+			{
+				window->width = event.window.data1;
+				window->height = event.window.data2;
+				engine_on_window_resize(window->width, window->height);
 			}
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EVENT_MOUSE_BUTTON_UP:

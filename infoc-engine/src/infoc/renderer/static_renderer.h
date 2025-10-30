@@ -12,5 +12,7 @@ void static_renderer_shutdown();
 void static_renderer_begin_frame();
 void static_renderer_end_frame();
 
+void static_renderer_on_window_resize(uint32_t width, uint32_t height);
+
 void static_renderer_set_camera(camera_t* camera);
 void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 colour, uint32_t index, vec4 highlight);

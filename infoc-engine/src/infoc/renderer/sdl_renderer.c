@@ -85,6 +85,18 @@ void sdl_renderer_end_frame()
 	glEnable(GL_DEPTH_TEST);
 }
 
+void sdl_renderer_on_window_resize(uint32_t width, uint32_t height)
+{
+	SDL_DestroyRenderer(s_sdl_renderer->renderer);
+	SDL_DestroySurface(s_sdl_renderer->surface);
+
+	s_sdl_renderer->surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
+	s_sdl_renderer->renderer = SDL_CreateSoftwareRenderer(s_sdl_renderer->surface);
+
+	texture_destroy(&s_sdl_renderer->texture);
+	texture_create_format(width, height, GL_RGBA8, &s_sdl_renderer->texture);
+}
+
 SDL_Renderer* sdl_renderer_get_handle()
 {
 	return s_sdl_renderer->renderer;

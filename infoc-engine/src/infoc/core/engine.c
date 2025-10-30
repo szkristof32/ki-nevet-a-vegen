@@ -122,6 +122,7 @@ void engine_run()
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, s_engine.window.width, s_engine.window.height);
 
 		static_renderer_begin_frame();
 
@@ -155,6 +156,19 @@ void engine_attach_layer(layer_t* layer)
 
 	if (layer->on_attach)
 		layer->on_attach();
+}
+
+void engine_on_window_resize(uint32_t width, uint32_t height)
+{
+	static_renderer_on_window_resize(width, height);
+	sdl_renderer_on_window_resize(width, height);
+
+	for (size_t i = 0; i < darray_count(s_engine.layer_stack.layers); i++)
+	{
+		layer_t* layer = &s_engine.layer_stack.layers[i];
+		if (layer->on_window_resize)
+			layer->on_window_resize(width, height);
+	}
 }
 
 arena_allocator_t* engine_get_allocator()

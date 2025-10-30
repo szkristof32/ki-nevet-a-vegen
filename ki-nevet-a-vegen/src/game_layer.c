@@ -25,6 +25,7 @@ static void game_on_attach();
 static void game_on_detach();
 static void game_on_update(float timestep);
 static void game_on_ui_render(SDL_Renderer* renderer);
+static void game_on_window_resize(uint32_t width, uint32_t height);
 
 typedef enum player_enum
 {
@@ -41,6 +42,7 @@ typedef struct game_layer_t
 	camera_controller_t camera_controller;
 	board_t board;
 	uint32_t hovered_object;
+	uint32_t window_width, window_height;
 
 	dice_t dice;
 	player_enum player_to_go;
@@ -58,6 +60,7 @@ layer_t game_layer_create()
 	game_layer.on_detach = game_on_detach;
 	game_layer.on_update = game_on_update;
 	game_layer.on_ui_render = game_on_ui_render;
+	game_layer.on_window_resize = game_on_window_resize;
 	game_layer.internal_state = arena_allocator_allocate(allocator, sizeof(game_layer_t));
 
 	s_game_layer = (game_layer_t*)game_layer.internal_state;
@@ -65,12 +68,13 @@ layer_t game_layer_create()
 	return game_layer;
 }
 
+static void _game_create_framebuffer(uint32_t width, uint32_t height);
+
 void game_on_attach()
 {
-	framebuffer_create(1280, 720, &s_game_layer->framebuffer);
-	framebuffer_add_colour_attachment(&s_game_layer->framebuffer);
-	framebuffer_add_attachment(&s_game_layer->framebuffer, GL_R32UI);
-	framebuffer_create_depth_attachment(&s_game_layer->framebuffer);
+	_game_create_framebuffer(1280, 720);
+	s_game_layer->window_width = 1280;
+	s_game_layer->window_height = 720;
 
 	scene_create(&s_game_layer->scene);
 
@@ -128,7 +132,7 @@ void game_on_update(float timestep)
 	}
 
 	framebuffer_unbind(&s_game_layer->framebuffer);
-	framebuffer_blit_to_screen(&s_game_layer->framebuffer, 1280, 720);
+	framebuffer_blit_to_screen(&s_game_layer->framebuffer, s_game_layer->window_width, s_game_layer->window_height);
 
 	uint32_t x_pos = (uint32_t)(1280.0f * input_get_mouse_x());
 	uint32_t y_pos = 720 - (uint32_t)(720.0f * input_get_mouse_y());
@@ -171,4 +175,22 @@ void game_on_ui_render(SDL_Renderer* renderer)
 	}
 
 	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+}
+
+void game_on_window_resize(uint32_t width, uint32_t height)
+{
+	s_game_layer->window_width = width;
+	s_game_layer->window_height = height;
+
+	framebuffer_destroy(&s_game_layer->framebuffer);
+
+	_game_create_framebuffer(width, height);
+}
+
+void _game_create_framebuffer(uint32_t width, uint32_t height)
+{
+	framebuffer_create(width, height, &s_game_layer->framebuffer);
+	framebuffer_add_colour_attachment(&s_game_layer->framebuffer);
+	framebuffer_add_attachment(&s_game_layer->framebuffer, GL_R32UI);
+	framebuffer_create_depth_attachment(&s_game_layer->framebuffer);
 }

@@ -35,6 +35,8 @@ typedef struct static_renderer_t
 
 static static_renderer_t* s_static_renderer = NULL;
 
+static void _static_renderer_create_projection(uint32_t width, uint32_t height);
+
 bool static_renderer_init()
 {
 	arena_allocator_t* allocator = engine_get_allocator();
@@ -60,7 +62,7 @@ bool static_renderer_init()
 	}
 	uniform_buffer_bind_base(&s_static_renderer->matrices_uniform, 0);
 
-	s_static_renderer->matrices.projection = mat4_perspective(70.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+	_static_renderer_create_projection(1280, 720);
 	s_static_renderer->matrices.view = mat4_identity();
 	s_static_renderer->matrices.view = mat4_translate_z(s_static_renderer->matrices.view, -10.0f);
 	s_static_renderer->matrices.view = mat4_rotate_y(s_static_renderer->matrices.view, deg_to_rad(19.0f));
@@ -96,6 +98,12 @@ void static_renderer_end_frame()
 {
 }
 
+void static_renderer_on_window_resize(uint32_t width, uint32_t height)
+{
+	_static_renderer_create_projection(width, height);
+	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
+}
+
 void static_renderer_set_camera(camera_t* camera)
 {
 	s_static_renderer->matrices.view = camera->view_matrix;
@@ -123,3 +131,7 @@ void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 col
 	glDrawElements(GL_TRIANGLES, (uint32_t)mesh->index_count, GL_UNSIGNED_INT, NULL);
 }
 
+void _static_renderer_create_projection(uint32_t width, uint32_t height)
+{
+	s_static_renderer->matrices.projection = mat4_perspective(70.0f, (float)width / (float)height, 0.1f, 100.0f);
+}

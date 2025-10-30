@@ -12,6 +12,7 @@ typedef struct layer_t
 	void (*on_detach)();
 	void (*on_update)(float timestep);
 	void (*on_ui_render)(SDL_Renderer* renderer);
+	void (*on_window_resize)(uint32_t width, uint32_t height);
 	void* internal_state;
 } layer_t;
 
