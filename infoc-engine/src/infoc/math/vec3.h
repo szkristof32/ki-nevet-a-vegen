@@ -26,77 +26,72 @@ typedef struct vec3
 	};
 } vec3;
 
-inline vec3 vec3_create(float x, float y, float z)
+static inline vec3 vec3_create(float x, float y, float z)
 {
-	vec3 vector = { x, y, z };
+	vec3 vector = { 0 };
+	vector.x = x;
+	vector.y = y;
+	vector.z = z;
 	return vector;
 }
 
-inline vec3 vec3_scalar(float scalar)
+static inline vec3 vec3_scalar(float scalar)
 {
-	vec3 vector = { scalar, scalar, scalar };
-	return vector;
+	return vec3_create(scalar, scalar, scalar);
 }
 
-inline vec3 vec3_vec3(vec3 other)
+static inline vec3 vec3_vec3(vec3 other)
 {
-	vec3 vector = { other.x, other.y, other.z };
-	return vector;
+	return vec3_create(other.x, other.y, other.z);
 }
 
-inline vec3 vec3_add(vec3 a, vec3 b)
+static inline vec3 vec3_add(vec3 a, vec3 b)
 {
-	vec3 result = { a.x + b.x, a.y + b.y, a.z + b.z };
-	return result;
+	return vec3_create(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
-inline vec3 vec3_sub(vec3 a, vec3 b)
+static inline vec3 vec3_sub(vec3 a, vec3 b)
 {
-	vec3 result = { a.x - b.x, a.y - b.y, a.z - b.z };
-	return result;
+	return vec3_create(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-inline vec3 vec3_scale(vec3 a, float scalar)
+static inline vec3 vec3_scale(vec3 a, float scalar)
 {
-	vec3 result = { a.x * scalar, a.y * scalar, a.z * scalar };
-	return result;
+	return vec3_create(a.x * scalar, a.y * scalar, a.z * scalar);
 }
 
-inline vec3 vec3_mul(vec3 a, vec3 b)
+static inline vec3 vec3_mul(vec3 a, vec3 b)
 {
-	vec3 result = { a.x * b.x, a.y * b.y, a.z * b.z };
-	return result;
+	return vec3_create(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
-inline float vec3_dot(vec3 a, vec3 b)
+static inline float vec3_dot(vec3 a, vec3 b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline vec3 vec3_cross(vec3 a, vec3 b)
+static inline vec3 vec3_cross(vec3 a, vec3 b)
 {
-	vec3 result = { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };
-	return result;
+	return vec3_create(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
-inline float vec3_length_squared(vec3 vector)
+static inline float vec3_length_squared(vec3 vector)
 {
 	return vec3_dot(vector, vector);
 }
 
-inline float vec3_length(vec3 vector)
+static inline float vec3_length(vec3 vector)
 {
 	return sqrtf(vec3_length_squared(vector));
 }
 
-inline vec3 vec3_normalise(vec3 vector)
+static inline vec3 vec3_normalise(vec3 vector)
 {
 	float length = vec3_length(vector);
-	vec3 result = { vector.x / length, vector.y / length, vector.z / length };
-	return result;
+	return vec3_scale(vector, 1.0f / length);
 }
 
-inline bool vec3_eq(vec3 a, vec3 b)
+static inline bool vec3_eq(vec3 a, vec3 b)
 {
 	return a.x == b.x && a.y == b.y && a.z == b.z;
 }

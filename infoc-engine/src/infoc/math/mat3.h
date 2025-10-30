@@ -7,7 +7,7 @@ typedef struct mat3
 	vec3 rows[3];
 } mat3;
 
-inline mat3 mat3_identity()
+static inline mat3 mat3_identity()
 {
 	mat3 result = { 0 };
 	result.rows[0].x = 1.0f;
@@ -16,7 +16,7 @@ inline mat3 mat3_identity()
 	return result;
 }
 
-inline mat3 mat3_mul(mat3 a, mat3 b)
+static inline mat3 mat3_mul(mat3 a, mat3 b)
 {
 	mat3 result = { 0 };
 	result.rows[0].x = a.rows[0].x * b.rows[0].x + a.rows[1].x * b.rows[0].y + a.rows[2].x * b.rows[0].z;
@@ -32,7 +32,7 @@ inline mat3 mat3_mul(mat3 a, mat3 b)
 	return result;
 }
 
-inline mat3 mat3_transpose(mat3 matrix)
+static inline mat3 mat3_transpose(mat3 matrix)
 {
 	mat3 result = { 0 };
 	result.rows[0].x = matrix.rows[0].x;
@@ -48,7 +48,7 @@ inline mat3 mat3_transpose(mat3 matrix)
 	return result;
 }
 
-inline mat3 mat3_scale(mat3 matrix, float scale)
+static inline mat3 mat3_scale(mat3 matrix, float scale)
 {
 	matrix.rows[0] = vec3_scale(matrix.rows[0], scale);
 	matrix.rows[1] = vec3_scale(matrix.rows[1], scale);
@@ -57,7 +57,7 @@ inline mat3 mat3_scale(mat3 matrix, float scale)
 	return matrix;
 }
 
-inline mat3 mat3_invert(mat3 matrix)
+static inline mat3 mat3_invert(mat3 matrix)
 {
 	float c1 = matrix.rows[1].y * matrix.rows[2].z - matrix.rows[1].z * matrix.rows[2].y;
 	float c2 = matrix.rows[1].x * matrix.rows[2].z - matrix.rows[2].x * matrix.rows[1].z;
@@ -79,7 +79,7 @@ inline mat3 mat3_invert(mat3 matrix)
 	return result;
 }
 
-inline bool mat3_eq(mat3 a, mat3 b)
+static inline bool mat3_eq(mat3 a, mat3 b)
 {
 	return vec3_eq(a.rows[0], b.rows[0]) && vec3_eq(a.rows[1], b.rows[1]) && vec3_eq(a.rows[2], b.rows[2]);
 }

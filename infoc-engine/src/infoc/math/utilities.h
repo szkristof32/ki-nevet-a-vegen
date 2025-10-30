@@ -6,17 +6,17 @@
 
 #define PI (3.141592654f)
 
-inline float deg_to_rad(float deg)
+static inline float deg_to_rad(float deg)
 {
 	return deg / 180.0f * PI;
 }
 
-inline float rad_to_deg(float rad)
+static inline float rad_to_deg(float rad)
 {
 	return rad / PI * 180.0f;
 }
 
-inline mat4 mat4_perspective(float fov, float aspect_ratio, float near_plane, float far_plane)
+static inline mat4 mat4_perspective(float fov, float aspect_ratio, float near_plane, float far_plane)
 {
 	float f = 1.0f / tanf(fov / 2.0f);
 	float fn = 1.0f / (near_plane - far_plane);
@@ -31,7 +31,7 @@ inline mat4 mat4_perspective(float fov, float aspect_ratio, float near_plane, fl
 	return result;
 }
 
-inline mat4 mat4_translate(mat4 matrix, vec4 vector)
+static inline mat4 mat4_translate(mat4 matrix, vec4 vector)
 {
 	vec4 v1 = vec4_scale(matrix.rows[0], vector.x);
 	vec4 v2 = vec4_scale(matrix.rows[1], vector.y);
@@ -44,28 +44,28 @@ inline mat4 mat4_translate(mat4 matrix, vec4 vector)
 	return matrix;
 }
 
-inline mat4 mat4_translate_x(mat4 matrix, float x)
+static inline mat4 mat4_translate_x(mat4 matrix, float x)
 {
 	vec4 v1 = vec4_scale(matrix.rows[0], x);
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
 	return matrix;
 }
 
-inline mat4 mat4_translate_y(mat4 matrix, float y)
+static inline mat4 mat4_translate_y(mat4 matrix, float y)
 {
 	vec4 v1 = vec4_scale(matrix.rows[1], y);
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
 	return matrix;
 }
 
-inline mat4 mat4_translate_z(mat4 matrix, float z)
+static inline mat4 mat4_translate_z(mat4 matrix, float z)
 {
 	vec4 v1 = vec4_scale(matrix.rows[2], z);
 	matrix.rows[3] = vec4_add(matrix.rows[3], v1);
 	return matrix;
 }
 
-inline mat4 mat4_rotate_x(mat4 matrix, float angle_rad)
+static inline mat4 mat4_rotate_x(mat4 matrix, float angle_rad)
 {
 	float c = cosf(angle_rad);
 	float s = sinf(angle_rad);
@@ -79,7 +79,7 @@ inline mat4 mat4_rotate_x(mat4 matrix, float angle_rad)
 	return mat4_mul_rot(matrix, result);
 }
 
-inline mat4 mat4_rotate_y(mat4 matrix, float angle_rad)
+static inline mat4 mat4_rotate_y(mat4 matrix, float angle_rad)
 {
 	float c = cosf(angle_rad);
 	float s = sinf(angle_rad);
@@ -93,7 +93,7 @@ inline mat4 mat4_rotate_y(mat4 matrix, float angle_rad)
 	return mat4_mul_rot(matrix, result);
 }
 
-inline mat4 mat4_rotate_z(mat4 matrix, float angle_rad)
+static inline mat4 mat4_rotate_z(mat4 matrix, float angle_rad)
 {
 	float c = cosf(angle_rad);
 	float s = sinf(angle_rad);
@@ -107,7 +107,7 @@ inline mat4 mat4_rotate_z(mat4 matrix, float angle_rad)
 	return mat4_mul_rot(matrix, result);
 }
 
-inline mat4 mat4_scale_vec3(mat4 matrix, vec3 scalar)
+static inline mat4 mat4_scale_vec3(mat4 matrix, vec3 scalar)
 {
 	matrix.rows[0].x *= scalar.x;
 	matrix.rows[1].y *= scalar.y;
@@ -116,7 +116,7 @@ inline mat4 mat4_scale_vec3(mat4 matrix, vec3 scalar)
 	return matrix;
 }
 
-inline mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
+static inline mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
 {
 	matrix.rows[0].x *= scalar.x;
 	matrix.rows[1].y *= scalar.y;
@@ -126,7 +126,7 @@ inline mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
 	return matrix;
 }
 
-inline mat4 mat4_look_at(vec3 eye, vec3 center, vec3 up)
+static inline mat4 mat4_look_at(vec3 eye, vec3 center, vec3 up)
 {
 	vec3 f = vec3_normalise(vec3_sub(center, eye));
 	vec3 s = vec3_normalise(vec3_cross(f, up));

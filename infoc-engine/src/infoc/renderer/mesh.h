@@ -15,7 +15,7 @@ typedef struct vertex_t
 	vec3 normal;
 } vertex_t;
 
-inline bool vertex_eq(vertex_t* a, vertex_t* b)
+static inline bool vertex_eq(vertex_t* a, vertex_t* b)
 {
 	return vec3_eq(a->position, b->position) && vec2_eq(a->uv, b->uv) && vec3_eq(a->normal, b->normal);
 }

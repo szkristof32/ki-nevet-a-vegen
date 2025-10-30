@@ -7,7 +7,7 @@ typedef struct mat4
 	vec4 rows[4];
 } mat4;
 
-inline mat4 mat4_identity()
+static inline mat4 mat4_identity()
 {
 	mat4 result = { 0 };
 	result.rows[0].x = 1.0f;
@@ -17,7 +17,7 @@ inline mat4 mat4_identity()
 	return result;
 }
 
-inline mat4 mat4_mul(mat4 a, mat4 b)
+static inline mat4 mat4_mul(mat4 a, mat4 b)
 {
 	mat4 result = { 0 };
 	result.rows[0].x = a.rows[0].x * b.rows[0].x + a.rows[1].x * b.rows[0].y + a.rows[2].x * b.rows[0].z + a.rows[3].x * b.rows[0].w;
@@ -40,7 +40,7 @@ inline mat4 mat4_mul(mat4 a, mat4 b)
 	return result;
 }
 
-inline mat4 mat4_mul_rot(mat4 a, mat4 b)
+static inline mat4 mat4_mul_rot(mat4 a, mat4 b)
 {
 	mat4 result = { 0 };
 	result.rows[0].x = a.rows[0].x * b.rows[0].x + a.rows[1].x * b.rows[0].y + a.rows[2].x * b.rows[0].z + a.rows[3].x * b.rows[0].w;
@@ -63,7 +63,7 @@ inline mat4 mat4_mul_rot(mat4 a, mat4 b)
 	return result;
 }
 
-inline mat4 mat4_transpose(mat4 matrix)
+static inline mat4 mat4_transpose(mat4 matrix)
 {
 	mat4 result = { 0 };
 	result.rows[0].x = matrix.rows[0].x;
@@ -86,7 +86,7 @@ inline mat4 mat4_transpose(mat4 matrix)
 	return result;
 }
 
-inline mat4 mat4_scale(mat4 matrix, float scale)
+static inline mat4 mat4_scale(mat4 matrix, float scale)
 {
 	matrix.rows[0] = vec4_scale(matrix.rows[0], scale);
 	matrix.rows[1] = vec4_scale(matrix.rows[1], scale);
@@ -96,7 +96,7 @@ inline mat4 mat4_scale(mat4 matrix, float scale)
 	return matrix;
 }
 
-inline mat4 mat4_invert(mat4 matrix)
+static inline mat4 mat4_invert(mat4 matrix)
 {
 	float a = matrix.rows[0].x;
 	float b = matrix.rows[0].y;
@@ -152,7 +152,7 @@ inline mat4 mat4_invert(mat4 matrix)
 	return result;
 }
 
-inline bool mat4_eq(mat4 a, mat4 b)
+static inline bool mat4_eq(mat4 a, mat4 b)
 {
 	return vec4_eq(a.rows[0], b.rows[0]) && vec4_eq(a.rows[1], b.rows[1]) && vec4_eq(a.rows[2], b.rows[2]) && vec4_eq(a.rows[3], b.rows[3]);
 }
