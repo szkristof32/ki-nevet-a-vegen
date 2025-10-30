@@ -33,7 +33,7 @@ bool shader_create(const char* vertex_path, const char* fragment_path, shader_t*
 
 	glLinkProgram(out_shader->program_handle);
 
-	uint32_t status;
+	int32_t status;
 	glGetProgramiv(out_shader->program_handle, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE)
 	{
@@ -67,7 +67,7 @@ uint32_t _shader_create_shader(const char* file_path, uint32_t stage)
 	uint32_t shader = glCreateShader(stage);
 
 	char* source = file_utils_read_file(file_path);
-	glShaderSource(shader, 1, &source, NULL);
+	glShaderSource(shader, 1, (const char**)&source, NULL);
 	glCompileShader(shader);
 	free(source);
 

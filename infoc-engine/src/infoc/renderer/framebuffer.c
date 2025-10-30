@@ -51,7 +51,7 @@ void framebuffer_bind(framebuffer_t* framebuffer)
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	glDrawBuffers((uint32_t)darray_count(renderbuffers), renderbuffers);
+	glDrawBuffers((uint32_t)darray_count(renderbuffers), (const GLenum*)renderbuffers);
 
 	if (texture_is_valid(&framebuffer->depth_attachment))
 	{
