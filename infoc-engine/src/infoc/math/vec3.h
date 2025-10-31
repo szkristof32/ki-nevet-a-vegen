@@ -33,6 +33,7 @@ vec3 vec3_sub(vec3 a, vec3 b);
 
 vec3 vec3_scale(vec3 a, float scalar);
 vec3 vec3_mul(vec3 a, vec3 b);
+vec3 vec3_inv(vec3 vector);
 
 float vec3_dot(vec3 a, vec3 b);
 vec3 vec3_cross(vec3 a, vec3 b);

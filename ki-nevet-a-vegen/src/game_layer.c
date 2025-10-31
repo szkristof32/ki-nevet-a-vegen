@@ -107,9 +107,13 @@ void game_on_update(float timestep)
 	{
 		if (s_game_layer->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
 		{
-			board_make_move(&s_game_layer->board, s_game_layer->hovered_object, s_game_layer->player_to_go, s_game_layer->rolled);
-			s_game_layer->rolled = 0;
-			s_game_layer->player_to_go = (s_game_layer->player_to_go + 1) % 4;
+			if (s_game_layer->hovered_object - 1 >= s_game_layer->player_to_go * 4 &&
+				s_game_layer->hovered_object - 1 < (s_game_layer->player_to_go + 1) * 4)
+			{
+				board_make_move(&s_game_layer->board, s_game_layer->hovered_object, s_game_layer->player_to_go, s_game_layer->rolled);
+				s_game_layer->rolled = 0;
+				s_game_layer->player_to_go = (s_game_layer->player_to_go + 1) % 4;
+			}
 		}
 	}
 

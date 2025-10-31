@@ -25,10 +25,10 @@ bool board_create(scene_t* scene, board_t* out_board)
 	for (uint32_t i = 0; i < 4; i++)
 	{
 		float x_axis = (float)(-(i % 3 == 0) + (i % 3 != 0));
-		float y_axis = (float)(-(i % 2 == 0) + (i % 2 != 0));
+		float y_axis = (float)(-(i % 4 <= 1) + (i % 4 >= 2));
 
 		vec3 base_position = vec3_create(x_axis * board_size, 0.0f, y_axis * board_size);
-		vec4 colour = vec4_create((float)(i % 3 == 0), (float)(i % 2 == 1), (float)(i == 2), 1.0f);
+		vec4 colour = vec4_create((float)(i % 3 == 0), (float)(i % 4 > 1), (float)(i == 1), 1.0f);
 
 		for (uint32_t j = 0; j < 4; j++)
 		{
@@ -78,12 +78,13 @@ void board_make_move(board_t* board, uint32_t object_index, uint32_t player_inde
 	if (position != -1)
 	{
 		memmove(&board->pieces[position + move], &board->pieces[position], sizeof(piece_t));
+		memset(&board->pieces[position], 0, sizeof(piece_t));
 		position += move;
 	}
 	else
 	{
 		uint32_t player_start = player_index * 10;
-		position = player_start + move;
+		position = player_start + move - 1;
 
 		piece_t* piece = &board->pieces[position];
 		piece->object_index = object_index;
@@ -91,7 +92,8 @@ void board_make_move(board_t* board, uint32_t object_index, uint32_t player_inde
 	}
 
 	board->pieces[position].position = position;
-	scene_get_object(board->scene, board->piece_objects[object_index])->transform.position = _board_get_field_position(position);
+	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
+	object->transform.position = vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale));
 }
 
 vec3 _board_get_field_position(uint32_t index)
