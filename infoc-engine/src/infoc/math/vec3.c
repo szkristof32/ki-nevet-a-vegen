@@ -44,6 +44,11 @@ vec3 vec3_mul(vec3 a, vec3 b)
 	return result;
 }
 
+vec3 vec3_inv(vec3 vector)
+{
+	return vec3_create(1.0f / vector.x, 1.0f / vector.y, 1.0f / vector.z);
+}
+
 float vec3_dot(vec3 a, vec3 b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
