@@ -14,7 +14,7 @@
 
 #include "camera_controller.h"
 #include "board.h"
-#include "dice.h"
+#include "game_state.h"
 
 #include "infoc/renderer/gl.h"
 #include <SDL3/SDL_render.h>
@@ -27,26 +27,15 @@ static void game_on_update(float timestep);
 static void game_on_ui_render(SDL_Renderer* renderer);
 static void game_on_window_resize(uint32_t width, uint32_t height);
 
-typedef enum player_enum
-{
-	player_red,
-	player_blue,
-	player_green,
-	player_yellow
-} player_enum;
-
 typedef struct game_layer_t
 {
 	framebuffer_t framebuffer;
 	scene_t scene;
 	camera_controller_t camera_controller;
-	board_t board;
 	uint32_t hovered_object;
 	uint32_t window_width, window_height;
 
-	dice_t dice;
-	player_enum player_to_go;
-	uint32_t rolled;
+	game_state_t game_state;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -84,15 +73,12 @@ void game_on_attach()
 	controller->pitch = 30.0f;
 	controller->distance_from_center = 7.0f;
 
-	board_create(&s_game_layer->scene, &s_game_layer->board);
-
-	s_game_layer->dice.dice_count = 1;
-	s_game_layer->dice.sides = 6;
+	game_state_create(&s_game_layer->scene, &s_game_layer->game_state);
 }
 
 void game_on_detach()
 {
-	board_destroy(&s_game_layer->board);
+	game_state_destroy(&s_game_layer->game_state);
 	scene_destroy(&s_game_layer->scene);
 	framebuffer_destroy(&s_game_layer->framebuffer);
 }
@@ -102,24 +88,8 @@ void game_on_update(float timestep)
 	// GAME UPDATE
 	camera_controller_update(&s_game_layer->camera_controller);
 	static_renderer_set_camera(&s_game_layer->scene.camera);
-
-	if (input_is_mouse_button_clicked(mouse_button_right))
-	{
-		s_game_layer->rolled = dice_roll(&s_game_layer->dice);
-	}
-	if (s_game_layer->rolled != 0)
-	{
-		if (s_game_layer->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
-		{
-			if (s_game_layer->hovered_object - 1 >= s_game_layer->player_to_go * 4 &&
-				s_game_layer->hovered_object - 1 < (s_game_layer->player_to_go + 1) * 4)
-			{
-				board_make_move(&s_game_layer->board, s_game_layer->hovered_object, s_game_layer->player_to_go, s_game_layer->rolled);
-				s_game_layer->rolled = 0;
-				s_game_layer->player_to_go = (s_game_layer->player_to_go + 1) % 4;
-			}
-		}
-	}
+	
+	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object);
 
 	// RENDER
 	framebuffer_bind(&s_game_layer->framebuffer);
@@ -145,40 +115,9 @@ void game_on_update(float timestep)
 	s_game_layer->hovered_object = hovered_object_index;
 }
 
-static const char* _get_player_name(player_enum index)
-{
-	switch (index)
-	{
-		case player_red:	return "piros";
-		case player_green:	return "zold";
-		case player_blue:	return "kek";
-		case player_yellow:	return "sarga";
-	}
-
-	return "???";
-}
-
-const float text_padding = 10.0f;
-const float text_height = 10.0f;
-
 void game_on_ui_render(SDL_Renderer* renderer)
 {
-	SDL_SetRenderScale(renderer, 2.0f, 2.0f);
-	SDL_SetRenderDrawColorFloat(renderer, 1.0f, 1.0f, 1.0f, 1.0f);
-
-	char player_to_go[26] = { 0 };
-	sprintf_s(player_to_go, sizeof(player_to_go), "Kovetkezo jatekos: %s", _get_player_name(s_game_layer->player_to_go));
-
-	SDL_RenderDebugText(renderer, text_padding, text_padding, player_to_go);
-
-	if (s_game_layer->rolled != 0)
-	{
-		char choose[32] = { 0 };
-		sprintf_s(choose, sizeof(choose), "Dobtal: %d. Valassz egy babut!", s_game_layer->rolled);
-		SDL_RenderDebugText(renderer, text_padding, 2.0f * text_padding + text_height, choose);
-	}
-
-	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+	game_state_render_ui(&s_game_layer->game_state, renderer);
 }
 
 void game_on_window_resize(uint32_t width, uint32_t height)
