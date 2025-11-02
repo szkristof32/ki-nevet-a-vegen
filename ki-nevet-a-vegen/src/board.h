@@ -27,4 +27,5 @@ typedef struct board_t
 bool board_create(scene_t* scene, board_t* out_board);
 void board_destroy(board_t* board);
 
-void board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);
+// Returns a darray
+vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);

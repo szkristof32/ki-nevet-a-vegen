@@ -89,7 +89,7 @@ void game_on_update(float timestep)
 	camera_controller_update(&s_game_layer->camera_controller);
 	static_renderer_set_camera(&s_game_layer->scene.camera);
 	
-	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object);
+	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object, timestep);
 
 	// RENDER
 	framebuffer_bind(&s_game_layer->framebuffer);

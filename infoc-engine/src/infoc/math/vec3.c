@@ -44,6 +44,11 @@ vec3 vec3_mul(vec3 a, vec3 b)
 	return result;
 }
 
+vec3 vec3_square(vec3 vector)
+{
+	return vec3_mul(vector, vector);
+}
+
 vec3 vec3_inv(vec3 vector)
 {
 	return vec3_create(1.0f / vector.x, 1.0f / vector.y, 1.0f / vector.z);
@@ -79,5 +84,5 @@ vec3 vec3_normalise(vec3 vector)
 
 bool vec3_eq(vec3 a, vec3 b)
 {
-	return a.x == b.x && a.y == b.y && a.z == b.z;
+	return fabs(a.x - b.x) < 0.001f && fabs(a.y - b.y) < 0.001f && fabs(a.z - b.z) < 0.001f;
 }

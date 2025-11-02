@@ -1,5 +1,7 @@
 #include "board.h"
 
+#include "infoc/core/darray.h"
+
 #include "infoc/math/vec3.h"
 
 #include "infoc/utils/obj_loader.h"
@@ -65,7 +67,7 @@ void board_destroy(board_t* board)
 
 static bool _board_step(board_t* board, uint32_t object_index, uint32_t destination);
 
-void board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
+vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
 {
 	uint32_t position = -1;
 	for (uint32_t i = 0; i < 40; i++)
@@ -86,14 +88,20 @@ void board_make_move(board_t* board, uint32_t object_index, uint32_t player_inde
 		start_position = -1;
 	}
 
+	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
+	vec3* fields = darray_create(vec3);
+	darray_push(fields, object->transform.position);
+
 	while (move != 0)
 	{
 		uint32_t step_size = 1;
 		while (!_board_step(board, object_index, position + step_size))
 			step_size++;
 		position += step_size;
+		darray_push(fields, vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale)));
 		move--;
 	}
+
 	position %= 40;
 
 	if (start_position != -1)
@@ -104,8 +112,7 @@ void board_make_move(board_t* board, uint32_t object_index, uint32_t player_inde
 	piece->object_index = object_index;
 	piece->position = position;
 
-	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
-	object->transform.position = vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale));
+	return fields;
 }
 
 bool _board_step(board_t* board, uint32_t object_index, uint32_t destination)

@@ -68,5 +68,5 @@ vec4 vec4_normalise(vec4 vector)
 
 bool vec4_eq(vec4 a, vec4 b)
 {
-	return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
+	return fabs(a.x - b.x) < 0.001f && fabs(a.y - b.y) < 0.001f && fabs(a.z - b.z) < 0.001f && fabs(a.w - b.w) < 0.001f;
 }

@@ -73,5 +73,5 @@ vec2 vec2_normalise(vec2 vector)
 
 bool vec2_eq(vec2 a, vec2 b)
 {
-	return a.x == b.x && a.y == b.y;
+	return fabs(a.x - b.x) < 0.001f && fabs(a.y - b.y) < 0.001f;
 }

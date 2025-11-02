@@ -21,6 +21,7 @@ typedef struct game_state_t
 
 	board_t board;
 	uint32_t hovered_object;
+	float delta;
 
 	void* internal_state;
 } game_state_t;
@@ -28,5 +29,5 @@ typedef struct game_state_t
 void game_state_create(scene_t* scene, game_state_t* out_game_state);
 void game_state_destroy(game_state_t* game_state);
 
-void game_state_update(game_state_t* game_state, uint32_t hovered_object);
+void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta);
 void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer);

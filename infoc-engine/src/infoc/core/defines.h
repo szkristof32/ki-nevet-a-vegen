@@ -12,3 +12,9 @@ typedef uint8_t bool;
 #define gigabytes(x)	(megabytes(x)*1024)
 
 #define countof(arr)	(sizeof(arr)/sizeof(arr[0]))
+
+#ifdef _MSC_VER
+	#define _typeof(x) __typeof__(x)
+#else
+	#define _typeof(x) typeof(x)
+#endif

@@ -11,6 +11,7 @@
 #include "infoc/renderer/static_renderer.h"
 #include "infoc/renderer/sdl_renderer.h"
 
+#include <SDL3/SDL.h>
 #include <string.h>
 
 typedef struct engine_t
@@ -113,9 +114,13 @@ void engine_shutdown()
 
 void engine_run()
 {
+	uint32_t last_frame_time = SDL_GetTicks();
+
 	while (s_engine.running)
 	{
-		float delta = 0.0f;
+		uint32_t current_time = SDL_GetTicks();
+		float delta = (float)(current_time - last_frame_time) / 1000.0f;
+		last_frame_time = current_time;
 
 		input_update();
 		window_update(&s_engine.window);
