@@ -63,6 +63,8 @@ void board_destroy(board_t* board)
 	memset(board, 0, sizeof(board_t));
 }
 
+static bool _board_step(board_t* board, uint32_t object_index, uint32_t destination);
+
 void board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
 {
 	uint32_t position = -1;
@@ -75,25 +77,40 @@ void board_make_move(board_t* board, uint32_t object_index, uint32_t player_inde
 		}
 	}
 
-	if (position != -1)
-	{
-		memmove(&board->pieces[position + move], &board->pieces[position], sizeof(piece_t));
-		memset(&board->pieces[position], 0, sizeof(piece_t));
-		position += move;
-	}
-	else
+	uint32_t start_position = position % 40;
+
+	if (position == -1)
 	{
 		uint32_t player_start = player_index * 10;
-		position = player_start + move - 1;
-
-		piece_t* piece = &board->pieces[position];
-		piece->object_index = object_index;
-		piece->player_index = player_index;
+		position = player_start - 1;
+		start_position = -1;
 	}
 
-	board->pieces[position].position = position;
+	while (move != 0)
+	{
+		uint32_t step_size = 1;
+		while (!_board_step(board, object_index, position + step_size))
+			step_size++;
+		position += step_size;
+		move--;
+	}
+	position %= 40;
+
+	if (start_position != -1)
+		memset(&board->pieces[start_position], 0, sizeof(piece_t));
+
+	piece_t* piece = &board->pieces[position];
+	piece->player_index = player_index;
+	piece->object_index = object_index;
+	piece->position = position;
+
 	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
 	object->transform.position = vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale));
+}
+
+bool _board_step(board_t* board, uint32_t object_index, uint32_t destination)
+{
+	return board->pieces[destination % 40].object_index == 0;
 }
 
 vec3 _board_get_field_position(uint32_t index)
@@ -103,18 +120,18 @@ vec3 _board_get_field_position(uint32_t index)
 		uint32_t step_count;
 		vec2 step_direction;
 	} steps[12] = {
-		{ 4, vec2_create( 1.0f,  0.0f) },
-		{ 4, vec2_create( 0.0f, -1.0f) },
-		{ 2, vec2_create( 1.0f,  0.0f) },
-		{ 4, vec2_create( 0.0f,  1.0f) },
-		{ 4, vec2_create( 1.0f,  0.0f) },
-		{ 2, vec2_create( 0.0f,  1.0f) },
+		{ 4, vec2_create(1.0f,  0.0f) },
+		{ 4, vec2_create(0.0f, -1.0f) },
+		{ 2, vec2_create(1.0f,  0.0f) },
+		{ 4, vec2_create(0.0f,  1.0f) },
+		{ 4, vec2_create(1.0f,  0.0f) },
+		{ 2, vec2_create(0.0f,  1.0f) },
 		{ 4, vec2_create(-1.0f,  0.0f) },
-		{ 4, vec2_create( 0.0f,  1.0f) },
+		{ 4, vec2_create(0.0f,  1.0f) },
 		{ 2, vec2_create(-1.0f,  0.0f) },
-		{ 4, vec2_create( 0.0f, -1.0f) },
+		{ 4, vec2_create(0.0f, -1.0f) },
 		{ 4, vec2_create(-1.0f,  0.0f) },
-		{ 2, vec2_create( 0.0f, -1.0f) },
+		{ 2, vec2_create(0.0f, -1.0f) },
 	};
 
 	float pos_x = (-board_size - step_size) * game_scale;
