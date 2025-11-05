@@ -114,11 +114,11 @@ void engine_shutdown()
 
 void engine_run()
 {
-	uint32_t last_frame_time = SDL_GetTicks();
+	uint64_t last_frame_time = SDL_GetTicks();
 
 	while (s_engine.running)
 	{
-		uint32_t current_time = SDL_GetTicks();
+		uint64_t current_time = SDL_GetTicks();
 		float delta = (float)(current_time - last_frame_time) / 1000.0f;
 		last_frame_time = current_time;
 

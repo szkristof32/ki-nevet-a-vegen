@@ -27,6 +27,7 @@ bool framebuffer_create(uint32_t width, uint32_t height, framebuffer_t* out_fram
 
 void framebuffer_destroy(framebuffer_t* framebuffer)
 {
+	darray_destroy(framebuffer->colour_attachments);
 	glDeleteFramebuffers(1, &framebuffer->framebuffer_handle);
 	memset(framebuffer, 0, sizeof(framebuffer_t));
 }
@@ -57,6 +58,8 @@ void framebuffer_bind(framebuffer_t* framebuffer)
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
+
+	darray_destroy(renderbuffers);
 }
 
 void framebuffer_unbind(framebuffer_t* framebuffer)

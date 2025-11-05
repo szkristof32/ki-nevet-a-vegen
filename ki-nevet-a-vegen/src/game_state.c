@@ -43,6 +43,12 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state)
 
 void game_state_destroy(game_state_t* game_state)
 {
+	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
+	piece_animation_t* animation = &internal_state->animation;
+
+	if (animation && animation->positions)
+		darray_destroy(animation->positions);
+
 	board_destroy(&game_state->board);
 }
 

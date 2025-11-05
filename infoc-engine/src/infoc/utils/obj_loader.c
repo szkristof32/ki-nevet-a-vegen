@@ -36,6 +36,8 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 			position.z = (float)atof(tokens[3]);
 
 			darray_push(vertex_positions, position);
+
+			darray_destroy(tokens);
 		}
 		if (string_starts_with(line, "vt "))
 		{
@@ -45,6 +47,8 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 			uv.y = (float)atof(tokens[2]);
 
 			darray_push(uv_coords, uv);
+
+			darray_destroy(tokens);
 		}
 		if (string_starts_with(line, "vn "))
 		{
@@ -55,6 +59,8 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 			normal.z = (float)atof(tokens[3]);
 
 			darray_push(normals, normal);
+
+			darray_destroy(tokens);
 		}
 
 		i++;
@@ -80,13 +86,19 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 				vertex.normal = normals[atoi(tokens[2]) - 1];
 
 				mesh_add_vertex(out_mesh, &vertex);
+				
+				darray_destroy(tokens);
 			}
+
+			darray_destroy(vertex_indices);
 		}
 
 		i++;
 	}
 
 	mesh_create(out_mesh);
+
+	darray_destroy(lines);
 
 	darray_destroy(normals);
 	darray_destroy(uv_coords);

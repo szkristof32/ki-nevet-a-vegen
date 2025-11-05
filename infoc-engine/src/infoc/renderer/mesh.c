@@ -48,6 +48,8 @@ bool mesh_create(mesh_t* mesh)
 
 void mesh_destroy(mesh_t* mesh)
 {
+	darray_destroy(mesh->vertices);
+	darray_destroy(mesh->indices);
 	vertex_buffer_destroy(&mesh->vertex_buffer);
 	index_buffer_destroy(&mesh->index_buffer);
 	vertex_array_destroy(&mesh->vertex_array);

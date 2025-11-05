@@ -11,6 +11,10 @@ bool arena_allocator_create(size_t max_size, arena_allocator_t* out_allocator)
 		return false;
 	}
 
+#ifdef IC_DEBUGMALLOC
+	debugmalloc_max_block_size((uint32_t)max_size);
+#endif
+
 	out_allocator->size = max_size;
 	out_allocator->allocation = malloc(max_size);
 	out_allocator->pointer = out_allocator->allocation;

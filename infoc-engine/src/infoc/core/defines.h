@@ -7,6 +7,15 @@ typedef uint8_t bool;
 #define true 1
 #define false 0
 
+#ifdef IC_DEBUG
+#define IC_DEBUGMALLOC
+#endif
+
+#ifdef IC_DEBUGMALLOC
+#define _STDBOOL
+#include "debugmalloc.h"
+#endif
+
 #define kilobytes(x)	(x*1024)
 #define megabytes(x)	(kilobytes(x)*1024)
 #define gigabytes(x)	(megabytes(x)*1024)
@@ -14,7 +23,7 @@ typedef uint8_t bool;
 #define countof(arr)	(sizeof(arr)/sizeof(arr[0]))
 
 #ifdef _MSC_VER
-	#define _typeof(x) __typeof__(x)
+#define _typeof(x) __typeof__(x)
 #else
-	#define _typeof(x) typeof(x)
+#define _typeof(x) typeof(x)
 #endif

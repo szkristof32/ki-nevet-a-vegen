@@ -26,9 +26,6 @@ void camera_controller_update(camera_controller_t* controller)
 	camera->view_matrix = mat4_look_at(camera->position, controller->center, vec3_create(0.0f, 1.0f, 0.0f));
 }
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 void _check_inputs(camera_controller_t* controller)
 {
 	{
