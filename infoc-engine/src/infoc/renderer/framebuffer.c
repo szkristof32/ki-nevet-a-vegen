@@ -12,11 +12,7 @@ bool framebuffer_create(uint32_t width, uint32_t height, framebuffer_t* out_fram
 	memset(out_framebuffer, 0, sizeof(framebuffer_t));
 
 	glCreateFramebuffers(1, &out_framebuffer->framebuffer_handle);
-	if (out_framebuffer->framebuffer_handle == 0)
-	{
-		fprintf(stderr, "Failed to create framebuffer!\n");
-		return false;
-	}
+	check_error(out_framebuffer->framebuffer_handle == 0, "Failed to create framebuffer!");
 
 	out_framebuffer->width = width;
 	out_framebuffer->height = height;
@@ -90,10 +86,7 @@ void framebuffer_attach_texture(framebuffer_t* framebuffer, texture_t* colour_at
 	glNamedFramebufferTexture(framebuffer->framebuffer_handle, GL_COLOR_ATTACHMENT0 + attachment_index, colour_attachment->texture_handle, 0);
 	darray_push(framebuffer->colour_attachments, *colour_attachment);
 
-	if (glCheckNamedFramebufferStatus(framebuffer->framebuffer_handle, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		fprintf(stderr, "Framebuffer isn't complete!\n");
-	}
+	check_error_no_return(glCheckNamedFramebufferStatus(framebuffer->framebuffer_handle, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE, "Framebuffer isn't complete!");
 }
 
 void framebuffer_create_depth_attachment(framebuffer_t* framebuffer)

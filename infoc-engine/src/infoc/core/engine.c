@@ -31,63 +31,31 @@ static engine_t s_engine;
 bool engine_initialise()
 {
 	bool success = arena_allocator_create(megabytes(10), &s_engine.allocator);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create arena allocator!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create arena allocator!");
 
 	success = window_create(1280, 720, u8"Ne nevessch korán!", &s_engine.window);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create window!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create window!");
 
 	success = context_create(&s_engine.window, &s_engine.context);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create context!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create context!");
 
 	success = texture_create_empty(1, 1, &s_engine.default_texture);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create default texture!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create default texture!");
 	uint32_t default_texture_data = 0xffffffff;
 	texture_set_data(&s_engine.default_texture, &default_texture_data);
 
 	success = input_initialise();
-	if (!success)
-	{
-		fprintf(stderr, "Failed to initialise input!\n");
-		return false;
-	}
+	check_error(!success, "Failed to initialise input!");
 
 	success = layer_stack_create(&s_engine.layer_stack);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create layer stack!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create layer stack!");
 
 	success = static_renderer_init();
-	if (!success)
-	{
-		fprintf(stderr, "Failed to initialise static renderer!\n");
-		return false;
-	}
+	check_error(!success, "Failed to initialise static renderer!");
 
 	success = sdl_renderer_init(&s_engine.context);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to initialise SDL renderer!\n");
-		return false;
-	}
-	
+	check_error(!success, "Failed to initialise SDL renderer!");
+
 	s_engine.running = true;
 
 	return true;

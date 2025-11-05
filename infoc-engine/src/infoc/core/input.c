@@ -28,11 +28,7 @@ bool input_initialise()
 	arena_allocator_t* allocator = engine_get_allocator();
 
 	s_input = arena_allocator_allocate(allocator, sizeof(input_t));
-	if (s_input == NULL)
-	{
-		fprintf(stderr, "Failed to initialise input!\n");
-		return false;
-	}
+	check_error(s_input == NULL, "Failed to initialise input!");
 
 	return true;
 }
@@ -63,7 +59,7 @@ void input_move_listener(float x, float y)
 void input_click_listener(int button, bool pressed)
 {
 	s_input->mouse.buttons_down[button] = pressed;
-	
+
 	if (pressed)
 		s_input->mouse.buttons_clicked[button] = true;
 	else

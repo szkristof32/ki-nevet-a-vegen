@@ -12,11 +12,7 @@ void* _darray_create(size_t element_size, size_t initial_capacity)
 	size_t array_size = element_size * initial_capacity;
 
 	void* array = malloc(header_size + array_size);
-	if (array == NULL)
-	{
-		fprintf(stderr, "Failed to allocate darray!\n");
-		return false;
-	}
+	check_error(array == NULL, "Failed to allocate darray!");
 
 	memset(array, 0, header_size + array_size);
 

@@ -41,25 +41,14 @@ bool static_renderer_init()
 {
 	arena_allocator_t* allocator = engine_get_allocator();
 	s_static_renderer = arena_allocator_allocate(allocator, sizeof(static_renderer_t));
-	if (s_static_renderer == NULL)
-	{
-		fprintf(stderr, "Failed to initialise static renderer!\n");
-		return false;
-	}
+	check_error(s_static_renderer == NULL, "Failed to initialise static renderer!");
 
 	bool success = shader_create("assets/shaders/static_shader.vert", "assets/shaders/static_shader.frag", &s_static_renderer->shader);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create static shader!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create static shader!");
 
 	success = uniform_buffer_create(NULL, sizeof(matrices_t), &s_static_renderer->matrices_uniform);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create uniform buffer!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create uniform buffer!");
+
 	uniform_buffer_bind_base(&s_static_renderer->matrices_uniform, 0);
 
 	_static_renderer_create_projection(1280, 720);
@@ -70,11 +59,8 @@ bool static_renderer_init()
 	uniform_buffer_set_data(&s_static_renderer->matrices_uniform, &s_static_renderer->matrices, sizeof(matrices_t));
 
 	success = uniform_buffer_create(NULL, sizeof(object_t), &s_static_renderer->object_uniform);
-	if (!success)
-	{
-		fprintf(stderr, "Failed to create uniform buffer!\n");
-		return false;
-	}
+	check_error(!success, "Failed to create uniform buffer!");
+
 	uniform_buffer_bind_base(&s_static_renderer->object_uniform, 1);
 
 	return true;

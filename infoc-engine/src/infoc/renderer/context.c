@@ -20,11 +20,7 @@ bool context_create(const window_t* window, context_t* out_context)
 
 	arena_allocator_t* allocator = engine_get_allocator();
 	context_internal_t* internal_state = arena_allocator_allocate(allocator, sizeof(context_internal_t));
-	if (internal_state == NULL)
-	{
-		fprintf(stderr, "Failed to allocate context internal state!\n");
-		return false;
-	}
+	check_error(internal_state == NULL, "Failed to allocate context internal state!");
 
 	out_context->internal_state = internal_state;
 
@@ -35,23 +31,9 @@ bool context_create(const window_t* window, context_t* out_context)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	internal_state->opengl_context = SDL_GL_CreateContext(internal_state->window_handle);
-	if (!internal_state->opengl_context)
-	{
-		fprintf(stderr, "Failed to create OpenGL context (%s)!\n", SDL_GetError());
-		return false;
-	}
-
-	if (!SDL_GL_MakeCurrent(internal_state->window_handle, internal_state->opengl_context))
-	{
-		fprintf(stderr, "Failed to make context current (%s)!\n", SDL_GetError());
-		return false;
-	}
-
-	if (!opengl_init())
-	{
-		fprintf(stderr, "Failed to initialise OpenGL!\n");
-		return false;
-	}
+	check_error(!internal_state->opengl_context, "Failed to create OpenGL context (%s)!", SDL_GetError());
+	check_error(!SDL_GL_MakeCurrent(internal_state->window_handle, internal_state->opengl_context), "Failed to make context current (%s)!", SDL_GetError());
+	check_error(!opengl_init(), "Failed to initialise OpenGL!");
 
 	return true;
 }

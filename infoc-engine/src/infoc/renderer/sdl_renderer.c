@@ -28,30 +28,12 @@ bool sdl_renderer_init(const context_t* context)
 	s_sdl_renderer = arena_allocator_allocate(allocator, sizeof(sdl_renderer_t));
 
 	s_sdl_renderer->surface = SDL_CreateSurface(1280, 720, SDL_PIXELFORMAT_RGBA32);
-	if (!s_sdl_renderer->surface)
-	{
-		fprintf(stderr, "Failed to create SDL surface!\n");
-		return false;
-	}
+	check_error(!s_sdl_renderer->surface, "Failed to create SDL surface!");
 
 	s_sdl_renderer->renderer = SDL_CreateSoftwareRenderer(s_sdl_renderer->surface);
-	if (!s_sdl_renderer->renderer)
-	{
-		fprintf(stderr, "Failed to create SDL renderer!\n");
-		return false;
-	}
-
-	if (!texture_create_format(1280, 720, GL_RGBA8, &s_sdl_renderer->texture))
-	{
-		fprintf(stderr, "Failed to create OpenGL texture!\n");
-		return false;
-	}
-
-	if (!shader_create("assets/shaders/sdl_shader.vert", "assets/shaders/sdl_shader.frag", &s_sdl_renderer->shader))
-	{
-		fprintf(stderr, "Failed to create SDL shader!\n");
-		return false;
-	}
+	check_error(!s_sdl_renderer->renderer, "Failed to create SDL renderer!");
+	check_error(!texture_create_format(1280, 720, GL_RGBA8, &s_sdl_renderer->texture), "Failed to create OpenGL texture!");
+	check_error(!shader_create("assets/shaders/sdl_shader.vert", "assets/shaders/sdl_shader.frag", &s_sdl_renderer->shader), "Failed to create SDL shader!");
 
 	return true;
 }

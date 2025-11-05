@@ -16,6 +16,10 @@ typedef uint8_t bool;
 #include "debugmalloc.h"
 #endif
 
+#define log_error(...) do { fprintf(stderr, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (false)
+#define check_error(err, ...) if (err) { log_error(__VA_ARGS__); return false; }
+#define check_error_no_return(err, ...) if (err) { log_error(__VA_ARGS__); }
+
 #define kilobytes(x)	(x*1024)
 #define megabytes(x)	(kilobytes(x)*1024)
 #define gigabytes(x)	(megabytes(x)*1024)

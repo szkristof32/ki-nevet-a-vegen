@@ -14,19 +14,11 @@ bool shader_create(const char* vertex_path, const char* fragment_path, shader_t*
 	memset(out_shader, 0, sizeof(shader_t));
 
 	out_shader->program_handle = glCreateProgram();
-	if (out_shader->program_handle == 0)
-	{
-		fprintf(stderr, "Failed to create shader program!\n");
-		return false;
-	}
+	check_error(out_shader->program_handle == 0, "Failed to create shader program!");
 
 	uint32_t vertex_shader = _shader_create_shader(vertex_path, GL_VERTEX_SHADER);
 	uint32_t fragment_shader = _shader_create_shader(fragment_path, GL_FRAGMENT_SHADER);
-	if (vertex_shader == 0 || fragment_shader == 0)
-	{
-		fprintf(stderr, "Failed to create either of the shader stages!\n");
-		return false;
-	}
+	check_error(vertex_shader == 0 || fragment_shader == 0, "Failed to create either of the shader stages!");
 
 	glAttachShader(out_shader->program_handle, vertex_shader);
 	glAttachShader(out_shader->program_handle, fragment_shader);
@@ -39,7 +31,7 @@ bool shader_create(const char* vertex_path, const char* fragment_path, shader_t*
 	{
 		char buffer[512];
 		glGetProgramInfoLog(out_shader->program_handle, 512, NULL, buffer);
-		printf(buffer);
+		log_error(buffer);
 	}
 
 	glDetachShader(out_shader->program_handle, vertex_shader);

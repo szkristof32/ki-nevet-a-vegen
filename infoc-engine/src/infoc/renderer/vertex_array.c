@@ -10,18 +10,10 @@ bool vertex_array_create(vertex_array_t* out_vertex_array)
 	memset(out_vertex_array, 0, sizeof(vertex_array_t));
 
 	glCreateVertexArrays(1, &out_vertex_array->array_handle);
-	if (out_vertex_array->array_handle == 0)
-	{
-		fprintf(stderr, "Failed to create vertex array!\n");
-		return false;
-	}
+	check_error(out_vertex_array->array_handle == 0, "Failed to create vertex array!");
 
 	out_vertex_array->attributes = darray_create(vertex_attribute_t);
-	if (out_vertex_array->attributes == NULL)
-	{
-		fprintf(stderr, "Failed to create darray for vertex attributes!\n");
-		return false;
-	}
+	check_error(out_vertex_array->attributes == NULL, "Failed to create darray for vertex attributes!");
 
 	return true;
 }
@@ -55,7 +47,7 @@ static uint32_t _vertex_attribute_type_size(vertex_attribute_type type)
 		case vertex_attribute_type_bool:	return 1;
 	}
 
-	fprintf(stderr, "Invalid vertex_attribute_type!\n");
+	log_error("Invalid vertex_attribute_type!");
 	return 0;
 }
 
@@ -76,7 +68,7 @@ static uint32_t _vertex_attribute_type_component_count(vertex_attribute_type typ
 		case vertex_attribute_type_bool:	return 1;
 	}
 
-	fprintf(stderr, "Invalid vertex_attribute_type!\n");
+	log_error("Invalid vertex_attribute_type!");
 	return 0;
 }
 
@@ -101,7 +93,7 @@ static uint32_t _vertex_attribute_type_gl_type(vertex_attribute_type type)
 			return GL_INT;
 	}
 
-	fprintf(stderr, "Invalid vertex_attribute_type!\n");
+	log_error("Invalid vertex_attribute_type!");
 	return 0;
 }
 

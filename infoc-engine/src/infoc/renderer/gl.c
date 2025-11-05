@@ -48,7 +48,7 @@ typedef void (*pfn_glCreateFramebuffers)(GLsizei n, GLuint* framebuffers);
 typedef void (*pfn_glDeleteFramebuffers)(GLsizei n, const GLuint* framebuffers);
 typedef void (*pfn_glBindFramebuffer)(GLenum target, GLuint framebuffer);
 typedef void (*pfn_glNamedFramebufferTexture)(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level);
-typedef GLenum (*pfn_glCheckNamedFramebufferStatus)(GLuint framebuffer, GLenum target);
+typedef GLenum(*pfn_glCheckNamedFramebufferStatus)(GLuint framebuffer, GLenum target);
 typedef void (*pfn_glBlitNamedFramebuffer)(GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 typedef void (*pfn_glDrawBuffers)(GLsizei n, const GLenum* bufs);
 typedef void (*pfn_glGetProgramiv)(GLuint program, GLenum pname, GLint* params);
@@ -56,7 +56,7 @@ typedef void (*pfn_glGetProgramInfoLog)(GLuint program, GLsizei bufSize, GLsizei
 typedef void (*pfn_glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
 typedef void (*pfn_glNamedFramebufferReadBuffer)(GLuint framebuffer, GLenum src);
 typedef void* (*pfn_glMapBuffer)(GLenum target, GLenum access);
-typedef GLboolean (*pfn_glUnmapBuffer)(GLenum target);
+typedef GLboolean(*pfn_glUnmapBuffer)(GLenum target);
 typedef void (*pfn_glGetTextureSubImage)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLsizei bufSize, void* pixels);
 
 typedef struct gl_t
@@ -124,11 +124,7 @@ bool opengl_init()
 {
 	arena_allocator_t* allocator = engine_get_allocator();
 	s_opengl = arena_allocator_allocate(allocator, sizeof(gl_t));
-	if (s_opengl == NULL)
-	{
-		fprintf(stderr, "Failed to initialise OpenGL!\n");
-		return false;
-	}
+	check_error(s_opengl == NULL, "Failed to initialise OpenGL!");
 
 	SDL_GL_LoadLibrary("opengl32");
 
@@ -207,7 +203,7 @@ void opengl_debug(GLenum source, GLenum type, GLuint id, GLenum severity, GLsize
 		case GL_DEBUG_SEVERITY_NOTIFICATION:	printf("[OpenGL notification] %s\n", message); return;
 		case GL_DEBUG_SEVERITY_LOW:				printf("[OpenGL information] %s\n", message); return;
 		case GL_DEBUG_SEVERITY_MEDIUM:			printf("[OpenGL warning] %s\n", message); return;
-		case GL_DEBUG_SEVERITY_HIGH:			fprintf(stderr, "[OpenGL error] %s\n", message); return;
+		case GL_DEBUG_SEVERITY_HIGH:			log_error("[OpenGL error] %s", message); return;
 	}
 }
 

@@ -12,18 +12,10 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 {
 	memset(out_texture, 0, sizeof(texture_t));
 	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
-	if (out_texture->texture_handle == 0)
-	{
-		fprintf(stderr, "Failed to create texture!\n");
-		return false;
-	}
+	check_error(out_texture->texture_handle == 0, "Failed to create texture!");
 
 	SDL_Surface* texuture = SDL_LoadBMP(filepath);
-	if (!texuture)
-	{
-		fprintf(stderr, "Failed to load image from disk!\n");
-		return false;
-	}
+	check_error(!texuture, "Failed to load image from disk!");
 
 	out_texture->width = texuture->w;
 	out_texture->height = texuture->h;
@@ -48,11 +40,7 @@ bool texture_create_empty(uint32_t width, uint32_t height, texture_t* out_textur
 {
 	memset(out_texture, 0, sizeof(texture_t));
 	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
-	if (out_texture->texture_handle == 0)
-	{
-		fprintf(stderr, "Failed to create texture!\n");
-		return false;
-	}
+	check_error(out_texture->texture_handle == 0, "Failed to create texture!");
 
 	out_texture->width = width;
 	out_texture->height = height;
@@ -73,11 +61,7 @@ bool texture_create_format(uint32_t width, uint32_t height, uint32_t format, tex
 {
 	memset(out_texture, 0, sizeof(texture_t));
 	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
-	if (out_texture->texture_handle == 0)
-	{
-		fprintf(stderr, "Failed to create texture!\n");
-		return false;
-	}
+	check_error(out_texture->texture_handle == 0, "Failed to create texture!");
 
 	out_texture->width = width;
 	out_texture->height = height;
@@ -98,11 +82,7 @@ bool texture_create_depth(uint32_t width, uint32_t height, texture_t* out_textur
 {
 	memset(out_texture, 0, sizeof(texture_t));
 	glCreateTextures(GL_TEXTURE_2D, 1, &out_texture->texture_handle);
-	if (out_texture->texture_handle == 0)
-	{
-		fprintf(stderr, "Failed to create texture!\n");
-		return false;
-	}
+	check_error(out_texture->texture_handle == 0, "Failed to create texture!");
 
 	out_texture->width = width;
 	out_texture->height = height;

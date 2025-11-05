@@ -5,11 +5,7 @@
 int main(int argc, char** argv)
 {
 	bool success = engine_initialise();
-	if (!success)
-	{
-		fprintf(stderr, "Failed to initialise engine!\n");
-		return -1;
-	}
+	check_error(!success, "Failed to initialise engine!");
 
 	layer_t game_layer = game_layer_create();
 	engine_attach_layer(&game_layer);

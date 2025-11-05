@@ -10,11 +10,7 @@ bool vertex_buffer_create(const void* data, size_t size, vertex_buffer_t* out_bu
 	memset(out_buffer, 0, sizeof(vertex_buffer_t));
 
 	glCreateBuffers(1, &out_buffer->buffer_handle);
-	if (out_buffer->buffer_handle == 0)
-	{
-		fprintf(stderr, "Failed to create vertex buffer!\n");
-		return false;
-	}
+	check_error(out_buffer->buffer_handle == 0, "Failed to create vertex buffer!");
 
 	glNamedBufferData(out_buffer->buffer_handle, size, NULL, GL_STATIC_DRAW);
 	glNamedBufferSubData(out_buffer->buffer_handle, 0, size, data);
@@ -43,11 +39,7 @@ bool index_buffer_create(const uint32_t* data, size_t index_count, index_buffer_
 	memset(out_buffer, 0, sizeof(index_buffer_t));
 
 	glCreateBuffers(1, &out_buffer->buffer_handle);
-	if (out_buffer->buffer_handle == 0)
-	{
-		fprintf(stderr, "Failed to create index buffer!\n");
-		return false;
-	}
+	check_error(out_buffer->buffer_handle == 0, "Failed to create index buffer!");
 
 	glNamedBufferData(out_buffer->buffer_handle, index_count * sizeof(uint32_t), NULL, GL_STATIC_DRAW);
 	glNamedBufferSubData(out_buffer->buffer_handle, 0, index_count * sizeof(uint32_t), data);
@@ -76,11 +68,8 @@ bool uniform_buffer_create(const void* data, size_t size, uniform_buffer_t* out_
 	memset(out_buffer, 0, sizeof(uniform_buffer_t));
 
 	glCreateBuffers(1, &out_buffer->buffer_handle);
-	if (out_buffer->buffer_handle == 0)
-	{
-		fprintf(stderr, "Failed to create uniform buffer!\n");
-		return false;
-	}
+	check_error(out_buffer->buffer_handle == 0, "Failed to create uniform buffer!");
+
 
 	glNamedBufferData(out_buffer->buffer_handle, size, NULL, GL_STATIC_DRAW);
 	glNamedBufferSubData(out_buffer->buffer_handle, 0, size, data);
