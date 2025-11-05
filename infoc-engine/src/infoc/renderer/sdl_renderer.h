@@ -17,3 +17,5 @@ void sdl_renderer_end_frame();
 void sdl_renderer_on_window_resize(uint32_t width, uint32_t height);
 
 SDL_Renderer* sdl_renderer_get_handle();
+
+void sdl_renderer_draw_text(const char* text, float x, float y);

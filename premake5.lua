@@ -56,6 +56,7 @@ project "infoc-engine"
 	{
 		"SDL3",
 		"SDL3_image",
+		"SDL3_ttf"
 	}
 
 	filter "system:windows"
@@ -95,6 +96,7 @@ project "ki-nevet-a-vegen"
 		"infoc-engine",
 		"SDL3",
 		"SDL3_image",
+		"SDL3_ttf"
 	}
 
 	filter "system:windows"
@@ -104,4 +106,5 @@ project "ki-nevet-a-vegen"
 	{
 		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
 		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3_image.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3_ttf.dll\" \"%{cfg.buildtarget.directory}\"",
 	}

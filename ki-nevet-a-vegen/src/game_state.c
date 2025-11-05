@@ -4,6 +4,8 @@
 #include "infoc/core/input.h"
 #include "infoc/core/darray.h"
 
+#include "infoc/renderer/sdl_renderer.h"
+
 #include <string.h>
 
 typedef enum game_state_enum
@@ -101,13 +103,10 @@ const float text_height = 10.0f;
 
 void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 {
-	SDL_SetRenderScale(renderer, 2.0f, 2.0f);
-	SDL_SetRenderDrawColorFloat(renderer, 1.0f, 1.0f, 1.0f, 1.0f);
-
 	char player_to_go[26] = { 0 };
 	sprintf_s(player_to_go, sizeof(player_to_go), "Kovetkezo jatekos: %s", _get_player_name(game_state->player_to_go));
 
-	SDL_RenderDebugText(renderer, text_padding, text_padding, player_to_go);
+	sdl_renderer_draw_text(player_to_go, text_padding, text_padding);
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
@@ -115,10 +114,8 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 	{
 		char choose[32] = { 0 };
 		sprintf_s(choose, sizeof(choose), "Dobtal: %d. Valassz egy babut!", game_state->rolled);
-		SDL_RenderDebugText(renderer, text_padding, 2.0f * text_padding + text_height, choose);
+		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height));
 	}
-
-	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 }
 
 void _game_state_normal(game_state_t* game_state)

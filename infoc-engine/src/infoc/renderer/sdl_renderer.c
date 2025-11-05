@@ -7,6 +7,7 @@
 #include "shader.h"
 
 #include <SDL3/SDL_render.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include <string.h>
 
@@ -16,6 +17,10 @@ typedef struct sdl_renderer_t
 {
 	SDL_Renderer* renderer;
 	SDL_Surface* surface;
+
+	TTF_TextEngine* text_engine;
+	TTF_Font* default_font;
+
 	texture_t texture;
 	shader_t shader;
 } sdl_renderer_t;
@@ -34,6 +39,14 @@ bool sdl_renderer_init(const context_t* context)
 	check_error(!s_sdl_renderer->renderer, "Failed to create SDL renderer!");
 	check_error(!texture_create_format(1280, 720, GL_RGBA8, &s_sdl_renderer->texture), "Failed to create OpenGL texture!");
 	check_error(!shader_create("assets/shaders/sdl_shader.vert", "assets/shaders/sdl_shader.frag", &s_sdl_renderer->shader), "Failed to create SDL shader!");
+
+	check_error(!TTF_Init(), "Failed to initialise SDL_ttf!");
+
+	s_sdl_renderer->text_engine = TTF_CreateSurfaceTextEngine();
+	check_error(!s_sdl_renderer->text_engine, "Failed to create SDL text engine!");
+
+	s_sdl_renderer->default_font = TTF_OpenFont("assets/fonts/Roboto.ttf", 24.0f);
+	check_error(!s_sdl_renderer->default_font, "Failed to open default font!\n%s", SDL_GetError());
 
 	return true;
 }
@@ -82,4 +95,18 @@ void sdl_renderer_on_window_resize(uint32_t width, uint32_t height)
 SDL_Renderer* sdl_renderer_get_handle()
 {
 	return s_sdl_renderer->renderer;
+}
+
+void sdl_renderer_draw_text(const char* text, float x, float y)
+{
+	SDL_Color white = { 255, 255, 255 };
+	SDL_Surface* text_surface = TTF_RenderText_Solid(s_sdl_renderer->default_font, text, 0, white);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(s_sdl_renderer->renderer, text_surface);
+	
+	SDL_FRect src = { 0.0f, 0.0f, (float)text_surface->w, (float)text_surface->h };
+	SDL_FRect dst = { x, y, (float)text_surface->w, (float)text_surface->h };
+	SDL_RenderTexture(s_sdl_renderer->renderer, texture, &src, &dst);
+
+	SDL_DestroyTexture(texture);
+	SDL_DestroySurface(text_surface);
 }
