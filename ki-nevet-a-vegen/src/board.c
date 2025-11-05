@@ -22,7 +22,7 @@ bool board_create(scene_t* scene, board_t* out_board)
 	out_board->game_object = scene_new_object(scene);
 	game_object_t* board_object = scene_get_object(scene, out_board->game_object);
 	obj_loader_load_model("assets/models/board_placeholder.obj", &board_object->model.mesh);
-	texture_create("assets/images/board.bmp", &board_object->model.model_texture);
+	texture_create("assets/images/board.png", &board_object->model.model_texture);
 
 	for (uint32_t i = 0; i < 4; i++)
 	{

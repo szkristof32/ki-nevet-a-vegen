@@ -19,6 +19,9 @@ workspace "ki-nevet-a-vegen"
 	filter "action:gmake"
 		buildoptions { "-Wall", "-Werror" }
 
+	filter "action:vs*"
+		linkoptions { "/ignore:4006" }
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "infoc-engine"
@@ -51,7 +54,8 @@ project "infoc-engine"
 
 	links
 	{
-		"SDL3"
+		"SDL3",
+		"SDL3_image",
 	}
 
 	filter "system:windows"
@@ -89,7 +93,8 @@ project "ki-nevet-a-vegen"
 	links
 	{
 		"infoc-engine",
-		"SDL3"
+		"SDL3",
+		"SDL3_image",
 	}
 
 	filter "system:windows"
@@ -97,5 +102,6 @@ project "ki-nevet-a-vegen"
 
 	postbuildcommands
 	{
-		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\""
+		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3_image.dll\" \"%{cfg.buildtarget.directory}\"",
 	}
