@@ -52,10 +52,10 @@ mat4 mat4_rotate_x(mat4 matrix, float angle_rad)
 	float s = sinf(angle_rad);
 
 	mat4 result = mat4_identity();
-	result.rows[1].y = c;
-	result.rows[1].z = s;
-	result.rows[2].y = -s;
-	result.rows[2].z = c;
+	result.values[1][1] = c;
+	result.values[1][2] = s;
+	result.values[2][1] = -s;
+	result.values[2][2] = c;
 
 	return mat4_mul_rot(matrix, result);
 }
@@ -66,10 +66,10 @@ mat4 mat4_rotate_y(mat4 matrix, float angle_rad)
 	float s = sinf(angle_rad);
 
 	mat4 result = mat4_identity();
-	result.rows[0].x = c;
-	result.rows[0].z = -s;
-	result.rows[2].x = s;
-	result.rows[2].z = c;
+	result.values[0][0] = c;
+	result.values[0][2] = -s;
+	result.values[2][0] = s;
+	result.values[2][2] = c;
 
 	return mat4_mul_rot(matrix, result);
 }
@@ -80,29 +80,29 @@ mat4 mat4_rotate_z(mat4 matrix, float angle_rad)
 	float s = sinf(angle_rad);
 
 	mat4 result = mat4_identity();
-	result.rows[0].x = c;
-	result.rows[0].y = s;
-	result.rows[1].x = -s;
-	result.rows[1].y = c;
+	result.values[0][0] = c;
+	result.values[0][1] = s;
+	result.values[1][0] = -s;
+	result.values[1][1] = c;
 
 	return mat4_mul_rot(matrix, result);
 }
 
 mat4 mat4_scale_vec3(mat4 matrix, vec3 scalar)
 {
-	matrix.rows[0].x *= scalar.x;
-	matrix.rows[1].y *= scalar.y;
-	matrix.rows[2].z *= scalar.z;
+	matrix.values[0][0] *= scalar.x;
+	matrix.values[1][1] *= scalar.y;
+	matrix.values[2][2] *= scalar.z;
 
 	return matrix;
 }
 
 mat4 mat4_scale_vec4(mat4 matrix, vec4 scalar)
 {
-	matrix.rows[0].x *= scalar.x;
-	matrix.rows[1].y *= scalar.y;
-	matrix.rows[2].z *= scalar.z;
-	matrix.rows[3].w *= scalar.w;
+	matrix.values[0][0] *= scalar.x;
+	matrix.values[1][1] *= scalar.y;
+	matrix.values[2][2] *= scalar.z;
+	matrix.values[3][3] *= scalar.w;
 
 	return matrix;
 }
@@ -113,11 +113,11 @@ mat4 mat4_perspective(float fov, float aspect_ratio, float near_plane, float far
 	float fn = 1.0f / (near_plane - far_plane);
 
 	mat4 result = { 0 };
-	result.rows[0].x = f / aspect_ratio;
-	result.rows[1].y = f;
-	result.rows[2].z = (near_plane + far_plane) * fn;
-	result.rows[2].w = -1.0f;
-	result.rows[3].z = 2.0f * near_plane * far_plane * fn;
+	result.values[0][0] = f / aspect_ratio;
+	result.values[1][1] = f;
+	result.values[2][2] = (near_plane + far_plane) * fn;
+	result.values[2][3] = -1.0f;
+	result.values[3][2] = 2.0f * near_plane * far_plane * fn;
 
 	return result;
 }
@@ -129,20 +129,20 @@ mat4 mat4_look_at(vec3 eye, vec3 center, vec3 up)
 	vec3 u = vec3_cross(s, f);
 
 	mat4 result = mat4_identity();
-	result.rows[0].x = s.x;
-	result.rows[0].y = u.x;
-	result.rows[0].z = -f.x;
-	result.rows[1].x = s.y;
-	result.rows[1].y = u.y;
-	result.rows[1].z = -f.y;
-	result.rows[2].x = s.z;
-	result.rows[2].y = u.z;
-	result.rows[2].z = -f.z;
-	result.rows[3].x = -vec3_dot(s, eye);
-	result.rows[3].y = -vec3_dot(u, eye);
-	result.rows[3].z = vec3_dot(f, eye);
-	result.rows[0].w = result.rows[1].w = result.rows[2].w = 0.0f;
-	result.rows[3].w = 1.0f;
+	result.values[0][0] = s.x;
+	result.values[0][1] = u.x;
+	result.values[0][2] = -f.x;
+	result.values[1][0] = s.y;
+	result.values[1][1] = u.y;
+	result.values[1][2] = -f.y;
+	result.values[2][0] = s.z;
+	result.values[2][1] = u.z;
+	result.values[2][2] = -f.z;
+	result.values[3][0] = -vec3_dot(s, eye);
+	result.values[3][1] = -vec3_dot(u, eye);
+	result.values[3][2] = vec3_dot(f, eye);
+	result.values[0][3] = result.rows[1].w = result.rows[2].w = 0.0f;
+	result.values[3][3] = 1.0f;
 
 	return result;
 }

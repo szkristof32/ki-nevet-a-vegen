@@ -4,12 +4,22 @@
 
 typedef struct mat3
 {
-	vec3 rows[3];
+	union
+	{
+		vec3 rows[3];
+		float values[3][3];
+		struct
+		{
+			float a, b, c;
+			float d, e, f;
+			float g, h, i;
+		};
+	};
 } mat3;
 
 mat3 mat3_identity();
 
-mat3 mat3_mul(mat3 a, mat3 b);
+mat3 mat3_mul(mat3 mat1, mat3 mat2);
 
 mat3 mat3_transpose(mat3 matrix);
 

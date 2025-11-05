@@ -4,44 +4,40 @@
 
 vec2 vec2_create(float x, float y)
 {
-	vec2 vector = { x, y };
+	vec2 vector = { 0 };
+	vector.x = x;
+	vector.y = y;
 	return vector;
 }
 
 vec2 vec2_scalar(float scalar)
 {
-	vec2 vector = { scalar, scalar };
-	return vector;
+	return vec2_create(scalar, scalar);
 }
 
 vec2 vec2_vec2(vec2 other)
 {
-	vec2 vector = { other.x, other.y };
-	return vector;
+	return vec2_create(other.x, other.y);
 }
 
 vec2 vec2_add(vec2 a, vec2 b)
 {
-	vec2 result = { a.x + b.x, a.y + b.y };
-	return result;
+	return vec2_create(a.x + b.x, a.y + b.y);
 }
 
 vec2 vec2_sub(vec2 a, vec2 b)
 {
-	vec2 result = { a.x - b.x, a.y - b.y };
-	return result;
+	return vec2_create(a.x - b.x, a.y - b.y);
 }
 
 vec2 vec2_scale(vec2 a, float scalar)
 {
-	vec2 result = { a.x * scalar, a.y * scalar };
-	return result;
+	return vec2_create(a.x * scalar, a.y * scalar);
 }
 
 vec2 vec2_mul(vec2 a, vec2 b)
 {
-	vec2 result = { a.x * b.x, a.y * b.y };
-	return result;
+	return vec2_create(a.x * b.x, a.y * b.y);
 }
 
 float vec2_dot(vec2 a, vec2 b)
@@ -67,8 +63,7 @@ float vec2_length(vec2 vector)
 vec2 vec2_normalise(vec2 vector)
 {
 	float length = vec2_length(vector);
-	vec2 result = { vector.x / length, vector.y / length };
-	return result;
+	return vec2_scale(vector, 1.0f / length);
 }
 
 bool vec2_eq(vec2 a, vec2 b)

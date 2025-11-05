@@ -3,24 +3,27 @@
 mat3 mat3_identity()
 {
 	mat3 result = { 0 };
-	result.rows[0].x = 1.0f;
-	result.rows[1].y = 1.0f;
-	result.rows[2].z = 1.0f;
+	result.values[0][0] = 1.0f;
+	result.values[1][1] = 1.0f;
+	result.values[2][2] = 1.0f;
 	return result;
 }
 
-mat3 mat3_mul(mat3 a, mat3 b)
+mat3 mat3_mul(mat3 mat1, mat3 mat2)
 {
+	float a = mat1.a, b = mat1.b, c = mat1.c, d = mat1.d, e = mat1.e, f = mat1.f, g = mat1.g, h = mat1.h, i = mat1.i;
+	float j = mat1.a, k = mat1.b, l = mat1.c, m = mat1.d, n = mat1.e, o = mat1.f, p = mat1.g, q = mat1.h, r = mat1.i;
+
 	mat3 result = { 0 };
-	result.rows[0].x = a.rows[0].x * b.rows[0].x + a.rows[1].x * b.rows[0].y + a.rows[2].x * b.rows[0].z;
-	result.rows[0].y = a.rows[0].y * b.rows[0].x + a.rows[1].y * b.rows[0].y + a.rows[2].y * b.rows[0].z;
-	result.rows[0].z = a.rows[0].z * b.rows[0].x + a.rows[1].z * b.rows[0].y + a.rows[2].z * b.rows[0].z;
-	result.rows[1].x = a.rows[0].x * b.rows[1].x + a.rows[1].x * b.rows[1].y + a.rows[2].x * b.rows[1].z;
-	result.rows[1].y = a.rows[0].y * b.rows[1].x + a.rows[1].y * b.rows[1].y + a.rows[2].y * b.rows[1].z;
-	result.rows[1].z = a.rows[0].z * b.rows[1].x + a.rows[1].z * b.rows[1].y + a.rows[2].z * b.rows[1].z;
-	result.rows[2].x = a.rows[0].x * b.rows[2].x + a.rows[1].x * b.rows[2].y + a.rows[2].x * b.rows[2].z;
-	result.rows[2].y = a.rows[0].y * b.rows[2].x + a.rows[1].y * b.rows[2].y + a.rows[2].y * b.rows[2].z;
-	result.rows[2].z = a.rows[0].z * b.rows[2].x + a.rows[1].z * b.rows[2].y + a.rows[2].z * b.rows[2].z;
+	result.a = a * j + b * m + c * p;
+	result.b = a * k + b * n + c * q;
+	result.c = a * l + b * o + c * r;
+	result.d = d * j + e * m + f * p;
+	result.e = d * k + e * n + f * q;
+	result.f = d * l + e * o + f * r;
+	result.g = g * j + h * m + i * p;
+	result.h = g * k + h * n + i * q;
+	result.i = g * l + h * o + i * r;
 
 	return result;
 }
@@ -28,15 +31,15 @@ mat3 mat3_mul(mat3 a, mat3 b)
 mat3 mat3_transpose(mat3 matrix)
 {
 	mat3 result = { 0 };
-	result.rows[0].x = matrix.rows[0].x;
-	result.rows[0].y = matrix.rows[1].x;
-	result.rows[0].z = matrix.rows[2].x;
-	result.rows[1].x = matrix.rows[0].y;
-	result.rows[1].y = matrix.rows[1].y;
-	result.rows[1].z = matrix.rows[2].y;
-	result.rows[2].x = matrix.rows[0].z;
-	result.rows[2].y = matrix.rows[1].z;
-	result.rows[2].z = matrix.rows[2].z;
+	result.values[0][0] = matrix.values[0][0];
+	result.values[0][1] = matrix.values[1][0];
+	result.values[0][2] = matrix.values[2][0];
+	result.values[1][0] = matrix.values[0][1];
+	result.values[1][1] = matrix.values[1][1];
+	result.values[1][2] = matrix.values[2][1];
+	result.values[2][0] = matrix.values[0][2];
+	result.values[2][1] = matrix.values[1][2];
+	result.values[2][2] = matrix.values[2][2];
 
 	return result;
 }
@@ -52,22 +55,22 @@ mat3 mat3_scale(mat3 matrix, float scale)
 
 mat3 mat3_invert(mat3 matrix)
 {
-	float c1 = matrix.rows[1].y * matrix.rows[2].z - matrix.rows[1].z * matrix.rows[2].y;
-	float c2 = matrix.rows[1].x * matrix.rows[2].z - matrix.rows[2].x * matrix.rows[1].z;
-	float c3 = matrix.rows[1].x * matrix.rows[2].y - matrix.rows[2].x * matrix.rows[1].y;
-	float idt = 1.0f / (matrix.rows[0].x * c1 - matrix.rows[0].y * c2 + matrix.rows[0].z * c3);
+	float c1 = matrix.e * matrix.i - matrix.f * matrix.h;
+	float c2 = matrix.d * matrix.i - matrix.g * matrix.f;
+	float c3 = matrix.d * matrix.h - matrix.g * matrix.e;
+	float idt = 1.0f / (matrix.a * c1 - matrix.b * c2 + matrix.c * c3);
 	float ndt = -idt;
 
 	mat3 result = { 0 };
-	result.rows[0].x = idt * c1;
-	result.rows[0].y = ndt * (matrix.rows[1].y * matrix.rows[2].z - matrix.rows[2].y * matrix.rows[0].z);
-	result.rows[0].z = idt * (matrix.rows[1].y * matrix.rows[1].z - matrix.rows[1].y * matrix.rows[0].z);
-	result.rows[1].x = ndt * c2;
-	result.rows[1].y = idt * (matrix.rows[0].x * matrix.rows[2].z - matrix.rows[2].x * matrix.rows[0].z);
-	result.rows[1].z = ndt * (matrix.rows[0].x * matrix.rows[1].z - matrix.rows[1].x * matrix.rows[0].z);
-	result.rows[2].x = idt * c3;
-	result.rows[2].y = ndt * (matrix.rows[0].x * matrix.rows[2].y - matrix.rows[2].x * matrix.rows[0].y);
-	result.rows[2].z = idt * (matrix.rows[0].x * matrix.rows[1].y - matrix.rows[1].x * matrix.rows[0].y);
+	result.a = idt * c1;
+	result.b = ndt * (matrix.e * matrix.i - matrix.h * matrix.c);
+	result.c = idt * (matrix.e * matrix.f - matrix.e * matrix.c);
+	result.d = ndt * c2;
+	result.e = idt * (matrix.a * matrix.i - matrix.g * matrix.c);
+	result.f = ndt * (matrix.a * matrix.f - matrix.d * matrix.c);
+	result.g = idt * c3;
+	result.h = ndt * (matrix.a * matrix.h - matrix.g * matrix.b);
+	result.i = idt * (matrix.a * matrix.e - matrix.d * matrix.b);
 
 	return result;
 }
