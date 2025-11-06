@@ -13,7 +13,7 @@ out VertexData
 	vec4 Highlight;
 } Output;
 
-layout (binding = 0) uniform Matrices
+layout (std140, binding = 0) uniform Matrices
 {
 	mat4 projection;
 	mat4 view;

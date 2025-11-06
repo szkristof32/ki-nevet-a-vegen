@@ -7,6 +7,7 @@
 #include "infoc/renderer/sdl_renderer.h"
 
 #include <string.h>
+#include <math.h>
 
 typedef enum game_state_enum
 {
@@ -196,6 +197,7 @@ vec3 _animation_get_position(float t, vec3 start, vec3 end)
 	const float bounce_height = 3.0f;
 
 	float distance = vec3_length(vec3_sub(end, start));
+	(void)distance;
 
 	float x = start.x + (end.x - start.x) * t;
 	float z = start.z + (end.z - start.z) * t;

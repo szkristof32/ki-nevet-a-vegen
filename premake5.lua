@@ -6,6 +6,8 @@ workspace "ki-nevet-a-vegen"
 
 	flags { "MultiProcessorCompile" }
 
+	defines "NOMINMAX"
+
 	filter "configurations:Debug"
 		defines "IC_DEBUG"
 		runtime "debug"
@@ -104,7 +106,7 @@ project "ki-nevet-a-vegen"
 
 	postbuildcommands
 	{
-		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
-		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3_image.dll\" \"%{cfg.buildtarget.directory}\"",
-		"{COPYFILE} \"%{wks.location}vendor/sdl/lib/x64/SDL3_ttf.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3_image.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3_ttf.dll\" \"%{cfg.buildtarget.directory}\"",
 	}

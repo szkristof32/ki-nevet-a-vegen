@@ -26,8 +26,9 @@ typedef uint8_t bool;
 
 #define countof(arr)	(sizeof(arr)/sizeof(arr[0]))
 
-#ifdef _MSC_VER
+#define min(a, b) ((a)<(b)?(a):(b))
+#define max(a, b) ((a)>(b)?(a):(b))
+
 #define _typeof(x) __typeof__(x)
-#else
-#define _typeof(x) typeof(x)
-#endif
+
+#undef bool
