@@ -33,7 +33,7 @@ bool engine_initialise()
 	bool success = arena_allocator_create(megabytes(10), &s_engine.allocator);
 	check_error(!success, "Failed to create arena allocator!");
 
-	success = window_create(1280, 720, u8"Ne nevessch korán!", &s_engine.window);
+	success = window_create(1280, 720, u8"Ludo", &s_engine.window);
 	check_error(!success, "Failed to create window!");
 
 	success = context_create(&s_engine.window, &s_engine.context);
