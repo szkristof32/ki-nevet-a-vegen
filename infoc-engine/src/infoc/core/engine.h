@@ -20,12 +20,16 @@ void engine_shutdown();
 */
 void engine_run();
 
+
+void engine_request_close();
 /*
 * Pushes a layer to the layer stack of the engine
 *
 * @param layer A pointer to the layer to be pushed onto the stack
 */
 void engine_attach_layer(layer_t* layer);
+void engine_detach_layer(layer_t* layer);
+
 /*
 * Window resize callback. Should only be called by the window handler
 *

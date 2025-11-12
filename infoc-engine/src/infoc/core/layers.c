@@ -18,3 +18,15 @@ void layer_stack_push_layer(layer_stack_t* layer_stack, layer_t* layer)
 {
 	darray_push(layer_stack->layers, *layer);
 }
+
+void layer_stack_pop_layer(layer_stack_t* layer_stack, layer_t* layer)
+{
+	for (uint32_t i = 0; i < darray_count(layer_stack->layers); i++)
+	{
+		if (layer_stack->layers[i].internal_state == layer->internal_state)
+		{
+			darray_erase(layer_stack->layers, i);
+			return;
+		}
+	}
+}

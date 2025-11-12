@@ -49,3 +49,4 @@ void layer_stack_destroy(layer_stack_t* layer_stack);
 * @param layer A pointer to a `layer_t` struct to be pushed to the stack
 */
 void layer_stack_push_layer(layer_stack_t* layer_stack, layer_t* layer);
+void layer_stack_pop_layer(layer_stack_t* layer_stack, layer_t* layer);

@@ -44,6 +44,7 @@ void sdl_renderer_on_window_resize(uint32_t width, uint32_t height);
 * @returns The SDL_Renderer handle
 */
 SDL_Renderer* sdl_renderer_get_handle();
+SDL_Surface* sdl_renderer_get_surface();
 
 /*
 * Helper method to draw text to the screen
@@ -51,4 +52,5 @@ SDL_Renderer* sdl_renderer_get_handle();
 * @param text The text to be rendered
 * @param x, y The coordinates of the text
 */
-void sdl_renderer_draw_text(const char* text, float x, float y);
+void sdl_renderer_draw_text(const char* text, float x, float y, bool big_text);
+void sdl_renderer_get_text_size(const char* text, float* width, float* height, bool big_text);

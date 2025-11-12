@@ -30,6 +30,7 @@ void darray_destroy(void* array);
 * Private function. Use `darray_push` instead!
 */
 void* _darray_push(void* array, const void* value_ptr);
+void* _darray_erase(void* array, size_t index);
 /*
 * Private function. Only for internal use.
 */
@@ -71,3 +72,5 @@ size_t darray_count(void* array);
 * @warning The method can change the location of `array` in the memory
 */
 #define darray_push(array, value) { _typeof(value) temp = value; array = _darray_push(array, &temp); }
+#define darray_erase(array, index) { array = _darray_erase(array, index); }
+

@@ -24,6 +24,7 @@ typedef struct engine_t
 	texture_t default_texture;
 
 	bool running;
+	bool close_request;
 } engine_t;
 
 static engine_t s_engine;
@@ -82,6 +83,8 @@ void engine_shutdown()
 
 void engine_run()
 {
+	engine_on_window_resize(s_engine.window.width, s_engine.window.height);
+
 	uint64_t last_frame_time = SDL_GetTicks();
 
 	while (s_engine.running)
@@ -119,7 +122,7 @@ void engine_run()
 
 		context_swap(&s_engine.context);
 
-		s_engine.running = !window_should_close(&s_engine.window);
+		s_engine.running = !window_should_close(&s_engine.window) && !s_engine.close_request;
 	}
 }
 
@@ -129,6 +132,14 @@ void engine_attach_layer(layer_t* layer)
 
 	if (layer->on_attach)
 		layer->on_attach();
+}
+
+void engine_detach_layer(layer_t* layer)
+{
+	layer_stack_pop_layer(&s_engine.layer_stack, layer);
+
+	if (layer->on_detach)
+		layer->on_detach();
 }
 
 void engine_on_window_resize(uint32_t width, uint32_t height)
@@ -142,6 +153,11 @@ void engine_on_window_resize(uint32_t width, uint32_t height)
 		if (layer->on_window_resize)
 			layer->on_window_resize(width, height);
 	}
+}
+
+void engine_request_close()
+{
+	s_engine.close_request = true;
 }
 
 arena_allocator_t* engine_get_allocator()

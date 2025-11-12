@@ -115,7 +115,7 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 	char player_to_go[22] = { 0 };
 	sprintf_s(player_to_go, sizeof(player_to_go), "Next player: %s", _get_player_name(game_state->player_to_go));
 
-	sdl_renderer_draw_text(player_to_go, text_padding, text_padding);
+	sdl_renderer_draw_text(player_to_go, text_padding, text_padding, false);
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
@@ -123,14 +123,14 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 	{
 		char choose[35] = { 0 };
 		sprintf_s(choose, sizeof(choose), "You rolled: %d. Choose a piece!", game_state->rolled);
-		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height));
+		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height), false);
 	}
 
 	if (internal_state->state == game_state_game_over)
 	{
 		char winner[17] = { 0 };
 		sprintf_s(winner, sizeof(winner), "Winner: %s", _get_player_name(game_state->winner));
-		sdl_renderer_draw_text(winner, 100, 100);
+		sdl_renderer_draw_text(winner, 100, 100, false);
 	}
 }
 

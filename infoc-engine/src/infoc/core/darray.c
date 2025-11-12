@@ -49,6 +49,29 @@ void* _darray_push(void* array, const void* value_ptr)
 	return array;
 }
 
+void* _darray_erase(void* array, size_t index)
+{
+	size_t header_size = sizeof(darray_t);
+	darray_t* header = (darray_t*)((uint8_t*)array - header_size);
+
+	size_t count = header->count;
+	size_t element_size = header->element_size;
+
+	if (index >= count)
+	{
+		log_error("Index is outside the array!");
+		return array;
+	}
+
+	if (index != count - 1)
+	{
+		memcpy((uint8_t*)array + (index * element_size), (uint8_t*)array + ((index + 1) * element_size), element_size * (count - index - 1));
+	}
+
+	header->count = count - 1;
+	return array;
+}
+
 void* _darray_resize(void* array, size_t new_count)
 {
 	size_t header_size = sizeof(darray_t);
