@@ -36,5 +36,7 @@ game_object_index_t scene_new_object(scene_t* scene)
 
 game_object_t* scene_get_object(scene_t* scene, game_object_index_t index)
 {
-	return &scene->game_objects[index];
+	if (darray_count(scene->game_objects) > index)
+		return &scene->game_objects[index];
+	return NULL;
 }

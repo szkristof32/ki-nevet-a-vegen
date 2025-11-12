@@ -98,10 +98,10 @@ static const char* _get_player_name(player_enum index)
 {
 	switch (index)
 	{
-		case player_red:	return "piros";
-		case player_green:	return "zold";
-		case player_blue:	return "kek";
-		case player_yellow:	return "sarga";
+		case player_red:	return "red";
+		case player_blue:	return "blue";
+		case player_green:	return "green";
+		case player_yellow:	return "yellow";
 	}
 
 	return "???";
@@ -112,8 +112,8 @@ const float text_height = 10.0f;
 
 void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 {
-	char player_to_go[26] = { 0 };
-	sprintf_s(player_to_go, sizeof(player_to_go), "Kovetkezo jatekos: %s", _get_player_name(game_state->player_to_go));
+	char player_to_go[22] = { 0 };
+	sprintf_s(player_to_go, sizeof(player_to_go), "Next player: %s", _get_player_name(game_state->player_to_go));
 
 	sdl_renderer_draw_text(player_to_go, text_padding, text_padding);
 
@@ -121,8 +121,8 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 
 	if (internal_state->state == game_state_move_picking)
 	{
-		char choose[32] = { 0 };
-		sprintf_s(choose, sizeof(choose), "Dobtal: %d. Valassz egy babut!", game_state->rolled);
+		char choose[35] = { 0 };
+		sprintf_s(choose, sizeof(choose), "You rolled: %d. Choose a piece!", game_state->rolled);
 		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height));
 	}
 
