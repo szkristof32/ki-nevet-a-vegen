@@ -140,8 +140,7 @@ void _game_state_normal(game_state_t* game_state)
 
 	if (input_is_mouse_button_clicked(mouse_button_right))
 	{
-		//game_state->rolled = dice_roll(&game_state->dice);
-		scanf_s("%ud", &game_state->rolled);
+		game_state->rolled = dice_roll(&game_state->dice);
 		internal_state->state = game_state_move_picking;
 	}
 }

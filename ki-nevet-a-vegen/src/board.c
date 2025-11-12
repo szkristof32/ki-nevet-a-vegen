@@ -133,7 +133,7 @@ vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_ind
 	if (start_position != -1)
 	{
 		if (!_is_position_in_house(start_position, player_index))
-			memset(&board->pieces[start_position], 0, sizeof(piece_t));
+			memset(&board->pieces[start_position % 40], 0, sizeof(piece_t));
 		else
 			memset(&board->pieces_in_house[player_index][house_position], 0, sizeof(piece_t));
 	}
