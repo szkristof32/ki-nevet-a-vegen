@@ -1,5 +1,7 @@
 #include "menu_layer.h"
 
+#include "game.h"
+
 #include "infoc/core/engine.h"
 #include "infoc/core/input.h"
 

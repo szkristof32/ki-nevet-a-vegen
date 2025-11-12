@@ -1,5 +1,7 @@
 #include "camera_controller.h"
 
+#include "game.h"
+
 #include "infoc/core/input.h"
 
 #include "infoc/math/utilities.h"
