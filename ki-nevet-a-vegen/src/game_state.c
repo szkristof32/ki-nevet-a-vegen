@@ -13,7 +13,8 @@ typedef enum game_state_enum
 {
 	game_state_normal,
 	game_state_move_picking,
-	game_state_moving
+	game_state_moving,
+	game_state_game_over
 } game_state_enum;
 
 typedef struct piece_animation_t
@@ -37,6 +38,7 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state)
 
 	out_game_state->dice.dice_count = 1;
 	out_game_state->dice.sides = 6;
+	out_game_state->winner = -1;
 
 	board_create(scene, &out_game_state->board);
 
@@ -58,6 +60,7 @@ void game_state_destroy(game_state_t* game_state)
 static void _game_state_normal(game_state_t* game_state);
 static void _game_state_move_picking(game_state_t* game_state);
 static void _game_state_moving(game_state_t* game_state);
+static void _game_state_game_over(game_state_t* game_state);
 
 void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta)
 {
@@ -81,6 +84,11 @@ void game_state_update(game_state_t* game_state, uint32_t hovered_object, float 
 		case game_state_moving:
 		{
 			_game_state_moving(game_state);
+			break;
+		}
+		case game_state_game_over:
+		{
+			_game_state_game_over(game_state);
 			break;
 		}
 	}
@@ -117,6 +125,13 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 		sprintf_s(choose, sizeof(choose), "Dobtal: %d. Valassz egy babut!", game_state->rolled);
 		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height));
 	}
+
+	if (internal_state->state == game_state_game_over)
+	{
+		char winner[17] = { 0 };
+		sprintf_s(winner, sizeof(winner), "Winner: %s", _get_player_name(game_state->winner));
+		sdl_renderer_draw_text(winner, 100, 100);
+	}
 }
 
 void _game_state_normal(game_state_t* game_state)
@@ -125,7 +140,8 @@ void _game_state_normal(game_state_t* game_state)
 
 	if (input_is_mouse_button_clicked(mouse_button_right))
 	{
-		game_state->rolled = dice_roll(&game_state->dice);
+		//game_state->rolled = dice_roll(&game_state->dice);
+		scanf_s("%ud", &game_state->rolled);
 		internal_state->state = game_state_move_picking;
 	}
 }
@@ -138,8 +154,9 @@ void _game_state_move_picking(game_state_t* game_state)
 
 	if (game_state->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
 	{
-		if (game_state->hovered_object - 1 >= game_state->player_to_go * 4 &&
-			game_state->hovered_object - 1 < (game_state->player_to_go + 1) * 4)
+		if (game_state->hovered_object - 1 >= (uint32_t)game_state->player_to_go * 4 &&
+			game_state->hovered_object - 1 < ((uint32_t)game_state->player_to_go + 1) * 4 &&
+			!board_is_piece_in_house(&game_state->board, game_state->hovered_object))
 		{
 			vec3* positions = board_make_move(&game_state->board, game_state->hovered_object, game_state->player_to_go, game_state->rolled);
 			game_state->rolled = 0;
@@ -152,12 +169,35 @@ void _game_state_move_picking(game_state_t* game_state)
 			animation->positions = positions;
 			animation->get_position = _animation_get_position;
 
+			player_enum winner = -1;
+			for (uint32_t i = 0; i < 4; i++)
+			{
+				uint32_t pieces_in_house = 0;
+
+				for (uint32_t j = 0; j < 4; j++)
+				{
+					if (game_state->board.pieces_in_house[i][j].object_index != 0)
+						pieces_in_house++;
+					else
+						break;
+				}
+
+				if (pieces_in_house == 4)
+				{
+					winner = (player_enum)i;
+					break;
+				}
+			}
+
+			if (winner != -1)
+				game_state->winner = winner;
+
 			internal_state->state = game_state_moving;
 		}
 	}
 }
 
-const float animation_duration = 0.7f;
+const float animation_duration = 0.2f;
 const float wait_time = 0.4f;
 
 void _game_state_moving(game_state_t* game_state)
@@ -179,7 +219,11 @@ void _game_state_moving(game_state_t* game_state)
 		{
 			darray_destroy(animation->positions);
 			memset(animation, 0, sizeof(piece_animation_t));
-			internal_state->state = game_state_normal;
+
+			if (game_state->winner == -1)
+				internal_state->state = game_state_normal;
+			else
+				internal_state->state = game_state_game_over;
 		}
 		else
 		{
@@ -187,6 +231,10 @@ void _game_state_moving(game_state_t* game_state)
 			animation->position_index++;
 		}
 	}
+}
+
+void _game_state_game_over(game_state_t* game_state)
+{
 }
 
 vec3 _animation_get_position(float t, vec3 start, vec3 end)

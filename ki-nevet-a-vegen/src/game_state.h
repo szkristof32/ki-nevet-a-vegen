@@ -22,6 +22,7 @@ typedef struct game_state_t
 	board_t board;
 	uint32_t hovered_object;
 	float delta;
+	player_enum winner;
 
 	void* internal_state;
 } game_state_t;

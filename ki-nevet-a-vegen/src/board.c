@@ -12,7 +12,8 @@ static const float game_scale = 0.125f;
 static const float board_size = 18.0f;
 static const float step_size = 2.0f;
 
-vec3 _board_get_field_position(uint32_t index);
+static vec3 _board_get_field_position(uint32_t index);
+static vec3 _board_get_house_position(uint32_t player_index, uint32_t house_index);
 
 bool board_create(scene_t* scene, board_t* out_board)
 {
@@ -65,9 +66,102 @@ void board_destroy(board_t* board)
 	memset(board, 0, sizeof(board_t));
 }
 
-static bool _board_step(board_t* board, uint32_t object_index, uint32_t destination);
+static bool _board_step(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t destination);
+static bool _is_position_in_house(uint32_t destination, uint32_t player_index);
 
 vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
+{
+	uint32_t position = -1;
+	for (uint32_t i = 0; i < 40; i++)
+	{
+		if (board->pieces[i].object_index == object_index)
+		{
+			position = board->pieces[i].position;
+			break;
+		}
+	}
+
+	uint32_t start_position = position;
+	uint32_t player_start = player_index * 10;
+	bool in_house = false;
+
+	if (position == -1)
+	{
+		position = player_start - 1;
+	}
+
+	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
+	vec3* fields = darray_create(vec3);
+	darray_push(fields, object->transform.position);
+
+	int32_t step_direction = 1;
+
+	while (move != 0)
+	{
+		bool in_house_next_step = _is_position_in_house(position + step_direction, player_index);
+		uint32_t house_position = in_house ? position % 40 - player_start : -1;
+
+		int32_t step_size = step_direction;
+		while (!_board_step(board, object_index, player_index, position + step_size) ||
+			(in_house_next_step && house_position + step_size >= 4) || step_size == 0)
+		{
+			if (in_house && house_position + step_size >= 4)
+				step_direction = -1;
+			step_size += step_direction;
+
+			in_house_next_step = _is_position_in_house(position + step_size, player_index);
+		}
+		position += step_size;
+		house_position = in_house_next_step ? position % 40 - player_start : -1;
+
+		if (in_house_next_step)
+		{
+			darray_push(fields, vec3_mul(_board_get_house_position(player_index, house_position), vec3_inv(object->transform.scale)));
+			in_house = true;
+		}
+		else
+		{
+			darray_push(fields, vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale)));
+			in_house = false;
+		}
+
+		move--;
+	}
+
+	uint32_t house_position = in_house ? position % 40 - player_start : -1;
+
+	if (start_position != -1)
+	{
+		if (!_is_position_in_house(start_position, player_index))
+			memset(&board->pieces[start_position], 0, sizeof(piece_t));
+		else
+			memset(&board->pieces_in_house[player_index][house_position], 0, sizeof(piece_t));
+	}
+
+	piece_t* piece = NULL;
+	if (!in_house)
+	{
+		piece = &board->pieces[position % 40];
+	}
+	else
+	{
+		piece = &board->pieces_in_house[player_index][house_position];
+	}
+	piece->player_index = player_index;
+	piece->object_index = object_index;
+	piece->position = position;
+
+	return fields;
+}
+
+bool _is_position_in_house(uint32_t destination, uint32_t player_index)
+{
+	uint32_t player_start = player_index * 10;
+
+	return destination >= player_start + 40;
+}
+
+bool board_is_piece_in_house(board_t* board, uint32_t object_index)
 {
 	uint32_t position = -1;
 	for (uint32_t i = 0; i < 40; i++)
@@ -79,45 +173,37 @@ vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_ind
 		}
 	}
 
-	uint32_t start_position = position % 40;
+	if (position != -1)
+		return false;
 
-	if (position == -1)
+	position = -1;
+	for (uint32_t i = 0; i < 4; i++)
 	{
-		uint32_t player_start = player_index * 10;
-		position = player_start - 1;
-		start_position = -1;
+		for (uint32_t j = 0; j < 4; j++)
+		{
+			if (board->pieces_in_house[i][j].object_index == object_index)
+			{
+				position = i;
+				return true;
+			}
+		}
 	}
 
-	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
-	vec3* fields = darray_create(vec3);
-	darray_push(fields, object->transform.position);
-
-	while (move != 0)
-	{
-		uint32_t step_size = 1;
-		while (!_board_step(board, object_index, position + step_size))
-			step_size++;
-		position += step_size;
-		darray_push(fields, vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale)));
-		move--;
-	}
-
-	position %= 40;
-
-	if (start_position != -1)
-		memset(&board->pieces[start_position], 0, sizeof(piece_t));
-
-	piece_t* piece = &board->pieces[position];
-	piece->player_index = player_index;
-	piece->object_index = object_index;
-	piece->position = position;
-
-	return fields;
+	return false;
 }
 
-bool _board_step(board_t* board, uint32_t object_index, uint32_t destination)
+bool _board_step(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t destination)
 {
-	return board->pieces[destination % 40].object_index == 0;
+	uint32_t player_start = player_index * 10;
+
+	if (!_is_position_in_house(destination, player_index))
+	{
+		uint32_t piece_object_index = board->pieces[destination % 40].object_index;
+		return piece_object_index == 0 || piece_object_index == object_index;
+	}
+
+	uint32_t piece_object_index = board->pieces_in_house[player_index][(destination % 40 - player_start) % 4].object_index;
+	return piece_object_index == 0 || piece_object_index == object_index;
 }
 
 vec3 _board_get_field_position(uint32_t index)
@@ -143,6 +229,7 @@ vec3 _board_get_field_position(uint32_t index)
 
 	float pos_x = (-board_size - step_size) * game_scale;
 	float pos_z = -step_size * 2.0f * game_scale;
+	index %= 40;
 
 	for (uint32_t i = 0; i < 12; i++)
 	{
@@ -160,6 +247,14 @@ vec3 _board_get_field_position(uint32_t index)
 			index--;
 		}
 	}
+
+	return vec3_create(pos_x, 0.0f, pos_z);
+}
+
+vec3 _board_get_house_position(uint32_t player_index, uint32_t house_index)
+{
+	float pos_x = (board_size - (2.0f * house_index + 1) * step_size) * game_scale * (-(player_index == 0) + (player_index == 2));
+	float pos_z = (board_size - (2.0f * house_index + 1) * step_size) * game_scale * (-(player_index == 1) + (player_index == 3));
 
 	return vec3_create(pos_x, 0.0f, pos_z);
 }
