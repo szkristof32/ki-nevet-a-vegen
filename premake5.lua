@@ -104,6 +104,9 @@ project "ki-nevet-a-vegen"
 	filter "system:windows"
 		systemversion "latest"
 
+	filter "configurations:Release"
+		kind "WindowedApp"
+
 	postbuildcommands
 	{
 		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
