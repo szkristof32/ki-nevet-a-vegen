@@ -114,6 +114,8 @@ void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 col
 	else
 		texture_bind(engine_get_default_texture(), 0);
 
+	uniform_buffer_bind(&s_static_renderer->object_uniform);
+
 	glDrawElements(GL_TRIANGLES, (uint32_t)mesh->index_count, GL_UNSIGNED_INT, NULL);
 }
 
