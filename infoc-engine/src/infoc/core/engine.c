@@ -165,6 +165,11 @@ arena_allocator_t* engine_get_allocator()
 	return &s_engine.allocator;
 }
 
+window_t* engine_get_window()
+{
+	return &s_engine.window;
+}
+
 struct texture_t* engine_get_default_texture()
 {
 	return &s_engine.default_texture;

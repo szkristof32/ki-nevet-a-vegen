@@ -2,6 +2,7 @@
 
 #include "defines.h"
 #include "arena_allocator.h"
+#include "window.h"
 #include "layers.h"
 
 /*
@@ -44,6 +45,7 @@ void engine_on_window_resize(uint32_t width, uint32_t height);
 * @returns A pointer to the arena allocator
 */
 arena_allocator_t* engine_get_allocator();
+window_t* engine_get_window();
 /*
 * Gets the default texture to be used in rendering
 *

@@ -2,6 +2,8 @@
 
 #include "infoc/core/defines.h"
 
+#include "infoc/math/vec4.h"
+
 #include "context.h"
 
 #include <SDL3/SDL_render.h>
@@ -54,3 +56,4 @@ SDL_Surface* sdl_renderer_get_surface();
 */
 void sdl_renderer_draw_text(const char* text, float x, float y, bool big_text);
 void sdl_renderer_get_text_size(const char* text, float* width, float* height, bool big_text);
+void sdl_renderer_draw_square(float x, float y, float width, float height, vec4 colour);

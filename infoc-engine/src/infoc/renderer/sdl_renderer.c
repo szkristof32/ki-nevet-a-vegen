@@ -132,3 +132,10 @@ void sdl_renderer_get_text_size(const char* text, float* width, float* height, b
 	*width = (float)text_width;
 	*height = (float)text_height;
 }
+
+void sdl_renderer_draw_square(float x, float y, float width, float height, vec4 colour)
+{
+	SDL_SetRenderDrawColorFloat(s_sdl_renderer->renderer, colour.r, colour.g, colour.b, colour.a);
+	SDL_FRect rect = { x, y, width, height };
+	SDL_RenderFillRect(s_sdl_renderer->renderer, &rect);
+}
