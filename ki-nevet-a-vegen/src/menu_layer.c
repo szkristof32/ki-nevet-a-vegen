@@ -8,6 +8,9 @@
 #include "infoc/renderer/sdl_renderer.h"
 #include "infoc/renderer/ui_renderer.h"
 
+#include "menu/menu_state.h"
+#include "menu/main_menu.h"
+
 static void menu_on_ui_render(SDL_Renderer* renderer);
 static void menu_on_window_resize(uint32_t width, uint32_t height);
 
@@ -15,6 +18,8 @@ typedef struct menu_layer_t
 {
 	layer_t* game_layer;
 	uint32_t window_width, window_height;
+
+	menu_state state;
 } menu_layer_t;
 
 static layer_t s_layer = { 0 };
@@ -30,11 +35,15 @@ layer_t menu_layer_create(layer_t* game_layer)
 
 	s_menu_layer = (menu_layer_t*)s_layer.internal_state;
 	s_menu_layer->game_layer = game_layer;
+	s_menu_layer->state = menu_state_main_menu;
 
 	return s_layer;
 }
 
 const float ui_padding = 15.0f;
+
+static void _menu_transition_to_game();
+static void _menu_exit();
 
 void menu_on_ui_render(SDL_Renderer* renderer)
 {
@@ -43,29 +52,23 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 
 	sdl_renderer_draw_square(0, 0, (float)s_menu_layer->window_width, (float)s_menu_layer->window_height, vec4_create(0.2f, 0.2f, 0.2f, 1.0f));
 
-	float y = 85.0f;
-
-	item_info title = ui_draw_text(u8"Mensch ärgere Dich nicht", item_placement_center, item_placement_beg, 0.0f, y, true);
-	y += title.size.y + 170.0f;
-
-	item_info new_game_button = ui_draw_button("New game", 250.0f, 50.0f,
-		item_placement_center, item_placement_beg, 0.0f, y,
-		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
-	y += new_game_button.size.y + ui_padding;
-	if (new_game_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	switch (s_menu_layer->state)
 	{
-		engine_detach_layer(&s_layer);
-		engine_attach_layer(s_menu_layer->game_layer);
+		case menu_state_main_menu:	s_menu_layer->state = draw_main_menu(s_menu_layer->window_width, s_menu_layer->window_height); break;
+		case menu_state_game:		_menu_transition_to_game(); break;
+		case menu_state_exit:		_menu_exit(); break;
 	}
+}
 
-	item_info exit_button = ui_draw_button("Exit", 250.0f, 50.0f,
-		item_placement_center, item_placement_beg, 0.0f, y,
-		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
-	y += exit_button.size.y + ui_padding;
-	if (exit_button.hovered && input_is_mouse_button_released(mouse_button_left))
-	{
-		engine_request_close();
-	}
+void _menu_transition_to_game()
+{
+	engine_detach_layer(&s_layer);
+	engine_attach_layer(s_menu_layer->game_layer);
+}
+
+void _menu_exit()
+{
+	engine_request_close();
 }
 
 void menu_on_window_resize(uint32_t width, uint32_t height)
