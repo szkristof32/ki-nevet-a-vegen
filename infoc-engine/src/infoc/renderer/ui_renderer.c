@@ -152,6 +152,39 @@ item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bo
 	return info;
 }
 
+item_info ui_draw_checkbox(bool* checked, float width, float height,
+	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+	vec4 colour_normal, vec4 colour_hovered)
+{
+	window_t* window = engine_get_window();
+
+	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
+	x = pos.x;
+	y = pos.y;
+
+	bool hovered = _ui_is_hovered(x, y, width, height);
+
+	sdl_renderer_draw_square(x, y, width, height, colour_normal);
+
+	float dot_size = (float)ceil(min(width, height) * 0.65f);
+	if (*checked)
+	{
+		sdl_renderer_draw_square(x + (width - dot_size) / 2.0f, y + (height - dot_size) / 2.0f,
+			dot_size, dot_size, vec4_sub(colour_normal, vec4_scalar(0.2f)));
+	}
+	if (hovered && input_is_mouse_button_clicked(mouse_button_left))
+	{
+		*checked = !(*checked);
+	}
+
+	item_info info = { 0 };
+	info.positon = vec2_create(x, y);
+	info.size = vec2_create(width, height);
+	info.hovered = hovered;
+
+	return info;
+}
+
 vec2 _ui_get_position(float width, float height, item_placement placement_horiz, item_placement placement_vert, float x, float y)
 {
 	window_t* window = engine_get_window();
