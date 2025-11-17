@@ -24,3 +24,6 @@ item_info ui_draw_button(const char* text, float width, float height,
 item_info ui_draw_text_field(char* buffer, float width, float height,
 	item_placement placement_horiz, item_placement placement_vert, float x, float y,
 	vec4 background_colour, bool cursor);
+item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bounds, float width, float height,
+	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+	vec4 colour_normal, vec4 colour_hovered);
