@@ -24,7 +24,7 @@ menu_state draw_main_menu(uint32_t window_width, uint32_t window_height)
 	y += new_game_button.size.y + ui_padding;
 	if (new_game_button.hovered && input_is_mouse_button_released(mouse_button_left))
 	{
-		new_state = menu_state_game;
+		new_state = menu_state_new_game_menu;
 	}
 
 	item_info exit_button = ui_draw_button("Exit", 250.0f, 50.0f,

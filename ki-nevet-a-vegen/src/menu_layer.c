@@ -10,7 +10,7 @@
 
 #include "menu/menu_state.h"
 #include "menu/main_menu.h"
-#include "game_layer.h"
+#include "menu/new_game_menu.h"
 
 static void menu_on_ui_render(SDL_Renderer* renderer);
 static void menu_on_window_resize(uint32_t width, uint32_t height);
@@ -55,18 +55,15 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 
 	switch (s_menu_layer->state)
 	{
-		case menu_state_main_menu:	s_menu_layer->state = draw_main_menu(s_menu_layer->window_width, s_menu_layer->window_height); break;
-		case menu_state_game:		_menu_transition_to_game(); break;
-		case menu_state_exit:		_menu_exit(); break;
+		case menu_state_main_menu:		s_menu_layer->state = draw_main_menu(s_menu_layer->window_width, s_menu_layer->window_height); break;
+		case menu_state_new_game_menu:	s_menu_layer->state = draw_new_game_menu(s_menu_layer->window_width, s_menu_layer->window_height); break;
+		case menu_state_game:			_menu_transition_to_game(); break;
+		case menu_state_exit:			_menu_exit(); break;
 	}
 }
 
 void _menu_transition_to_game()
 {
-	char* game_name = (char*)malloc(6 * sizeof(char));
-	sprintf_s(game_name, 6, "game0");
-	game_layer_set_game_name(game_name);
-
 	engine_detach_layer(&s_layer);
 	engine_attach_layer(s_menu_layer->game_layer);
 }

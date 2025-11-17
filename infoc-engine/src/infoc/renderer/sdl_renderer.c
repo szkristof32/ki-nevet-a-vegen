@@ -114,6 +114,8 @@ void sdl_renderer_draw_text(const char* text, float x, float y, bool big_text)
 {
 	SDL_Color white = { 255, 255, 255 };
 	SDL_Surface* text_surface = TTF_RenderText_Solid(!big_text ? s_sdl_renderer->default_font : s_sdl_renderer->big_font, text, 0, white);
+	if (text_surface == NULL)
+		return;
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(s_sdl_renderer->renderer, text_surface);
 	
 	SDL_FRect src = { 0.0f, 0.0f, (float)text_surface->w, (float)text_surface->h };

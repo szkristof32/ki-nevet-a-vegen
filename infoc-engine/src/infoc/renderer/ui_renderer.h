@@ -21,3 +21,6 @@ item_info ui_draw_text(const char* text, item_placement placement_horiz, item_pl
 item_info ui_draw_button(const char* text, float width, float height,
 	item_placement placement_horiz, item_placement placement_vert, float x, float y,
 	vec4 colour_normal, vec4 colour_hovered);
+item_info ui_draw_text_field(char* buffer, float width, float height,
+	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+	vec4 background_colour, bool cursor);
