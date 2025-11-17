@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 char* file_utils_read_file(const char* path)
 {
 	FILE* file = fopen(path, "rb");
@@ -30,4 +36,13 @@ char* file_utils_read_file(const char* path)
 	fclose(file);
 
 	return buffer;
+}
+
+void file_utils_create_directory(const char* path)
+{
+#ifdef _WIN32
+	CreateDirectoryA(path, NULL);
+#else
+	mkdir(path, 0700);
+#endif
 }

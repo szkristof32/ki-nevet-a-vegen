@@ -6,6 +6,8 @@
 
 #include "infoc/renderer/sdl_renderer.h"
 
+#include "infoc/utils/file_utils.h"
+
 #include <string.h>
 #include <math.h>
 
@@ -26,11 +28,21 @@ typedef struct piece_animation_t
 	uint32_t position_index;
 } piece_animation_t;
 
+typedef struct move_t
+{
+	player_enum player;
+	uint32_t move_count;
+	game_object_index_t object;
+} move_t;
+
 typedef struct game_state_internal_t
 {
 	game_state_enum state;
 	piece_animation_t animation;
+	move_t* moves; // darray
 } game_state_internal_t;
+
+static void _game_state_serialise_game_data(game_state_t* game_state);
 
 void game_state_create(scene_t* scene, game_state_t* out_game_state)
 {
@@ -44,15 +56,22 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state)
 
 	arena_allocator_t* allocator = engine_get_allocator();
 	out_game_state->internal_state = arena_allocator_allocate(allocator, sizeof(game_state_internal_t));
+	
+	game_state_internal_t* internal_state = (game_state_internal_t*)out_game_state->internal_state;
+	internal_state->moves = darray_create(move_t);
 }
 
 void game_state_destroy(game_state_t* game_state)
 {
+	_game_state_serialise_game_data(game_state);
+
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 	piece_animation_t* animation = &internal_state->animation;
 
 	if (animation && animation->positions)
 		darray_destroy(animation->positions);
+
+	darray_destroy(internal_state->moves);
 
 	board_destroy(&game_state->board);
 }
@@ -158,6 +177,13 @@ void _game_state_move_picking(game_state_t* game_state)
 			!board_is_piece_in_house(&game_state->board, game_state->hovered_object))
 		{
 			vec3* positions = board_make_move(&game_state->board, game_state->hovered_object, game_state->player_to_go, game_state->rolled);
+
+			move_t move = { 0 };
+			move.player = game_state->player_to_go;
+			move.move_count = game_state->rolled;
+			move.object = game_state->hovered_object;
+			darray_push(internal_state->moves, move);
+
 			game_state->rolled = 0;
 			game_state->player_to_go = (game_state->player_to_go + 1) % 4;
 
@@ -251,4 +277,33 @@ vec3 _animation_get_position(float t, vec3 start, vec3 end)
 	float y = -4 * bounce_height * (t * (t - 1.0f)) / (powf(-1.0f, 2.0f));
 
 	return vec3_create(x, y, z);
+}
+
+void _game_state_serialise_game_data(game_state_t* game_state)
+{
+	// TODO: hardcoded values
+	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
+
+	file_utils_create_directory("saves");
+	FILE* file = fopen("saves/save0.dat", "wb");
+	if (file == NULL)
+	{
+		char msg[64] = "";
+		sprintf_s(msg, sizeof(msg), "Failed to open file (%s)", "saves/save0.dat");
+		perror(msg);
+		return;
+	}
+
+	fprintf(file, "nev: %s\n", "jatek1");
+	fprintf(file, "kocka: %dd%d\n", game_state->dice.dice_count, game_state->dice.sides);
+	fprintf(file, "jatekosok: h,h,h,h\n");
+	fprintf(file, "---\n");
+
+	for (uint32_t i = 0; i < darray_count(internal_state->moves); i++)
+	{
+		move_t* move = &internal_state->moves[i];
+		fprintf(file, "%d: %d %d\n", move->player, move->move_count, move->object);
+	}
+
+	fclose(file);
 }

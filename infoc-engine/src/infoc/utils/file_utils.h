@@ -12,3 +12,5 @@
 * @warning The returned buffer should be freed by the caller
 */
 char* file_utils_read_file(const char* path);
+
+void file_utils_create_directory(const char* path);
