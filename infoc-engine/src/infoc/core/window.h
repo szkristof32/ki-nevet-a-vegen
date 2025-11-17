@@ -54,3 +54,6 @@ bool window_should_close(const window_t* window);
 * @returns The SDL handle of the window cast to `void*`
 */
 void* window_get_handle(const window_t* window);
+
+void window_start_text_input(const window_t* window);
+void window_stop_text_input(const window_t* window);

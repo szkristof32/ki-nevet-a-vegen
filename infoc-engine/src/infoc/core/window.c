@@ -97,6 +97,19 @@ void window_update(window_t* window)
 				input_scroll_listener((float)mouse_event.x, (float)mouse_event.y);
 				break;
 			}
+			case SDL_EVENT_KEY_DOWN:
+			case SDL_EVENT_KEY_UP:
+			{
+				SDL_KeyboardEvent keyboard_event = *(SDL_KeyboardEvent*)&event;
+				input_key_listener(keyboard_event.key, keyboard_event.type == SDL_EVENT_KEY_DOWN);
+				break;
+			}
+			case SDL_EVENT_TEXT_INPUT:
+			{
+				SDL_TextInputEvent text_input_event = *(SDL_TextInputEvent*)&event;
+				input_type_listener(text_input_event.text[0]);
+				break;
+			}
 		}
 	}
 }
@@ -111,4 +124,16 @@ void* window_get_handle(const window_t* window)
 {
 	window_internal_t* internal_state = window->internal_state;
 	return internal_state->window_handle;
+}
+
+void window_start_text_input(const window_t* window)
+{
+	window_internal_t* internal_state = window->internal_state;
+	SDL_StartTextInput(internal_state->window_handle);
+}
+
+void window_stop_text_input(const window_t* window)
+{
+	window_internal_t* internal_state = window->internal_state;
+	SDL_StopTextInput(internal_state->window_handle);
 }

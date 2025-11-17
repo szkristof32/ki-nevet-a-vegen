@@ -94,3 +94,12 @@ size_t darray_count(void* array)
 
 	return header->count;
 }
+
+void darray_clear(void* array)
+{
+	size_t header_size = sizeof(darray_t);
+	darray_t* header = (darray_t*)((uint8_t*)array - header_size);
+
+	header->count = 0;
+	memset(array, 0, header->capacity * header->element_size);
+}

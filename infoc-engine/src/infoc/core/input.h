@@ -41,7 +41,7 @@ void input_move_listener(float x, float y);
 * @param button The button code of the mouse button
 * @param pressed A boolean indicating whether the button is pressed or released
 */
-void input_click_listener(int button, bool pressed);
+void input_click_listener(uint32_t button, bool pressed);
 /*
 * Mouse scroll listener. Should only be called by the event handler
 *
@@ -105,3 +105,11 @@ float input_get_mouse_dy();
 * @returns The scroll amount
 */
 float input_get_mouse_scroll();
+
+bool input_is_key_down(uint32_t key);
+char* input_get_keys_typed();
+bool input_is_key_pressed(uint32_t key);
+bool input_is_key_released(uint32_t key);
+
+void input_key_listener(uint32_t key, bool pressed);
+void input_type_listener(char key);

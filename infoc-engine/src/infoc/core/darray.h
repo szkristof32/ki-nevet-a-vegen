@@ -74,3 +74,4 @@ size_t darray_count(void* array);
 #define darray_push(array, value) { _typeof(value) temp = value; array = _darray_push(array, &temp); }
 #define darray_erase(array, index) { array = _darray_erase(array, index); }
 
+void darray_clear(void* array);
