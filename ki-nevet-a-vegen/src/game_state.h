@@ -41,7 +41,7 @@ typedef struct game_state_t
 *
 * @warning Game state does not own the scene therefore it should be freed elsewhere
 */
-void game_state_create(scene_t* scene, game_state_t* out_game_state);
+void game_state_create(scene_t* scene, game_state_t* out_game_state, const char* game_name);
 /*
 * Destroys the game state
 *

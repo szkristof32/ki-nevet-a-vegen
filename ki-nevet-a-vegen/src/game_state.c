@@ -39,12 +39,13 @@ typedef struct game_state_internal_t
 {
 	game_state_enum state;
 	piece_animation_t animation;
+	const char* game_name;
 	move_t* moves; // darray
 } game_state_internal_t;
 
 static void _game_state_serialise_game_data(game_state_t* game_state);
 
-void game_state_create(scene_t* scene, game_state_t* out_game_state)
+void game_state_create(scene_t* scene, game_state_t* out_game_state, const char* game_name)
 {
 	memset(out_game_state, 0, sizeof(game_state_t));
 
@@ -56,8 +57,9 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state)
 
 	arena_allocator_t* allocator = engine_get_allocator();
 	out_game_state->internal_state = arena_allocator_allocate(allocator, sizeof(game_state_internal_t));
-	
+
 	game_state_internal_t* internal_state = (game_state_internal_t*)out_game_state->internal_state;
+	internal_state->game_name = game_name;
 	internal_state->moves = darray_create(move_t);
 }
 
@@ -281,20 +283,26 @@ vec3 _animation_get_position(float t, vec3 start, vec3 end)
 
 void _game_state_serialise_game_data(game_state_t* game_state)
 {
+	file_utils_create_directory("saves");
 	// TODO: hardcoded values
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	file_utils_create_directory("saves");
-	FILE* file = fopen("saves/save0.dat", "wb");
+	size_t length = strlen(internal_state->game_name) + 11;
+	char* save_path = (char*)malloc(length * sizeof(char));
+	sprintf_s(save_path, length, "saves/%s.dat", internal_state->game_name);
+
+	FILE* file = fopen(save_path, "wb");
 	if (file == NULL)
 	{
 		char msg[64] = "";
-		sprintf_s(msg, sizeof(msg), "Failed to open file (%s)", "saves/save0.dat");
+		sprintf_s(msg, sizeof(msg), "Failed to open file (%s)", save_path);
 		perror(msg);
+		free(save_path);
 		return;
 	}
+	free(save_path);
 
-	fprintf(file, "nev: %s\n", "jatek1");
+	fprintf(file, "nev: %s\n", internal_state->game_name);
 	fprintf(file, "kocka: %dd%d\n", game_state->dice.dice_count, game_state->dice.sides);
 	fprintf(file, "jatekosok: h,h,h,h\n");
 	fprintf(file, "---\n");

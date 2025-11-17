@@ -10,6 +10,7 @@
 
 #include "menu/menu_state.h"
 #include "menu/main_menu.h"
+#include "game_layer.h"
 
 static void menu_on_ui_render(SDL_Renderer* renderer);
 static void menu_on_window_resize(uint32_t width, uint32_t height);
@@ -62,6 +63,10 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 
 void _menu_transition_to_game()
 {
+	char* game_name = (char*)malloc(6 * sizeof(char));
+	sprintf_s(game_name, 6, "game0");
+	game_layer_set_game_name(game_name);
+
 	engine_detach_layer(&s_layer);
 	engine_attach_layer(s_menu_layer->game_layer);
 }
