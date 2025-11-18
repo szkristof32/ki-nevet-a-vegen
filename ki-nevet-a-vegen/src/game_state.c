@@ -5,6 +5,7 @@
 #include "infoc/core/darray.h"
 
 #include "infoc/renderer/sdl_renderer.h"
+#include "infoc/renderer/ui_renderer.h"
 
 #include "infoc/utils/file_utils.h"
 
@@ -37,6 +38,7 @@ typedef struct move_t
 
 typedef struct game_state_internal_t
 {
+	bool roll_button_hovered;
 	game_state_enum state;
 	piece_animation_t animation;
 	move_t* moves; // darray
@@ -128,6 +130,8 @@ static const char* _get_player_name(player_enum index)
 const float text_padding = 10.0f;
 const float text_height = 10.0f;
 
+extern float ui_padding;
+
 void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 {
 	char player_to_go[22] = { 0 };
@@ -150,13 +154,18 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 		sprintf_s(winner, sizeof(winner), "Winner: %s", _get_player_name(game_state->winner));
 		sdl_renderer_draw_text(winner, 100, 100, false);
 	}
+
+	item_info roll_button = ui_draw_button("Roll", 100.0f, 100.0f,
+		item_placement_end, item_placement_end, ui_padding, ui_padding,
+		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
+	internal_state->roll_button_hovered = roll_button.hovered;
 }
 
 void _game_state_normal(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	if (input_is_mouse_button_clicked(mouse_button_right))
+	if (internal_state->roll_button_hovered && input_is_mouse_button_released(mouse_button_left))
 	{
 		game_state->rolled = dice_roll(&game_state->configuration->dice);
 		internal_state->state = game_state_move_picking;
