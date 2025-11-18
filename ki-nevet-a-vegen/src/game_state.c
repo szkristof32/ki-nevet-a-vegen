@@ -38,6 +38,7 @@ typedef struct move_t
 
 typedef struct game_state_internal_t
 {
+	float time;
 	bool roll_button_hovered;
 	game_state_enum state;
 	piece_animation_t animation;
@@ -88,30 +89,19 @@ void game_state_update(game_state_t* game_state, uint32_t hovered_object, float 
 	game_state->delta = delta;
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
+	internal_state->time += delta;
 
-	switch (internal_state->state)
+	game_state_enum state = internal_state->state;
+	switch (state)
 	{
-		case game_state_normal:
-		{
-			_game_state_normal(game_state);
-			break;
-		}
-		case game_state_move_picking:
-		{
-			_game_state_move_picking(game_state);
-			break;
-		}
-		case game_state_moving:
-		{
-			_game_state_moving(game_state);
-			break;
-		}
-		case game_state_game_over:
-		{
-			_game_state_game_over(game_state);
-			break;
-		}
+		case game_state_normal: _game_state_normal(game_state); break;
+		case game_state_move_picking: _game_state_move_picking(game_state); break;
+		case game_state_moving: _game_state_moving(game_state); break;
+		case game_state_game_over: _game_state_game_over(game_state); break;
 	}
+
+	if (state != internal_state->state)
+		internal_state->time = 0;
 }
 
 static const char* _get_player_name(player_enum index)
@@ -165,10 +155,23 @@ void _game_state_normal(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	if (internal_state->roll_button_hovered && input_is_mouse_button_released(mouse_button_left))
+	player_type current_player_type = game_state->configuration->players[game_state->player_to_go];
+
+	if (current_player_type == player_human)
 	{
-		game_state->rolled = dice_roll(&game_state->configuration->dice);
-		internal_state->state = game_state_move_picking;
+		if (internal_state->roll_button_hovered && input_is_mouse_button_released(mouse_button_left))
+		{
+			game_state->rolled = dice_roll(&game_state->configuration->dice);
+			internal_state->state = game_state_move_picking;
+		}
+	}
+	else
+	{
+		if (internal_state->time >= 1.0f)
+		{
+			game_state->rolled = dice_roll(&game_state->configuration->dice);
+			internal_state->state = game_state_move_picking;
+		}
 	}
 }
 
@@ -178,56 +181,75 @@ void _game_state_move_picking(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	if (game_state->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
+	player_type current_player_type = game_state->configuration->players[game_state->player_to_go];
+
+	uint32_t picked_piece = -1;
+
+	if (current_player_type == player_human)
 	{
-		if (game_state->hovered_object - 1 >= (uint32_t)game_state->player_to_go * 4 &&
-			game_state->hovered_object - 1 < ((uint32_t)game_state->player_to_go + 1) * 4 &&
-			!board_is_piece_in_house(&game_state->board, game_state->hovered_object))
+		if (game_state->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
 		{
-			vec3* positions = board_make_move(&game_state->board, game_state->hovered_object, game_state->player_to_go, game_state->rolled);
-
-			move_t move = { 0 };
-			move.player = game_state->player_to_go;
-			move.move_count = game_state->rolled;
-			move.object = game_state->hovered_object;
-			darray_push(internal_state->moves, move);
-
-			game_state->rolled = 0;
-			game_state->player_to_go = (game_state->player_to_go + 1) % 4;
-
-			game_object_index_t object_index = game_state->board.piece_objects[game_state->hovered_object - 1];
-
-			piece_animation_t* animation = &internal_state->animation;
-			animation->object = object_index;
-			animation->positions = positions;
-			animation->get_position = _animation_get_position;
-
-			player_enum winner = -1;
-			for (uint32_t i = 0; i < 4; i++)
+			if (game_state->hovered_object - 1 >= (uint32_t)game_state->player_to_go * 4 &&
+				game_state->hovered_object - 1 < ((uint32_t)game_state->player_to_go + 1) * 4 &&
+				!board_is_piece_in_house(&game_state->board, game_state->hovered_object))
 			{
-				uint32_t pieces_in_house = 0;
-
-				for (uint32_t j = 0; j < 4; j++)
-				{
-					if (game_state->board.pieces_in_house[i][j].object_index != 0)
-						pieces_in_house++;
-					else
-						break;
-				}
-
-				if (pieces_in_house == 4)
-				{
-					winner = (player_enum)i;
-					break;
-				}
+				picked_piece = game_state->hovered_object;
 			}
-
-			if (winner != -1)
-				game_state->winner = winner;
-
-			internal_state->state = game_state_moving;
 		}
 	}
+	else
+	{
+		if (internal_state->time >= 1.0f)
+		{
+			picked_piece = (rand() % 4) + (uint32_t)game_state->player_to_go * 4 + 1;
+		}
+	}
+
+	if (picked_piece == -1)
+		return;
+
+	vec3* positions = board_make_move(&game_state->board, picked_piece, game_state->player_to_go, game_state->rolled);
+
+	move_t move = { 0 };
+	move.player = game_state->player_to_go;
+	move.move_count = game_state->rolled;
+	move.object = picked_piece;
+	darray_push(internal_state->moves, move);
+
+	game_state->rolled = 0;
+	game_state->player_to_go = (game_state->player_to_go + 1) % 4;
+
+	game_object_index_t object_index = game_state->board.piece_objects[picked_piece - 1];
+
+	piece_animation_t* animation = &internal_state->animation;
+	animation->object = object_index;
+	animation->positions = positions;
+	animation->get_position = _animation_get_position;
+
+	player_enum winner = -1;
+	for (uint32_t i = 0; i < 4; i++)
+	{
+		uint32_t pieces_in_house = 0;
+
+		for (uint32_t j = 0; j < 4; j++)
+		{
+			if (game_state->board.pieces_in_house[i][j].object_index != 0)
+				pieces_in_house++;
+			else
+				break;
+		}
+
+		if (pieces_in_house == 4)
+		{
+			winner = (player_enum)i;
+			break;
+		}
+	}
+
+	if (winner != -1)
+		game_state->winner = winner;
+
+	internal_state->state = game_state_moving;
 }
 
 const float animation_duration = 0.2f;
@@ -268,6 +290,7 @@ void _game_state_moving(game_state_t* game_state)
 
 void _game_state_game_over(game_state_t* game_state)
 {
+	_game_state_serialise_game_data(game_state);
 }
 
 vec3 _animation_get_position(float t, vec3 start, vec3 end)
@@ -287,10 +310,20 @@ vec3 _animation_get_position(float t, vec3 start, vec3 end)
 	return vec3_create(x, y, z);
 }
 
+static char _player_type_to_char(player_type type)
+{
+	switch (type)
+	{
+		case player_computer:	return 'c';
+		case player_human:		return 'h';
+	}
+
+	return '?';
+}
+
 void _game_state_serialise_game_data(game_state_t* game_state)
 {
 	file_utils_create_directory("saves");
-	// TODO: hardcoded values
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
 	size_t length = strlen(game_state->configuration->game_name) + 11;
@@ -310,7 +343,11 @@ void _game_state_serialise_game_data(game_state_t* game_state)
 
 	fprintf(file, "nev: %s\n", game_state->configuration->game_name);
 	fprintf(file, "kocka: %dd%d\n", game_state->configuration->dice.dice_count, game_state->configuration->dice.sides);
-	fprintf(file, "jatekosok: h,h,h,h\n");
+	fprintf(file, "jatekosok: %c,%c,%c,%c\n",
+		_player_type_to_char(game_state->configuration->players[0]),
+		_player_type_to_char(game_state->configuration->players[1]),
+		_player_type_to_char(game_state->configuration->players[2]),
+		_player_type_to_char(game_state->configuration->players[3]));
 	fprintf(file, "---\n");
 
 	for (uint32_t i = 0; i < darray_count(internal_state->moves); i++)

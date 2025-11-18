@@ -15,7 +15,7 @@ typedef struct new_game_menu_t
 {
 	char* buffer; // darray
 	dice_t dice;
-	bool red_human, blue_human, green_human, yellow_human;
+	player_type players[4];
 } new_game_menu_t;
 
 void* new_game_menu_attach()
@@ -25,7 +25,8 @@ void* new_game_menu_attach()
 		return NULL;
 	menu_data->buffer = darray_create(char);
 	menu_data->dice = (dice_t){ .dice_count = 1, .sides = 6 };
-	memset(&menu_data->red_human, 1, 4 * sizeof(bool));
+	for (uint32_t i = 0; i < 4; i++)
+		menu_data->players[i] = player_human;
 
 	return menu_data;
 }
@@ -85,16 +86,16 @@ menu_state draw_new_game_menu(uint32_t window_width, uint32_t window_height, voi
 	y += dice_sides.size.y + ui_padding;
 	(void)dice_count;
 
-	item_info red_player = ui_draw_checkbox(&menu_data->red_human, 50.0f, 50.0f,
+	item_info red_player = ui_draw_checkbox((bool*)&menu_data->players[0], 50.0f, 50.0f,
 		item_placement_center, item_placement_beg, -100.0f, y,
 		vec4_create(0.87f, 0.24f, 0.14f, 1.0f), vec4_create(0.92f, 0.29f, 0.19f, 1.0f));
-	item_info blue_player = ui_draw_checkbox(&menu_data->blue_human, 50.0f, 50.0f,
+	item_info blue_player = ui_draw_checkbox((bool*)&menu_data->players[1], 50.0f, 50.0f,
 		item_placement_center, item_placement_beg, -32.5f, y,
 		vec4_create(0.37f, 0.34f, 0.54f, 1.0f), vec4_create(0.42f, 0.39f, 0.59f, 1.0f));
-	item_info green_player = ui_draw_checkbox(&menu_data->green_human, 50.0f, 50.0f,
+	item_info green_player = ui_draw_checkbox((bool*)&menu_data->players[2], 50.0f, 50.0f,
 		item_placement_center, item_placement_beg, 32.5f, y,
 		vec4_create(0.47f, 0.74f, 0.14f, 1.0f), vec4_create(0.52f, 0.79f, 0.19f, 1.0f));
-	item_info yellow_player = ui_draw_checkbox(&menu_data->yellow_human, 50.0f, 50.0f,
+	item_info yellow_player = ui_draw_checkbox((bool*)&menu_data->players[3], 50.0f, 50.0f,
 		item_placement_center, item_placement_beg, 100.0f, y,
 		vec4_create(0.87f, 0.74f, 0.14f, 1.0f), vec4_create(0.92f, 0.79f, 0.19f, 1.0f));
 	ui_draw_text("Human/AI players", item_placement_center, item_placement_beg, -game_name_field.size.x + 20.0f, y + 10.0f, false);
