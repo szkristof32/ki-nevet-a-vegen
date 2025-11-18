@@ -18,6 +18,15 @@ menu_state draw_main_menu(uint32_t window_width, uint32_t window_height)
 	item_info title = ui_draw_text(u8"Mensch ärgere Dich nicht", item_placement_center, item_placement_beg, 0.0f, y, true);
 	y += title.size.y + 170.0f;
 
+	item_info continue_button = ui_draw_button("Continue", 250.0f, 50.0f,
+		item_placement_center, item_placement_beg, 0.0f, y,
+		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
+	y += continue_button.size.y + ui_padding;
+	if (continue_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	{
+		new_state = menu_state_load_game;
+	}
+
 	item_info new_game_button = ui_draw_button("New game", 250.0f, 50.0f,
 		item_placement_center, item_placement_beg, 0.0f, y,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));

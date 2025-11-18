@@ -58,6 +58,15 @@ layer_t game_layer_create()
 	return game_layer;
 }
 
+void game_load(const game_save_t* save)
+{
+	game_configure(&save->configuration);
+	for (uint32_t i = 0; i < darray_count(save->moves); i++)
+	{
+		game_state_play_move(&s_game_layer->game_state, &save->moves[i], false);
+	}
+}
+
 void game_configure(const game_configuration_t* configuration)
 {
 	memcpy(&s_game_layer->configuration, configuration, sizeof(game_configuration_t));
@@ -85,7 +94,7 @@ void game_on_attach()
 void game_on_detach()
 {
 	game_state_destroy(&s_game_layer->game_state);
-	darray_destroy(s_game_layer->configuration.game_name);
+	free(s_game_layer->configuration.game_name);
 	scene_destroy(&s_game_layer->scene);
 	framebuffer_destroy(&s_game_layer->framebuffer);
 }

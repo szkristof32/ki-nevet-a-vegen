@@ -1,5 +1,7 @@
 #pragma once
 
+#include "infoc/scene/game_object.h"
+
 #include "dice.h"
 
 typedef enum player_type
@@ -10,10 +12,34 @@ typedef enum player_type
 
 typedef struct game_configuration_t
 {
-	const char* game_name;
+	char* game_name;
 	dice_t dice;
 	player_type players[4];
 } game_configuration_t;
+
+/*
+* Enumeration for the players
+*/
+typedef enum player_enum
+{
+	player_red,
+	player_blue,
+	player_green,
+	player_yellow
+} player_enum;
+
+typedef struct move_t
+{
+	player_enum player;
+	uint32_t move_count;
+	game_object_index_t object;
+} move_t;
+
+typedef struct game_save_t
+{
+	game_configuration_t configuration;
+	move_t* moves; // darray
+} game_save_t;
 
 #ifndef min
 /*

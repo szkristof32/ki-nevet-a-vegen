@@ -29,13 +29,6 @@ typedef struct piece_animation_t
 	uint32_t position_index;
 } piece_animation_t;
 
-typedef struct move_t
-{
-	player_enum player;
-	uint32_t move_count;
-	game_object_index_t object;
-} move_t;
-
 typedef struct game_state_internal_t
 {
 	float time;
@@ -151,6 +144,57 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 	internal_state->roll_button_hovered = roll_button.hovered;
 }
 
+vec3 _animation_get_position(float t, vec3 start, vec3 end);
+
+void game_state_play_move(game_state_t* game_state, const move_t* move, bool animate)
+{
+	vec3* positions = board_make_move(&game_state->board, move->object, move->player, move->move_count);
+
+	game_state->rolled = 0;
+	game_state->player_to_go = (game_state->player_to_go + 1) % 4;
+
+	game_object_index_t object_index = game_state->board.piece_objects[move->object - 1];
+
+	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
+	darray_push(internal_state->moves, *move);
+
+	if (animate)
+	{
+		piece_animation_t* animation = &internal_state->animation;
+		animation->object = object_index;
+		animation->positions = positions;
+		animation->get_position = _animation_get_position;
+	}
+	else
+	{
+		scene_get_object(game_state->board.scene, object_index)->transform.position = positions[darray_count(positions) - 1];
+		darray_destroy(positions);
+	}
+
+	player_enum winner = -1;
+	for (uint32_t i = 0; i < 4; i++)
+	{
+		uint32_t pieces_in_house = 0;
+
+		for (uint32_t j = 0; j < 4; j++)
+		{
+			if (game_state->board.pieces_in_house[i][j].object_index != 0)
+				pieces_in_house++;
+			else
+				break;
+		}
+
+		if (pieces_in_house == 4)
+		{
+			winner = (player_enum)i;
+			break;
+		}
+	}
+
+	if (winner != -1)
+		game_state->winner = winner;
+}
+
 void _game_state_normal(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
@@ -174,8 +218,6 @@ void _game_state_normal(game_state_t* game_state)
 		}
 	}
 }
-
-vec3 _animation_get_position(float t, vec3 start, vec3 end);
 
 void _game_state_move_picking(game_state_t* game_state)
 {
@@ -208,46 +250,12 @@ void _game_state_move_picking(game_state_t* game_state)
 	if (picked_piece == -1)
 		return;
 
-	vec3* positions = board_make_move(&game_state->board, picked_piece, game_state->player_to_go, game_state->rolled);
-
 	move_t move = { 0 };
 	move.player = game_state->player_to_go;
 	move.move_count = game_state->rolled;
 	move.object = picked_piece;
-	darray_push(internal_state->moves, move);
 
-	game_state->rolled = 0;
-	game_state->player_to_go = (game_state->player_to_go + 1) % 4;
-
-	game_object_index_t object_index = game_state->board.piece_objects[picked_piece - 1];
-
-	piece_animation_t* animation = &internal_state->animation;
-	animation->object = object_index;
-	animation->positions = positions;
-	animation->get_position = _animation_get_position;
-
-	player_enum winner = -1;
-	for (uint32_t i = 0; i < 4; i++)
-	{
-		uint32_t pieces_in_house = 0;
-
-		for (uint32_t j = 0; j < 4; j++)
-		{
-			if (game_state->board.pieces_in_house[i][j].object_index != 0)
-				pieces_in_house++;
-			else
-				break;
-		}
-
-		if (pieces_in_house == 4)
-		{
-			winner = (player_enum)i;
-			break;
-		}
-	}
-
-	if (winner != -1)
-		game_state->winner = winner;
+	game_state_play_move(game_state, &move, true);
 
 	internal_state->state = game_state_moving;
 }
@@ -355,6 +363,18 @@ void _game_state_serialise_game_data(game_state_t* game_state)
 		move_t* move = &internal_state->moves[i];
 		fprintf(file, "%d: %d %d\n", move->player, move->move_count, move->object);
 	}
+
+	fclose(file);
+
+	file = fopen("saves/last_game.dat", "wb");
+	if (!file)
+	{
+		perror("Failed to open file (saves/last_game.dat)");
+		free(save_path);
+		return;
+	}
+
+	fprintf(file, "saves/%s.dat", game_state->configuration->game_name);
 
 	fclose(file);
 }

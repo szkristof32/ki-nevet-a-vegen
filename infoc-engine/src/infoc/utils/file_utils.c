@@ -38,6 +38,18 @@ char* file_utils_read_file(const char* path)
 	return buffer;
 }
 
+bool file_utils_file_exists(const char* path)
+{
+	FILE* file = fopen(path, "rb");
+	if (file)
+	{
+		fclose(file);
+		return true;
+	}
+
+	return false;
+}
+
 void file_utils_create_directory(const char* path)
 {
 #ifdef _WIN32

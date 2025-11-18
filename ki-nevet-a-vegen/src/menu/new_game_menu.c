@@ -114,7 +114,12 @@ menu_state draw_new_game_menu(uint32_t window_width, uint32_t window_height, voi
 		if (length == 1)
 			return new_state;
 
-		new_state = menu_state_game;
+		char* game_name = (char*)malloc(length * sizeof(char));
+		memcpy(game_name, menu_data->buffer, length);
+		darray_destroy(menu_data->buffer);
+		menu_data->buffer = game_name;
+
+		new_state = menu_state_new_game;
 	}
 
 	return new_state;

@@ -7,17 +7,6 @@
 #include <SDL3/SDL_render.h>
 
 /*
-* Enumeration for the players
-*/
-typedef enum player_enum
-{
-	player_red,
-	player_blue,
-	player_green,
-	player_yellow
-} player_enum;
-
-/*
 * Core game state
 */
 typedef struct game_state_t
@@ -67,3 +56,5 @@ void game_state_update(game_state_t* game_state, uint32_t hovered_object, float 
 * @param renderer The SDL renderer
 */
 void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer);
+
+void game_state_play_move(game_state_t* game_state, const move_t* move, bool animate);

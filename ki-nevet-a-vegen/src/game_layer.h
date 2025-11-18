@@ -11,4 +11,5 @@
 */
 layer_t game_layer_create();
 
+void game_load(const game_save_t* save);
 void game_configure(const game_configuration_t* configuration);
