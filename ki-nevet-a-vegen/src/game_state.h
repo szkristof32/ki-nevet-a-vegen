@@ -1,5 +1,6 @@
 #pragma once
 
+#include "game.h"
 #include "board.h"
 #include "dice.h"
 
@@ -21,7 +22,6 @@ typedef enum player_enum
 */
 typedef struct game_state_t
 {
-	dice_t dice; /* Dice */
 	player_enum player_to_go; /* The currently playing player */
 	uint32_t rolled; /* The last number rolled by any player */
 
@@ -30,6 +30,7 @@ typedef struct game_state_t
 	float delta;
 	player_enum winner;
 
+	const game_configuration_t* configuration;
 	void* internal_state; /* Internal game state data, not exposed */
 } game_state_t;
 
@@ -41,7 +42,7 @@ typedef struct game_state_t
 *
 * @warning Game state does not own the scene therefore it should be freed elsewhere
 */
-void game_state_create(scene_t* scene, game_state_t* out_game_state, const char* game_name);
+void game_state_create(scene_t* scene, game_state_t* out_game_state, const game_configuration_t* configuration);
 /*
 * Destroys the game state
 *

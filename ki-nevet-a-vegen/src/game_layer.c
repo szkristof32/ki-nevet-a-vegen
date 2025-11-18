@@ -35,8 +35,7 @@ typedef struct game_layer_t
 	uint32_t hovered_object;
 	uint32_t window_width, window_height;
 
-	dice_t dice;
-	char* game_name;
+	game_configuration_t configuration;
 	game_state_t game_state;
 } game_layer_t;
 
@@ -59,14 +58,9 @@ layer_t game_layer_create()
 	return game_layer;
 }
 
-void game_layer_set_game_name(char* game_name)
+void game_configure(const game_configuration_t* configuration)
 {
-	s_game_layer->game_name = game_name;
-}
-
-void game_layer_set_dice(dice_t dice)
-{
-	s_game_layer->dice = dice;
+	memcpy(&s_game_layer->configuration, configuration, sizeof(game_configuration_t));
 }
 
 static void _game_create_framebuffer(uint32_t width, uint32_t height);
@@ -85,17 +79,15 @@ void game_on_attach()
 	controller->pitch = 30.0f;
 	controller->distance_from_center = 7.0f;
 
-	game_state_create(&s_game_layer->scene, &s_game_layer->game_state, s_game_layer->game_name);
-	s_game_layer->game_state.dice = s_game_layer->dice;
+	game_state_create(&s_game_layer->scene, &s_game_layer->game_state, &s_game_layer->configuration);
 }
 
 void game_on_detach()
 {
 	game_state_destroy(&s_game_layer->game_state);
+	darray_destroy(s_game_layer->configuration.game_name);
 	scene_destroy(&s_game_layer->scene);
 	framebuffer_destroy(&s_game_layer->framebuffer);
-
-	free(s_game_layer->game_name);
 }
 
 void game_on_update(float timestep)

@@ -1,5 +1,20 @@
 #pragma once
 
+#include "dice.h"
+
+typedef enum player_type
+{
+	player_computer,
+	player_human
+} player_type;
+
+typedef struct game_configuration_t
+{
+	const char* game_name;
+	dice_t dice;
+	player_type players[4];
+} game_configuration_t;
+
 #ifndef min
 /*
 * Returns the minimum of `a` and `b`

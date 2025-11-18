@@ -39,18 +39,16 @@ typedef struct game_state_internal_t
 {
 	game_state_enum state;
 	piece_animation_t animation;
-	const char* game_name;
 	move_t* moves; // darray
 } game_state_internal_t;
 
 static void _game_state_serialise_game_data(game_state_t* game_state);
 
-void game_state_create(scene_t* scene, game_state_t* out_game_state, const char* game_name)
+void game_state_create(scene_t* scene, game_state_t* out_game_state, const game_configuration_t* configuration)
 {
 	memset(out_game_state, 0, sizeof(game_state_t));
 
-	out_game_state->dice.dice_count = 1;
-	out_game_state->dice.sides = 6;
+	out_game_state->configuration = configuration;
 	out_game_state->winner = -1;
 
 	board_create(scene, &out_game_state->board);
@@ -59,7 +57,6 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state, const char*
 	out_game_state->internal_state = arena_allocator_allocate(allocator, sizeof(game_state_internal_t));
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)out_game_state->internal_state;
-	internal_state->game_name = game_name;
 	internal_state->moves = darray_create(move_t);
 }
 
@@ -161,7 +158,7 @@ void _game_state_normal(game_state_t* game_state)
 
 	if (input_is_mouse_button_clicked(mouse_button_right))
 	{
-		game_state->rolled = dice_roll(&game_state->dice);
+		game_state->rolled = dice_roll(&game_state->configuration->dice);
 		internal_state->state = game_state_move_picking;
 	}
 }
@@ -287,9 +284,9 @@ void _game_state_serialise_game_data(game_state_t* game_state)
 	// TODO: hardcoded values
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	size_t length = strlen(internal_state->game_name) + 11;
+	size_t length = strlen(game_state->configuration->game_name) + 11;
 	char* save_path = (char*)malloc(length * sizeof(char));
-	sprintf_s(save_path, length, "saves/%s.dat", internal_state->game_name);
+	sprintf_s(save_path, length, "saves/%s.dat", game_state->configuration->game_name);
 
 	FILE* file = fopen(save_path, "wb");
 	if (file == NULL)
@@ -302,8 +299,8 @@ void _game_state_serialise_game_data(game_state_t* game_state)
 	}
 	free(save_path);
 
-	fprintf(file, "nev: %s\n", internal_state->game_name);
-	fprintf(file, "kocka: %dd%d\n", game_state->dice.dice_count, game_state->dice.sides);
+	fprintf(file, "nev: %s\n", game_state->configuration->game_name);
+	fprintf(file, "kocka: %dd%d\n", game_state->configuration->dice.dice_count, game_state->configuration->dice.sides);
 	fprintf(file, "jatekosok: h,h,h,h\n");
 	fprintf(file, "---\n");
 

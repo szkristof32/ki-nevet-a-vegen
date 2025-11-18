@@ -136,10 +136,10 @@ void engine_attach_layer(layer_t* layer)
 
 void engine_detach_layer(layer_t* layer)
 {
-	layer_stack_pop_layer(&s_engine.layer_stack, layer);
-
 	if (layer->on_detach)
 		layer->on_detach();
+
+	layer_stack_pop_layer(&s_engine.layer_stack, layer);
 }
 
 void engine_on_window_resize(uint32_t width, uint32_t height)
