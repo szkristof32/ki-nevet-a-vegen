@@ -41,6 +41,8 @@ typedef struct game_save_t
 	move_t* moves; // darray
 } game_save_t;
 
+void game_load_save(const char* path, game_save_t* out_save);
+
 #ifndef min
 /*
 * Returns the minimum of `a` and `b`

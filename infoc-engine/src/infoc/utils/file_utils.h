@@ -15,3 +15,5 @@ char* file_utils_read_file(const char* path);
 
 bool file_utils_file_exists(const char* path);
 void file_utils_create_directory(const char* path);
+
+char** file_utils_get_files_in_directory(const char* path);

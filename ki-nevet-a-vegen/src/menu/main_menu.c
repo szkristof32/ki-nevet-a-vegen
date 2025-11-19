@@ -24,7 +24,7 @@ menu_state draw_main_menu(uint32_t window_width, uint32_t window_height)
 	y += continue_button.size.y + ui_padding;
 	if (continue_button.hovered && input_is_mouse_button_released(mouse_button_left))
 	{
-		new_state = menu_state_load_game;
+		new_state = menu_state_continue_menu;
 	}
 
 	item_info new_game_button = ui_draw_button("New game", 250.0f, 50.0f,

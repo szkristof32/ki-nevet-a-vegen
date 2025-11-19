@@ -13,6 +13,7 @@
 
 #include "menu/menu_state.h"
 #include "menu/main_menu.h"
+#include "menu/continue_menu.h"
 #include "menu/new_game_menu.h"
 
 #include "game_layer.h"
@@ -45,6 +46,7 @@ layer_t menu_layer_create(layer_t* game_layer)
 	s_menu_layer = (menu_layer_t*)s_layer.internal_state;
 	s_menu_layer->game_layer = game_layer;
 	s_menu_layer->state = menu_state_main_menu;
+	s_menu_layer->state_data = NULL;
 
 	return s_layer;
 }
@@ -60,8 +62,10 @@ void menu_on_detach()
 	switch (s_menu_layer->state)
 	{
 		case menu_state_new_game_menu: new_game_menu_detach(s_menu_layer->state_data); break;
+		case menu_state_continue_menu: continue_menu_detach(s_menu_layer->state_data); break;
 	}
-	free(s_menu_layer->state_data);
+	if (s_menu_layer)
+		free(s_menu_layer->state_data);
 }
 
 void menu_on_ui_render(SDL_Renderer* renderer)
@@ -76,6 +80,7 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 	switch (s_menu_layer->state)
 	{
 		case menu_state_main_menu:		new_state = draw_main_menu(s_menu_layer->window_width, s_menu_layer->window_height); break;
+		case menu_state_continue_menu:	new_state = draw_continue_menu(s_menu_layer->window_width, s_menu_layer->window_height, s_menu_layer->state_data); break;
 		case menu_state_new_game_menu:	new_state = draw_new_game_menu(s_menu_layer->window_width, s_menu_layer->window_height, s_menu_layer->state_data); break;
 		case menu_state_new_game:		_menu_transition_to_game(); break;
 		case menu_state_load_game:		new_state = _menu_load_game(); break;
@@ -84,14 +89,29 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 
 	if (new_state != s_menu_layer->state)
 	{
-		if (s_menu_layer->state == menu_state_new_game_menu && new_state == menu_state_main_menu)
+		switch (s_menu_layer->state)
 		{
-			new_game_menu_detach(s_menu_layer->state_data);
-			free(s_menu_layer->state_data);
+			case menu_state_new_game:
+				if (new_state == menu_state_main_menu)
+				{
+					new_game_menu_detach(s_menu_layer->state_data);
+					free(s_menu_layer->state_data);
+					s_menu_layer->state_data = NULL;
+				}
+				break;
+			case menu_state_continue_menu:
+				if (new_state != menu_state_load_game)
+				{
+					continue_menu_detach(s_menu_layer->state_data);
+					free(s_menu_layer->state_data);
+					s_menu_layer->state_data = NULL;
+				}
+				break;
 		}
 
 		switch (new_state)
 		{
+			case menu_state_continue_menu:	s_menu_layer->state_data = continue_menu_attach(); break;
 			case menu_state_new_game_menu:	s_menu_layer->state_data = new_game_menu_attach(); break;
 		}
 	}
@@ -111,55 +131,18 @@ static char* _get_last_game_played();
 
 menu_state _menu_load_game()
 {
-	char* last_game = _get_last_game_played();
-	if (!last_game)
-	{
-		return menu_state_main_menu;
-	}
-	if (!file_utils_file_exists(last_game))
-	{
-		free(last_game);
-		return menu_state_main_menu;
-	}
+	game_save_t save;
+	game_load_save(*(char**)s_menu_layer->state_data, &save);
 
-	game_save_t save = { 0 };
-	char* save_game = file_utils_read_file(last_game);
-
-	char* next_token = NULL;
-	char* line = strtok_s(save_game, "\n", &next_token);
-	size_t line_length = strlen(line);
-	save.configuration.game_name = (char*)malloc(line_length * sizeof(char));
-	sscanf_s(line, "nev: %s", save.configuration.game_name, (uint32_t)line_length);
-
-	line = strtok_s(NULL, "\n", &next_token);
-	sscanf_s(line, "kocka: %dd%d", &save.configuration.dice.dice_count, &save.configuration.dice.sides);
-
-	line = strtok_s(NULL, "\n", &next_token);
-	char players[4] = { 0 };
-	sscanf_s(line, "jatekosok: %c,%c,%c,%c", &players[0], 1, &players[1], 1, &players[2], 1, &players[3], 1);
-	for (uint32_t i = 0; i < 4; i++)
-		save.configuration.players[i] = players[i] == 'h' ? player_human : player_computer;
-
-	line = strtok_s(NULL, "\n", &next_token);
-	line = strtok_s(NULL, "\n", &next_token);
-
-	save.moves = darray_create(move_t);
-
-	while (line)
-	{
-		move_t move = { 0 };
-		sscanf_s(line, "%d: %d %d", (uint32_t*)&move.player, &move.move_count, &move.object);
-		darray_push(save.moves, move);
-		line = strtok_s(NULL, "\n", &next_token);
-	}
+	continue_menu_detach(s_menu_layer->state_data);
+	free(s_menu_layer->state_data);
+	s_menu_layer->state_data = NULL;
 
 	engine_detach_layer(&s_layer);
 	engine_attach_layer(s_menu_layer->game_layer);
 	game_load(&save);
 
 	darray_destroy(save.moves);
-	free(save_game);
-	free(last_game);
 
 	return menu_state_load_game;
 }

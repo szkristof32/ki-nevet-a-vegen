@@ -1,5 +1,7 @@
 #include "file_utils.h"
 
+#include "infoc/core/darray.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +10,9 @@
 #include <Windows.h>
 #else
 #include <unistd.h>
+#include <dirent.h>
 #endif
+
 
 char* file_utils_read_file(const char* path)
 {
@@ -57,4 +61,51 @@ void file_utils_create_directory(const char* path)
 #else
 	mkdir(path, 0700);
 #endif
+}
+
+char** file_utils_get_files_in_directory(const char* path)
+{
+	size_t path_length = strlen(path);
+	char** files = NULL;
+
+#ifdef _WIN32
+	char* folder = (char*)malloc((path_length + 7) * sizeof(char));
+	if (!folder)
+		return NULL;
+	sprintf_s(folder, path_length + 7, "%s/*.dat", path);
+
+	WIN32_FIND_DATAA file_data;
+	HANDLE find = FindFirstFileA(folder, &file_data);
+	if (find == INVALID_HANDLE_VALUE)
+		return NULL;
+
+	files = darray_create(char*);
+
+	do
+	{
+		if (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			continue;
+		char* file = (char*)malloc(sizeof(file_data.cFileName));
+		memcpy(file, file_data.cFileName, sizeof(file_data.cFileName));
+		darray_push(files, file);
+	} while (FindNextFileA(find, &file_data));
+
+	FindClose(find);
+
+	free(folder);
+#else
+	DIR* directory = opendir(path);
+	struct dirent* entry = NULL;
+
+	files = darray_create(char*);
+
+	while ((entry = readdir(directory)) != NULL)
+	{
+		darray_push(files, entry->d_name);
+	}
+
+	closedir(directory);
+#endif
+
+	return files;
 }

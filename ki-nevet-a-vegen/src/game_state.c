@@ -365,16 +365,4 @@ void _game_state_serialise_game_data(game_state_t* game_state)
 	}
 
 	fclose(file);
-
-	file = fopen("saves/last_game.dat", "wb");
-	if (!file)
-	{
-		perror("Failed to open file (saves/last_game.dat)");
-		free(save_path);
-		return;
-	}
-
-	fprintf(file, "saves/%s.dat", game_state->configuration->game_name);
-
-	fclose(file);
 }
