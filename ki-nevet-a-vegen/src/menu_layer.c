@@ -63,6 +63,7 @@ void menu_on_detach()
 	{
 		case menu_state_new_game_menu: new_game_menu_detach(s_menu_layer->state_data); break;
 		case menu_state_continue_menu: continue_menu_detach(s_menu_layer->state_data); break;
+		default: break;
 	}
 	if (s_menu_layer)
 		free(s_menu_layer->state_data);
@@ -70,9 +71,6 @@ void menu_on_detach()
 
 void menu_on_ui_render(SDL_Renderer* renderer)
 {
-	float mouse_x = input_get_mouse_x() * s_menu_layer->window_width;
-	float mouse_y = input_get_mouse_y() * s_menu_layer->window_height;
-
 	sdl_renderer_draw_square(0, 0, (float)s_menu_layer->window_width, (float)s_menu_layer->window_height, vec4_create(0.2f, 0.2f, 0.2f, 1.0f));
 
 	menu_state new_state = s_menu_layer->state;
@@ -85,13 +83,14 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 		case menu_state_new_game:		_menu_transition_to_game(); break;
 		case menu_state_load_game:		new_state = _menu_load_game(); break;
 		case menu_state_exit:			_menu_exit(); break;
+		default: break;
 	}
 
 	if (new_state != s_menu_layer->state)
 	{
 		switch (s_menu_layer->state)
 		{
-			case menu_state_new_game:
+			case menu_state_new_game_menu:
 				if (new_state == menu_state_main_menu)
 				{
 					new_game_menu_detach(s_menu_layer->state_data);
@@ -107,12 +106,14 @@ void menu_on_ui_render(SDL_Renderer* renderer)
 					s_menu_layer->state_data = NULL;
 				}
 				break;
+			default: break;
 		}
 
 		switch (new_state)
 		{
 			case menu_state_continue_menu:	s_menu_layer->state_data = continue_menu_attach(); break;
 			case menu_state_new_game_menu:	s_menu_layer->state_data = new_game_menu_attach(); break;
+			default: break;
 		}
 	}
 
@@ -126,8 +127,6 @@ void _menu_transition_to_game()
 	engine_attach_layer(s_menu_layer->game_layer);
 	game_configure(&config);
 }
-
-static char* _get_last_game_played();
 
 menu_state _menu_load_game()
 {
@@ -145,11 +144,6 @@ menu_state _menu_load_game()
 	darray_destroy(save.moves);
 
 	return menu_state_load_game;
-}
-
-char* _get_last_game_played()
-{
-	return file_utils_read_file("saves/last_game.dat");
 }
 
 void _menu_exit()

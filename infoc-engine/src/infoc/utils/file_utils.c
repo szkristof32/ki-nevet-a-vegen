@@ -77,7 +77,10 @@ char** file_utils_get_files_in_directory(const char* path)
 	WIN32_FIND_DATAA file_data;
 	HANDLE find = FindFirstFileA(folder, &file_data);
 	if (find == INVALID_HANDLE_VALUE)
+	{
+		free(folder);
 		return NULL;
+	}
 
 	files = darray_create(char*);
 

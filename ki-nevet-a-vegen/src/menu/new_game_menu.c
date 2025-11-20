@@ -42,9 +42,6 @@ menu_state draw_new_game_menu(uint32_t window_width, uint32_t window_height, voi
 	menu_state new_state = menu_state_new_game_menu;
 	new_game_menu_t* menu_data = (new_game_menu_t*)menu_data_ext;
 
-	float mouse_x = input_get_mouse_x() * window_width;
-	float mouse_y = input_get_mouse_y() * window_height;
-
 	float y = 85.0f;
 
 	item_info title = ui_draw_text("New game", item_placement_center, item_placement_beg, 0.0f, y, true);

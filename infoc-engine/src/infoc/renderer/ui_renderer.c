@@ -6,6 +6,7 @@
 #include "sdl_renderer.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 static bool s_adjust_for_text_size = true;
 
@@ -35,8 +36,6 @@ item_info ui_draw_button(const char* text, float width, float height,
 	item_placement placement_horiz, item_placement placement_vert, float x, float y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
-	window_t* window = engine_get_window();
-
 	float text_width, text_height;
 	sdl_renderer_get_text_size(text, &text_width, &text_height, false);
 
@@ -107,8 +106,6 @@ item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bo
 	item_placement placement_horiz, item_placement placement_vert, float x, float y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
-	window_t* window = engine_get_window();
-
 	char number_text[16] = { 0 };
 	sprintf_s(number_text, sizeof(number_text), "%d", *number);
 	float text_width, text_height;
@@ -156,8 +153,6 @@ item_info ui_draw_checkbox(bool* checked, float width, float height,
 	item_placement placement_horiz, item_placement placement_vert, float x, float y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
-	window_t* window = engine_get_window();
-
 	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
 	x = pos.x;
 	y = pos.y;
