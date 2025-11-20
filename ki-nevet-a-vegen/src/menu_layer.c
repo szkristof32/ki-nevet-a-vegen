@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 
+static void menu_on_attach();
 static void menu_on_detach();
 static void menu_on_ui_render(SDL_Renderer* renderer);
 static void menu_on_window_resize(uint32_t width, uint32_t height);
@@ -40,6 +41,7 @@ layer_t menu_layer_create(layer_t* game_layer)
 {
 	arena_allocator_t* allocator = engine_get_allocator();
 
+	s_layer.on_attach = menu_on_attach;
 	s_layer.on_detach = menu_on_detach;
 	s_layer.on_ui_render = menu_on_ui_render;
 	s_layer.on_window_resize = menu_on_window_resize;
@@ -47,10 +49,14 @@ layer_t menu_layer_create(layer_t* game_layer)
 
 	s_menu_layer = (menu_layer_t*)s_layer.internal_state;
 	s_menu_layer->game_layer = game_layer;
-	s_menu_layer->state = menu_state_main_menu;
-	s_menu_layer->state_data = NULL;
 
 	return s_layer;
+}
+
+void menu_layer_transition_to()
+{
+	engine_detach_layer(s_menu_layer->game_layer);
+	engine_attach_layer(&s_layer);
 }
 
 const float ui_padding = 15.0f;
@@ -58,6 +64,12 @@ const float ui_padding = 15.0f;
 static void _menu_transition_to_game();
 static menu_state _menu_load_game();
 static void _menu_exit();
+
+void menu_on_attach()
+{
+	s_menu_layer->state = menu_state_main_menu;
+	s_menu_layer->state_data = NULL;
+}
 
 void menu_on_detach()
 {

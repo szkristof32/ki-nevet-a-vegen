@@ -196,6 +196,11 @@ void game_state_play_move(game_state_t* game_state, const move_t* move, bool ani
 		game_state->winner = winner;
 }
 
+void game_state_save(game_state_t* game_state)
+{
+	_game_state_serialise_game_data(game_state);
+}
+
 void _game_state_normal(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;

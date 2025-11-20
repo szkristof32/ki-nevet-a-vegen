@@ -1,4 +1,4 @@
-#include "main_menu.h"
+﻿#include "main_menu.h"
 
 #include "infoc/core/input.h"
 
@@ -12,7 +12,7 @@ menu_state draw_main_menu(uint32_t window_width, uint32_t window_height)
 
 	float y = 85.0f;
 
-	item_info title = ui_draw_text(u8"Mensch �rgere Dich nicht", item_placement_center, item_placement_beg, 0.0f, y, true);
+	item_info title = ui_draw_text(u8"Mensch ärgere Dich nicht", item_placement_center, item_placement_beg, 0.0f, y, true);
 	y += title.size.y + 170.0f;
 
 	item_info continue_button = ui_draw_button("Continue", 250.0f, 50.0f,

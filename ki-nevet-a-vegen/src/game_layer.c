@@ -7,6 +7,7 @@
 #include "infoc/renderer/model.h"
 #include "infoc/renderer/framebuffer.h"
 #include "infoc/renderer/static_renderer.h"
+#include "infoc/renderer/ui_renderer.h"
 
 #include "infoc/scene/scene.h"
 
@@ -15,6 +16,8 @@
 #include "camera_controller.h"
 #include "board.h"
 #include "game_state.h"
+
+#include "menu_layer.h"
 
 #include "infoc/renderer/gl.h"
 #include <SDL3/SDL_render.h>
@@ -106,7 +109,7 @@ void game_on_update(float timestep)
 	// GAME UPDATE
 	camera_controller_update(&s_game_layer->camera_controller);
 	static_renderer_set_camera(&s_game_layer->scene.camera);
-	
+
 	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object, timestep);
 
 	// RENDER
@@ -133,9 +136,27 @@ void game_on_update(float timestep)
 	s_game_layer->hovered_object = hovered_object_index;
 }
 
+extern float ui_padding;
+
 void game_on_ui_render(SDL_Renderer* renderer)
 {
 	game_state_render_ui(&s_game_layer->game_state, renderer);
+
+	item_info back_button = ui_draw_button("Back to main menu", 250.0f, 50.0f,
+		item_placement_end, item_placement_beg, ui_padding, ui_padding,
+		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
+	if (back_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	{
+		menu_layer_transition_to();
+	}
+
+	item_info save_button = ui_draw_button("Manual save", 250.0f, 50.0f,
+		item_placement_end, item_placement_beg, ui_padding, 2.0f * ui_padding + 50.0f,
+		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
+	if (save_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	{
+		game_state_save(&s_game_layer->game_state);
+	}
 }
 
 void game_on_window_resize(uint32_t width, uint32_t height)
