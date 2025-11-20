@@ -19,6 +19,8 @@
 #include "infoc/renderer/gl.h"
 #include <SDL3/SDL_render.h>
 
+#include <stdlib.h>
+
 #undef bool
 
 static void game_on_attach();

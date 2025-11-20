@@ -7,6 +7,9 @@
 
 #include "infoc/utils/file_utils.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 extern const float ui_padding;
 
 typedef struct continue_menu_t

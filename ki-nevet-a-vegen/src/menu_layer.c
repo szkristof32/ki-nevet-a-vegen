@@ -18,6 +18,8 @@
 
 #include "game_layer.h"
 
+#include <stdlib.h>
+
 static void menu_on_detach();
 static void menu_on_ui_render(SDL_Renderer* renderer);
 static void menu_on_window_resize(uint32_t width, uint32_t height);

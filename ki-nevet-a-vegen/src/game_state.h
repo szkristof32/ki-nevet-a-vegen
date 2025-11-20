@@ -6,6 +6,8 @@
 
 #include <SDL3/SDL_render.h>
 
+#undef bool
+
 /*
 * Core game state
 */

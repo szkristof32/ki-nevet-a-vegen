@@ -9,6 +9,8 @@
 #include "game_layer.h"
 #include "dice.h"
 
+#include <stdlib.h>
+
 extern const float ui_padding;
 
 typedef struct new_game_menu_t
