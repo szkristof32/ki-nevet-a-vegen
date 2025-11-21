@@ -35,7 +35,7 @@ typedef struct game_state_internal_t
 	float time;
 	bool roll_button_hovered;
 	game_state_enum state;
-	piece_animation_t animation;
+	piece_animation_t* animations; // darray
 	move_t* moves; // darray
 } game_state_internal_t;
 
@@ -55,6 +55,7 @@ void game_state_create(scene_t* scene, game_state_t* out_game_state, const game_
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)out_game_state->internal_state;
 	internal_state->moves = darray_create(move_t);
+	internal_state->animations = darray_create(piece_animation_t);
 }
 
 void game_state_destroy(game_state_t* game_state)
@@ -62,11 +63,8 @@ void game_state_destroy(game_state_t* game_state)
 	_game_state_serialise_game_data(game_state);
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
-	piece_animation_t* animation = &internal_state->animation;
 
-	if (animation && animation->positions)
-		darray_destroy(animation->positions);
-
+	darray_destroy(internal_state->animations);
 	darray_destroy(internal_state->moves);
 
 	board_destroy(&game_state->board);
@@ -149,7 +147,7 @@ vec3 _animation_get_position(float t, vec3 start, vec3 end);
 
 void game_state_play_move(game_state_t* game_state, const move_t* move, bool animate)
 {
-	vec3* positions = board_make_move(&game_state->board, move->object, move->player, move->move_count);
+	board_move_t board_move = board_make_move(&game_state->board, move->object, move->player, move->move_count);
 
 	game_state->rolled = 0;
 	game_state->player_to_go = (game_state->player_to_go + 1) % 4;
@@ -161,16 +159,33 @@ void game_state_play_move(game_state_t* game_state, const move_t* move, bool ani
 
 	if (animate)
 	{
-		piece_animation_t* animation = &internal_state->animation;
-		animation->object = object_index;
-		animation->positions = positions;
-		animation->get_position = _animation_get_position;
+		piece_animation_t animation = { 0 };
+		animation.object = object_index;
+		animation.positions = board_move.positions;
+		animation.get_position = _animation_get_position;
+		darray_push(internal_state->animations, animation);
+
+		for (uint32_t i = 0; i < darray_count(board_move.captured_pieces); i++)
+		{
+			captured_piece_t* capture = &board_move.captured_pieces[i];
+
+			piece_animation_t animation = { 0 };
+			animation.object = capture->object_index;
+			animation.positions = darray_create(vec3);
+			animation.get_position = _animation_get_position;
+			for (uint32_t i = 0; i < capture->step; i++)
+				darray_push(animation.positions, scene_get_object(game_state->board.scene, object_index)->transform.position);
+			darray_push(animation.positions, vec3_scalar(0.0f));
+
+			darray_push(internal_state->animations, animation);
+		}
 	}
 	else
 	{
-		scene_get_object(game_state->board.scene, object_index)->transform.position = positions[darray_count(positions) - 1];
-		darray_destroy(positions);
+		scene_get_object(game_state->board.scene, object_index)->transform.position = board_move.positions[darray_count(board_move.positions) - 1];
+		darray_destroy(board_move.positions);
 	}
+	darray_destroy(board_move.captured_pieces);
 
 	player_enum winner = -1;
 	for (uint32_t i = 0; i < 4; i++)
@@ -269,37 +284,59 @@ void _game_state_move_picking(game_state_t* game_state)
 const float animation_duration = 0.2f;
 const float wait_time = 0.4f;
 
+static bool _game_state_animate(piece_animation_t* animation, scene_t* scene, float delta);
+
 void _game_state_moving(game_state_t* game_state)
 {
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 
-	piece_animation_t* animation = &internal_state->animation;
+	uint32_t finished_count = 0;
+	int32_t animation_count = (int32_t)darray_count(internal_state->animations);
+
+	for (int32_t i = 0; i < animation_count; i++)
+	{
+		bool finished = _game_state_animate(&internal_state->animations[i], game_state->board.scene, game_state->delta);
+		if (finished)
+			finished_count++;
+	}
+
+	if (finished_count == animation_count)
+	{
+		for (int32_t i = animation_count - 1; i >= 0; i--)
+		{
+			darray_destroy(internal_state->animations[i].positions);
+			darray_erase(internal_state->animations, i);
+		}
+
+		if (game_state->winner == -1)
+			internal_state->state = game_state_normal;
+		else
+			internal_state->state = game_state_game_over;
+	}
+}
+
+bool _game_state_animate(piece_animation_t* animation, scene_t* scene, float delta)
+{
+	if (animation->current_time >= 1.0f + wait_time && animation->position_index + 2 >= darray_count(animation->positions))
+		return true;
 
 	vec3 prev_position = animation->positions[animation->position_index];
 	vec3 next_position = animation->positions[animation->position_index + 1];
 	vec3 position = animation->get_position(animation->current_time, prev_position, next_position);
-	scene_get_object(game_state->board.scene, animation->object)->transform.position = position;
+	scene_get_object(scene, animation->object)->transform.position = position;
 
-	animation->current_time += game_state->delta / animation_duration;
+	animation->current_time += delta / animation_duration;
 
 	if (animation->current_time >= 1.0f + wait_time)
 	{
 		if (animation->position_index + 2 >= darray_count(animation->positions))
-		{
-			darray_destroy(animation->positions);
-			memset(animation, 0, sizeof(piece_animation_t));
+			return true;
 
-			if (game_state->winner == -1)
-				internal_state->state = game_state_normal;
-			else
-				internal_state->state = game_state_game_over;
-		}
-		else
-		{
-			animation->current_time = 0.0f;
-			animation->position_index++;
-		}
+		animation->current_time = 0.0f;
+		animation->position_index++;
 	}
+
+	return false;
 }
 
 void _game_state_game_over(game_state_t* game_state)

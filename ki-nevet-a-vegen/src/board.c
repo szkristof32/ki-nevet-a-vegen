@@ -69,7 +69,7 @@ void board_destroy(board_t* board)
 static bool _board_step(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t destination);
 static bool _is_position_in_house(uint32_t destination, uint32_t player_index);
 
-vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
+board_move_t board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move)
 {
 	uint32_t position = -1;
 	for (uint32_t i = 0; i < 40; i++)
@@ -91,8 +91,10 @@ vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_ind
 	}
 
 	game_object_t* object = scene_get_object(board->scene, board->piece_objects[object_index - 1]);
-	vec3* fields = darray_create(vec3);
-	darray_push(fields, object->transform.position);
+	board_move_t board_move = { 0 };
+	board_move.positions = darray_create(vec3);
+	board_move.captured_pieces = darray_create(captured_piece_t);
+	darray_push(board_move.positions, object->transform.position);
 
 	int32_t step_direction = 1;
 
@@ -114,14 +116,23 @@ vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_ind
 		position += step_size;
 		house_position = in_house_next_step ? position % 40 - player_start : -1;
 
+		if (!in_house_next_step && board->pieces[position % 40].object_index != 0)
+		{
+			captured_piece_t capture = {
+				.object_index = board->pieces[position % 40].object_index,
+				.step = (uint32_t)darray_count(board_move.positions)
+			};
+			darray_push(board_move.captured_pieces, capture);
+		}
+
 		if (in_house_next_step)
 		{
-			darray_push(fields, vec3_mul(_board_get_house_position(player_index, house_position), vec3_inv(object->transform.scale)));
+			darray_push(board_move.positions, vec3_mul(_board_get_house_position(player_index, house_position), vec3_inv(object->transform.scale)));
 			in_house = true;
 		}
 		else
 		{
-			darray_push(fields, vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale)));
+			darray_push(board_move.positions, vec3_mul(_board_get_field_position(position), vec3_inv(object->transform.scale)));
 			in_house = false;
 		}
 
@@ -151,7 +162,7 @@ vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_ind
 	piece->object_index = object_index;
 	piece->position = position;
 
-	return fields;
+	return board_move;
 }
 
 bool _is_position_in_house(uint32_t destination, uint32_t player_index)
@@ -198,12 +209,14 @@ bool _board_step(board_t* board, uint32_t object_index, uint32_t player_index, u
 
 	if (!_is_position_in_house(destination, player_index))
 	{
+		uint32_t piece_player_index = board->pieces[destination % 40].player_index;
 		uint32_t piece_object_index = board->pieces[destination % 40].object_index;
-		return piece_object_index == 0 || piece_object_index == object_index;
+		return piece_player_index != player_index || piece_object_index == 0;
 	}
 
+	uint32_t piece_player_index = board->pieces_in_house[player_index][(destination % 40 - player_start) % 4].player_index;
 	uint32_t piece_object_index = board->pieces_in_house[player_index][(destination % 40 - player_start) % 4].object_index;
-	return piece_object_index == 0 || piece_object_index == object_index;
+	return piece_player_index != player_index || piece_object_index == 0;
 }
 
 vec3 _board_get_field_position(uint32_t index)

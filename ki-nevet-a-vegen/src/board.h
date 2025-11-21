@@ -48,7 +48,18 @@ bool board_create(scene_t* scene, board_t* out_board);
 */
 void board_destroy(board_t* board);
 
-// Returns a darray
+typedef struct captured_piece_t
+{
+	game_object_index_t object_index;
+	uint32_t step;
+} captured_piece_t;
+
+typedef struct board_move_t
+{
+	vec3* positions;
+	captured_piece_t* captured_pieces;
+} board_move_t;
+
 /*
 * Generates the moves of the given piece
 *
@@ -61,5 +72,5 @@ void board_destroy(board_t* board);
 *
 * @warning The returned dynamic array should be freed after use using `darray_destroy`
 */
-vec3* board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);
+board_move_t board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);
 bool board_is_piece_in_house(board_t* board, uint32_t object_index);
