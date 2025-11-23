@@ -34,6 +34,7 @@ typedef struct game_state_internal_t
 {
 	float time;
 	bool roll_button_hovered;
+	bool enable_ui_input;
 	game_state_enum state;
 	piece_animation_t* animations; // darray
 	move_t* moves; // darray
@@ -75,13 +76,14 @@ static void _game_state_move_picking(game_state_t* game_state);
 static void _game_state_moving(game_state_t* game_state);
 static void _game_state_game_over(game_state_t* game_state);
 
-void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta)
+void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta, bool enable_ui_input)
 {
 	game_state->hovered_object = hovered_object;
 	game_state->delta = delta;
 
 	game_state_internal_t* internal_state = (game_state_internal_t*)game_state->internal_state;
 	internal_state->time += delta;
+	internal_state->enable_ui_input = enable_ui_input;
 
 	game_state_enum state = internal_state->state;
 	switch (state)
@@ -114,7 +116,7 @@ const float text_height = 10.0f;
 
 extern float ui_padding;
 
-void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
+bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 {
 	char player_to_go[22] = { 0 };
 	sprintf_s(player_to_go, sizeof(player_to_go), "Next player: %s", _get_player_name(game_state->player_to_go));
@@ -141,6 +143,8 @@ void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 		item_placement_end, item_placement_end, ui_padding, ui_padding,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 	internal_state->roll_button_hovered = roll_button.hovered;
+
+	return roll_button.hovered;
 }
 
 vec3 _animation_get_position(float t, vec3 start, vec3 end);
@@ -233,7 +237,7 @@ void _game_state_normal(game_state_t* game_state)
 
 	if (current_player_type == player_human)
 	{
-		if (internal_state->roll_button_hovered && input_is_mouse_button_released(mouse_button_left))
+		if (internal_state->roll_button_hovered && internal_state->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
 		{
 			game_state->rolled = dice_roll(&game_state->configuration->dice);
 			internal_state->state = game_state_move_picking;
@@ -259,7 +263,7 @@ void _game_state_move_picking(game_state_t* game_state)
 
 	if (current_player_type == player_human)
 	{
-		if (game_state->hovered_object != 0 && input_is_mouse_button_clicked(mouse_button_left))
+		if (game_state->hovered_object != 0 && internal_state->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
 		{
 			if (game_state->hovered_object - 1 >= (uint32_t)game_state->player_to_go * 4 &&
 				game_state->hovered_object - 1 < ((uint32_t)game_state->player_to_go + 1) * 4 &&

@@ -85,11 +85,11 @@ item_info ui_draw_text_field(char* buffer, float width, float height,
 	if (cursor)
 		sdl_renderer_draw_square(x + (width + text_width) / 2.0f, y + (height - text_height) / 2.0f, 2.0f, text_height, vec4_scalar(1.0f));
 
-	if (hovered && input_is_mouse_button_clicked(mouse_button_left))
+	if (hovered && input_is_mouse_button_released(mouse_button_left))
 	{
 		window_start_text_input(window);
 	}
-	else if (!hovered && input_is_mouse_button_clicked(mouse_button_left))
+	else if (!hovered && input_is_mouse_button_released(mouse_button_left))
 	{
 		window_stop_text_input(window);
 	}
@@ -132,7 +132,7 @@ item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bo
 	item_info decrease = ui_draw_button("-", control_size, control_size,
 		item_placement_beg, item_placement_beg, x + width - control_size, y + control_size,
 		colour_normal, colour_hovered);
-	if (input_is_mouse_button_clicked(mouse_button_left))
+	if (input_is_mouse_button_released(mouse_button_left))
 	{
 		if (increase.hovered)
 			*number = min(*number + 1, max_bounds);
@@ -167,7 +167,7 @@ item_info ui_draw_checkbox(bool* checked, float width, float height,
 		sdl_renderer_draw_square(x + (width - dot_size) / 2.0f, y + (height - dot_size) / 2.0f,
 			dot_size, dot_size, vec4_sub(colour_normal, vec4_scalar(0.2f)));
 	}
-	if (hovered && input_is_mouse_button_clicked(mouse_button_left))
+	if (hovered && input_is_mouse_button_released(mouse_button_left))
 	{
 		*checked = !(*checked);
 	}

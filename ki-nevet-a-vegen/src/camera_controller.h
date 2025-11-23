@@ -16,6 +16,8 @@ typedef struct camera_controller_t
 	
 	float angle_around_center; /* The angle rotated around the center point */
 	float pitch; /* Camera pitch (rotation along the x axis) */
+
+	bool is_moving;
 } camera_controller_t;
 
 /*
@@ -23,4 +25,4 @@ typedef struct camera_controller_t
 *
 * @param controller A pointer to a valid `camera_controller_t` struct
 */
-void camera_controller_update(camera_controller_t* controller);
+void camera_controller_update(camera_controller_t* controller, bool enable_moving);

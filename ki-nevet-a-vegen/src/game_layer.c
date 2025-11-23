@@ -42,6 +42,9 @@ typedef struct game_layer_t
 
 	game_configuration_t configuration;
 	game_state_t game_state;
+
+	bool enable_ui_input;
+	bool ui_hovered;
 } game_layer_t;
 
 static game_layer_t* s_game_layer = NULL;
@@ -107,10 +110,13 @@ void game_on_detach()
 void game_on_update(float timestep)
 {
 	// GAME UPDATE
-	camera_controller_update(&s_game_layer->camera_controller);
+	camera_controller_update(&s_game_layer->camera_controller, !s_game_layer->ui_hovered);
 	static_renderer_set_camera(&s_game_layer->scene.camera);
 
-	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object, timestep);
+	bool enable_ui_input = !s_game_layer->camera_controller.is_moving;
+	s_game_layer->enable_ui_input = s_game_layer->enable_ui_input && enable_ui_input;
+
+	game_state_update(&s_game_layer->game_state, s_game_layer->hovered_object, timestep, s_game_layer->enable_ui_input);
 
 	// RENDER
 	framebuffer_bind(&s_game_layer->framebuffer);
@@ -140,23 +146,27 @@ extern float ui_padding;
 
 void game_on_ui_render(SDL_Renderer* renderer)
 {
-	game_state_render_ui(&s_game_layer->game_state, renderer);
+	s_game_layer->ui_hovered = game_state_render_ui(&s_game_layer->game_state, renderer);
 
 	item_info back_button = ui_draw_button("Back to main menu", 250.0f, 50.0f,
 		item_placement_end, item_placement_beg, ui_padding, ui_padding,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
-	if (back_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	if (back_button.hovered && s_game_layer->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
 	{
 		menu_layer_transition_to();
 	}
+	s_game_layer->ui_hovered |= back_button.hovered;
 
 	item_info save_button = ui_draw_button("Manual save", 250.0f, 50.0f,
 		item_placement_end, item_placement_beg, ui_padding, 2.0f * ui_padding + 50.0f,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
-	if (save_button.hovered && input_is_mouse_button_released(mouse_button_left))
+	if (save_button.hovered && s_game_layer->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
 	{
 		game_state_save(&s_game_layer->game_state);
 	}
+	s_game_layer->ui_hovered |= save_button.hovered;
+
+	s_game_layer->enable_ui_input = !s_game_layer->camera_controller.is_moving;
 }
 
 void game_on_window_resize(uint32_t width, uint32_t height)

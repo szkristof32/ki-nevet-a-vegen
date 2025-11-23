@@ -50,14 +50,14 @@ void game_state_destroy(game_state_t* game_state);
 * @param hovered_object The index of the object the mouse is currently hovering over
 * @param delta The game delta in seconds
 */
-void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta);
+void game_state_update(game_state_t* game_state, uint32_t hovered_object, float delta, bool enable_ui_input);
 /*
 * Renders the game state UI using SDL
 *
 * @param game_state A pointer to a valid `game_state_t` struct
 * @param renderer The SDL renderer
 */
-void game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer);
+bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer);
 
 void game_state_play_move(game_state_t* game_state, const move_t* move, bool animate);
 void game_state_save(game_state_t* game_state);

@@ -8,13 +8,13 @@
 
 #include <math.h>
 
-static void _check_inputs(camera_controller_t* controller);
+static void _check_inputs(camera_controller_t* controller, bool enable_moving);
 
-void camera_controller_update(camera_controller_t* controller)
+void camera_controller_update(camera_controller_t* controller, bool enable_moving)
 {
 	camera_t* camera = controller->camera;
 	
-	_check_inputs(controller);
+	_check_inputs(controller, enable_moving);
 
 	float pitch = deg_to_rad(controller->pitch);
 	float horizontal_distance = controller->distance_from_center * cosf(pitch);
@@ -28,14 +28,14 @@ void camera_controller_update(camera_controller_t* controller)
 	camera->view_matrix = mat4_look_at(camera->position, controller->center, vec3_create(0.0f, 1.0f, 0.0f));
 }
 
-void _check_inputs(camera_controller_t* controller)
+void _check_inputs(camera_controller_t* controller, bool enable_moving)
 {
 	{
 		float zoom_level = input_get_mouse_scroll();
 		controller->distance_from_center -= zoom_level;
 	}
 
-	if (input_is_mouse_button_down(mouse_button_middle))
+	if (input_is_mouse_button_down(mouse_button_left) && enable_moving)
 	{
 		float dx = input_get_mouse_dx();
 		float dy = input_get_mouse_dy();
@@ -44,5 +44,11 @@ void _check_inputs(camera_controller_t* controller)
 		controller->pitch += dy * 150.0f;
 
 		controller->pitch = max(min(controller->pitch, 89.95f), -89.95f);
+
+		controller->is_moving = true;
+	}
+	else
+	{
+		controller->is_moving = false;
 	}
 }
