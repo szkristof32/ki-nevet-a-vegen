@@ -123,6 +123,7 @@ board_move_t board_make_move(board_t* board, uint32_t object_index, uint32_t pla
 				.step = (uint32_t)darray_count(board_move.positions)
 			};
 			darray_push(board_move.captured_pieces, capture);
+			memset(&board->pieces[position % 40], 0, sizeof(piece_t));
 		}
 
 		if (in_house_next_step)
@@ -201,6 +202,22 @@ bool board_is_piece_in_house(board_t* board, uint32_t object_index)
 	}
 
 	return false;
+}
+
+vec3 board_get_piece_start_position(board_t* board, game_object_index_t object_index)
+{
+	uint32_t player_index = (object_index - 1) / 4;
+	uint32_t piece_index = (object_index - 1) % 4;
+
+	float x_axis = (float)(-(player_index % 3 == 0) + (player_index % 3 != 0));
+	float y_axis = (float)(-(player_index % 4 <= 1) + (player_index % 4 >= 2));
+
+	vec3 base_position = vec3_create(x_axis * board_size, 0.0f, y_axis * board_size);
+
+	x_axis = (float)(-(piece_index % 3 == 0) + (piece_index % 3 != 0));
+	y_axis = (float)(-(piece_index % 2 == 0) + (piece_index % 2 != 0));
+
+	return vec3_add(base_position, vec3_create(x_axis * step_size, 0.0f, y_axis * step_size));
 }
 
 bool _board_step(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t destination)

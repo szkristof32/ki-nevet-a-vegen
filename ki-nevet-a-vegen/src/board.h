@@ -74,3 +74,4 @@ typedef struct board_move_t
 */
 board_move_t board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);
 bool board_is_piece_in_house(board_t* board, uint32_t object_index);
+vec3 board_get_piece_start_position(board_t* board, game_object_index_t object_index);

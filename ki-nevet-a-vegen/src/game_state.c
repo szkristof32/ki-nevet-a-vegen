@@ -168,14 +168,15 @@ void game_state_play_move(game_state_t* game_state, const move_t* move, bool ani
 		for (uint32_t i = 0; i < darray_count(board_move.captured_pieces); i++)
 		{
 			captured_piece_t* capture = &board_move.captured_pieces[i];
+			game_object_index_t captured_object_index = capture->object_index;
 
 			piece_animation_t animation = { 0 };
 			animation.object = capture->object_index;
 			animation.positions = darray_create(vec3);
 			animation.get_position = _animation_get_position;
 			for (uint32_t i = 0; i < capture->step; i++)
-				darray_push(animation.positions, scene_get_object(game_state->board.scene, object_index)->transform.position);
-			darray_push(animation.positions, vec3_scalar(0.0f));
+				darray_push(animation.positions, scene_get_object(game_state->board.scene, captured_object_index)->transform.position);
+			darray_push(animation.positions, board_get_piece_start_position(&game_state->board, captured_object_index));
 
 			darray_push(internal_state->animations, animation);
 		}
@@ -184,6 +185,14 @@ void game_state_play_move(game_state_t* game_state, const move_t* move, bool ani
 	{
 		scene_get_object(game_state->board.scene, object_index)->transform.position = board_move.positions[darray_count(board_move.positions) - 1];
 		darray_destroy(board_move.positions);
+
+		for (uint32_t i = 0; i < darray_count(board_move.captured_pieces); i++)
+		{
+			captured_piece_t* capture = &board_move.captured_pieces[i];
+			game_object_index_t captured_object_index = capture->object_index;
+
+			scene_get_object(game_state->board.scene, captured_object_index)->transform.position = board_get_piece_start_position(&game_state->board, captured_object_index);
+		}
 	}
 	darray_destroy(board_move.captured_pieces);
 
@@ -323,6 +332,10 @@ bool _game_state_animate(piece_animation_t* animation, scene_t* scene, float del
 	vec3 prev_position = animation->positions[animation->position_index];
 	vec3 next_position = animation->positions[animation->position_index + 1];
 	vec3 position = animation->get_position(animation->current_time, prev_position, next_position);
+	if (vec3_eq(prev_position, next_position))
+	{
+		position = next_position;
+	}
 	scene_get_object(scene, animation->object)->transform.position = position;
 
 	animation->current_time += delta / animation_duration;
