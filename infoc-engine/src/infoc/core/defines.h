@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef uint8_t bool;
 #define true 1
@@ -65,7 +66,6 @@ typedef uint8_t bool;
 */
 #define max(a, b) ((a)>(b)?(a):(b))
 #endif
-
 
 #define _typeof(x) __typeof__(x)
 

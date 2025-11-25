@@ -12,6 +12,8 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 {
 	memset(out_mesh, 0, sizeof(mesh_t));
 
+	printf("Loading model %s...\n", filepath);
+
 	char* source = file_utils_read_file(filepath);
 	vec3* vertex_positions = darray_create(vec3);
 	vec2* uv_coords = darray_create(vec2);
@@ -44,7 +46,7 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 			char** tokens = string_split(line, " ");
 			vec2 uv = { 0 };
 			uv.x = (float)atof(tokens[1]);
-			uv.y = (float)atof(tokens[2]);
+			uv.y = 1.0f - (float)atof(tokens[2]);
 
 			darray_push(uv_coords, uv);
 
@@ -86,7 +88,7 @@ void obj_loader_load_model(const char* filepath, mesh_t* out_mesh)
 				vertex.normal = normals[atoi(tokens[2]) - 1];
 
 				mesh_add_vertex(out_mesh, &vertex);
-				
+
 				darray_destroy(tokens);
 			}
 

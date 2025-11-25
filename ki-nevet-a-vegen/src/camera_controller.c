@@ -43,9 +43,9 @@ void _check_inputs(camera_controller_t* controller, bool enable_moving)
 		controller->angle_around_center -= dx * 150.0f;
 		controller->pitch += dy * 150.0f;
 
-		controller->pitch = max(min(controller->pitch, 89.95f), -89.95f);
+		controller->pitch = max(min(controller->pitch, 89.95f), 0.05f);
 
-		controller->is_moving = true;
+		controller->is_moving = !(fabs(dx) < 0.02f || fabs(dy) < 0.02f);
 	}
 	else
 	{

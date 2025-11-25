@@ -22,6 +22,8 @@ void main()
 	vec3 to_light_vector = -light_dir_norm;
 	vec3 unit_normal = normalize(Input.Normal);
 	float NdotL = dot(unit_normal, to_light_vector);
+	if (Input.ObjectIndex == 42)
+		NdotL = 1.0;
 
 	vec4 colour = texture(model_texture, Input.Uv);
 	out_colour = Input.Colour * colour * max(NdotL, 0.1) + Input.Highlight;

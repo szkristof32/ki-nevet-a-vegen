@@ -121,5 +121,5 @@ void static_renderer_render(model_t* model, mat4 transformation_matrix, vec4 col
 
 void _static_renderer_create_projection(uint32_t width, uint32_t height)
 {
-	s_static_renderer->matrices.projection = mat4_perspective(70.0f, (float)width / (float)height, 0.1f, 100.0f);
+	s_static_renderer->matrices.projection = mat4_perspective(70.0f, (float)width / (float)height, 0.1f, 1000.0f);
 }

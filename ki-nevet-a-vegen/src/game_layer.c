@@ -97,6 +97,28 @@ void game_on_attach()
 	controller->distance_from_center = 7.0f;
 
 	game_state_create(&s_game_layer->scene, &s_game_layer->game_state, &s_game_layer->configuration);
+
+	{
+		game_object_index_t object = scene_new_object(&s_game_layer->scene);
+		game_object_t* picnic_table = scene_get_object(&s_game_layer->scene, object);
+		obj_loader_load_model("assets/models/table.model", &picnic_table->model.mesh);
+		texture_create("assets/images/scene.png", &picnic_table->model.model_texture);
+	}
+
+	{
+		game_object_index_t object = scene_new_object(&s_game_layer->scene);
+		game_object_t* floor = scene_get_object(&s_game_layer->scene, object);
+		obj_loader_load_model("assets/models/floor.model", &floor->model.mesh);
+		texture_create("assets/images/scene.png", &floor->model.model_texture);
+	}
+
+	{
+		game_object_index_t object = scene_new_object(&s_game_layer->scene);
+		game_object_t* skybox = scene_get_object(&s_game_layer->scene, object);
+		skybox->index = 42;
+		obj_loader_load_model("assets/models/skybox.model", &skybox->model.mesh);
+		texture_create("assets/images/skybox2.png", &skybox->model.model_texture);
+	}
 }
 
 void game_on_detach()

@@ -22,8 +22,8 @@ bool board_create(scene_t* scene, board_t* out_board)
 	out_board->scene = scene;
 	out_board->game_object = scene_new_object(scene);
 	game_object_t* board_object = scene_get_object(scene, out_board->game_object);
-	obj_loader_load_model("assets/models/board_placeholder.obj", &board_object->model.mesh);
-	texture_create("assets/images/board.png", &board_object->model.model_texture);
+	obj_loader_load_model("assets/models/board.model", &board_object->model.mesh);
+	texture_create("assets/images/scene.png", &board_object->model.model_texture);
 
 	for (uint32_t i = 0; i < 4; i++)
 	{
@@ -40,22 +40,13 @@ bool board_create(scene_t* scene, board_t* out_board)
 
 			game_object_index_t object_index = out_board->piece_objects[i * 4 + j] = scene_new_object(scene);
 			game_object_t* object = scene_get_object(scene, object_index);
-			obj_loader_load_model("assets/models/piece_placeholder.obj", &object->model.mesh);
+			obj_loader_load_model("assets/models/piece.model", &object->model.mesh);
 
 			object->colour = colour;
 			object->transform.position = vec3_add(base_position, vec3_create(x_axis * step_size, 0.0f, y_axis * step_size));
 			object->transform.scale = vec3_scalar(game_scale);
 			object->index = (i * 4) + j + 1;
 		}
-	}
-
-	for (uint32_t i = 0; i < 40; i++)
-	{
-		game_object_index_t object_index = out_board->field_objects[i] = scene_new_object(scene);
-		game_object_t* object = scene_get_object(scene, object_index);
-		obj_loader_load_model("assets/models/board_field_placeholder.obj", &object->model.mesh);
-
-		object->transform.position = _board_get_field_position(i);
 	}
 
 	return true;

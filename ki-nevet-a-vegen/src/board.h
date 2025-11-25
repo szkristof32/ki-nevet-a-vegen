@@ -23,8 +23,6 @@ typedef struct board_t
 	game_object_index_t game_object;
 	game_object_index_t piece_objects[4 * 4];
 
-	game_object_index_t field_objects[40]; /* Stepping stone objects in the scene */
-
 	scene_t* scene; /* Reference to the scene */
 } board_t;
 
