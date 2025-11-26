@@ -2,7 +2,7 @@
 
 #include "infoc/core/engine.h"
 
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <stdio.h>
 
 #undef bool

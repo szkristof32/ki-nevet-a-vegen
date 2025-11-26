@@ -20,16 +20,13 @@
 #include "menu_layer.h"
 
 #include "infoc/renderer/gl.h"
-#include <SDL3/SDL_render.h>
 
 #include <stdlib.h>
-
-#undef bool
 
 static void game_on_attach();
 static void game_on_detach();
 static void game_on_update(float timestep);
-static void game_on_ui_render(SDL_Renderer* renderer);
+static void game_on_ui_render();
 static void game_on_window_resize(uint32_t width, uint32_t height);
 
 typedef struct game_layer_t
@@ -164,13 +161,13 @@ void game_on_update(float timestep)
 	s_game_layer->hovered_object = hovered_object_index;
 }
 
-extern float ui_padding;
+extern int32_t ui_padding;
 
-void game_on_ui_render(SDL_Renderer* renderer)
+void game_on_ui_render()
 {
-	s_game_layer->ui_hovered = game_state_render_ui(&s_game_layer->game_state, renderer);
+	s_game_layer->ui_hovered = game_state_render_ui(&s_game_layer->game_state);
 
-	item_info back_button = ui_draw_button("Back to main menu", 250.0f, 50.0f,
+	item_info back_button = ui_draw_button("Back to main menu", 250, 50,
 		item_placement_end, item_placement_beg, ui_padding, ui_padding,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 	if (back_button.hovered && s_game_layer->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
@@ -179,8 +176,8 @@ void game_on_ui_render(SDL_Renderer* renderer)
 	}
 	s_game_layer->ui_hovered |= back_button.hovered;
 
-	item_info save_button = ui_draw_button("Manual save", 250.0f, 50.0f,
-		item_placement_end, item_placement_beg, ui_padding, 2.0f * ui_padding + 50.0f,
+	item_info save_button = ui_draw_button("Manual save", 250, 50,
+		item_placement_end, item_placement_beg, ui_padding, 2 * ui_padding + 50,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 	if (save_button.hovered && s_game_layer->enable_ui_input && input_is_mouse_button_released(mouse_button_left))
 	{

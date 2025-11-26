@@ -4,10 +4,6 @@
 #include "board.h"
 #include "dice.h"
 
-#include <SDL3/SDL_render.h>
-
-#undef bool
-
 /*
 * Core game state
 */
@@ -57,7 +53,7 @@ void game_state_update(game_state_t* game_state, uint32_t hovered_object, float 
 * @param game_state A pointer to a valid `game_state_t` struct
 * @param renderer The SDL renderer
 */
-bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer);
+bool game_state_render_ui(game_state_t* game_state);
 
 void game_state_play_move(game_state_t* game_state, const move_t* move, bool animate);
 void game_state_save(game_state_t* game_state);

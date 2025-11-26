@@ -56,9 +56,9 @@ project "infoc-engine"
 
 	links
 	{
-		"SDL3",
-		"SDL3_image",
-		"SDL3_ttf"
+		"SDL2",
+		"SDL2_image",
+		"SDL2_ttf"
 	}
 
 	filter "system:windows"
@@ -96,9 +96,16 @@ project "ki-nevet-a-vegen"
 	links
 	{
 		"infoc-engine",
-		"SDL3",
-		"SDL3_image",
-		"SDL3_ttf"
+		"SDL2",
+		"SDL2_image",
+		"SDL2_ttf"
+	}
+	
+	postbuildcommands
+	{
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL2.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL2_image.dll\" \"%{cfg.buildtarget.directory}\"",
+		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL2_ttf.dll\" \"%{cfg.buildtarget.directory}\"",
 	}
 
 	filter "system:windows"
@@ -106,10 +113,3 @@ project "ki-nevet-a-vegen"
 
 	filter "configurations:Release"
 		kind "WindowedApp"
-
-	postbuildcommands
-	{
-		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3.dll\" \"%{cfg.buildtarget.directory}\"",
-		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3_image.dll\" \"%{cfg.buildtarget.directory}\"",
-		"{COPYFILE} \"%{wks.location}/vendor/sdl/lib/x64/SDL3_ttf.dll\" \"%{cfg.buildtarget.directory}\"",
-	}

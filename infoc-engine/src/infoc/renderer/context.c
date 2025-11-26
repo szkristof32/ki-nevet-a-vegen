@@ -4,7 +4,7 @@
 
 #include "infoc/renderer/gl.h"
 
-#include <SDL3/SDL.h>
+#include <SDL.h>
 
 #undef bool
 
@@ -32,7 +32,7 @@ bool context_create(const window_t* window, context_t* out_context)
 
 	internal_state->opengl_context = SDL_GL_CreateContext(internal_state->window_handle);
 	check_error(!internal_state->opengl_context, "Failed to create OpenGL context (%s)!", SDL_GetError());
-	check_error(!SDL_GL_MakeCurrent(internal_state->window_handle, internal_state->opengl_context), "Failed to make context current (%s)!", SDL_GetError());
+	check_error(SDL_GL_MakeCurrent(internal_state->window_handle, internal_state->opengl_context), "Failed to make context current (%s)!", SDL_GetError());
 	check_error(!opengl_init(), "Failed to initialise OpenGL!");
 
 	return true;
@@ -43,7 +43,7 @@ void context_destroy(context_t* context)
 	opengl_shutdown();
 
 	context_internal_t* internal_state = context->internal_state;
-	SDL_GL_DestroyContext(internal_state->opengl_context);
+	SDL_GL_DeleteContext(internal_state->opengl_context);
 
 	memset(context, 0, sizeof(context_t));
 }

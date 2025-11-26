@@ -3,7 +3,7 @@
 #include "infoc/core/engine.h"
 #include "infoc/core/input.h"
 
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <string.h>
 
 #undef bool
@@ -28,9 +28,13 @@ bool window_create(uint32_t width, uint32_t height, const char* title, window_t*
 
 	out_window->internal_state = internal_state;
 
-	check_error(!SDL_Init(SDL_INIT_VIDEO), "Failed to initialise SDL (%s)!", SDL_GetError());
+	check_error(SDL_Init(SDL_INIT_VIDEO), "Failed to initialise SDL (%s)!", SDL_GetError());
 
-	internal_state->window_handle = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+	SDL_DisplayMode display_mode;
+	SDL_GetCurrentDisplayMode(0, &display_mode);
+	internal_state->window_handle = SDL_CreateWindow(title, 
+		(display_mode.w - width) / 2, (display_mode.h - height) / 2, width, height, 
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 	check_error(!internal_state->window_handle, "Failed to create window!");
 
 	return true;
@@ -64,26 +68,29 @@ void window_update(window_t* window)
 	{
 		switch (event.type)
 		{
-			case SDL_EVENT_QUIT:
+			case SDL_QUIT:
 			{
 				window_internal_t* internal_state = window->internal_state;
 				internal_state->should_close = true;
 				break;
 			}
-			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_WINDOWEVENT:
 			{
-				window->width = event.window.data1;
-				window->height = event.window.data2;
-				engine_on_window_resize(window->width, window->height);
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					window->width = event.window.data1;
+					window->height = event.window.data2;
+					engine_on_window_resize(window->width, window->height);
+				}
 			}
-			case SDL_EVENT_MOUSE_BUTTON_DOWN:
-			case SDL_EVENT_MOUSE_BUTTON_UP:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
 			{
 				SDL_MouseButtonEvent mouse_event = *(SDL_MouseButtonEvent*)&event;
-				input_click_listener(_mouse_button_index(mouse_event.button), mouse_event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+				input_click_listener(_mouse_button_index(mouse_event.button), mouse_event.type == SDL_MOUSEBUTTONDOWN);
 				break;
 			}
-			case SDL_EVENT_MOUSE_MOTION:
+			case SDL_MOUSEMOTION:
 			{
 				SDL_MouseMotionEvent mouse_event = *(SDL_MouseMotionEvent*)&event;
 				float x = (float)mouse_event.x / (float)window->width;
@@ -91,20 +98,20 @@ void window_update(window_t* window)
 				input_move_listener(x, y);
 				break;
 			}
-			case SDL_EVENT_MOUSE_WHEEL:
+			case SDL_MOUSEWHEEL:
 			{
 				SDL_MouseWheelEvent mouse_event = *(SDL_MouseWheelEvent*)&event;
 				input_scroll_listener((float)mouse_event.x, (float)mouse_event.y);
 				break;
 			}
-			case SDL_EVENT_KEY_DOWN:
-			case SDL_EVENT_KEY_UP:
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
 			{
 				SDL_KeyboardEvent keyboard_event = *(SDL_KeyboardEvent*)&event;
-				input_key_listener(keyboard_event.key, keyboard_event.type == SDL_EVENT_KEY_DOWN);
+				input_key_listener(keyboard_event.keysym.sym, keyboard_event.type == SDL_KEYDOWN);
 				break;
 			}
-			case SDL_EVENT_TEXT_INPUT:
+			case SDL_TEXTINPUT:
 			{
 				SDL_TextInputEvent text_input_event = *(SDL_TextInputEvent*)&event;
 				input_type_listener(text_input_event.text[0]);
@@ -128,12 +135,10 @@ void* window_get_handle(const window_t* window)
 
 void window_start_text_input(const window_t* window)
 {
-	window_internal_t* internal_state = window->internal_state;
-	SDL_StartTextInput(internal_state->window_handle);
+	SDL_StartTextInput();
 }
 
 void window_stop_text_input(const window_t* window)
 {
-	window_internal_t* internal_state = window->internal_state;
-	SDL_StopTextInput(internal_state->window_handle);
+	SDL_StopTextInput();
 }

@@ -10,23 +10,28 @@ typedef enum item_placement
 	item_placement_end
 } item_placement;
 
+typedef struct uvec2
+{
+	uint32_t x, y;
+} uvec2;
+
 typedef struct item_info
 {
-	vec2 positon;
-	vec2 size;
+	uvec2 positon;
+	uvec2 size;
 	bool hovered;
 } item_info;
 
-item_info ui_draw_text(const char* text, item_placement placement_horiz, item_placement placement_vert, float x, float y, bool big_text);
-item_info ui_draw_button(const char* text, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_text(const char* text, item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y, bool big_text);
+item_info ui_draw_button(const char* text, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered);
-item_info ui_draw_text_field(char* buffer, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_text_field(char* buffer, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 background_colour, bool cursor);
-item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bounds, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bounds, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered);
-item_info ui_draw_checkbox(bool* checked, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_checkbox(bool* checked, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered);

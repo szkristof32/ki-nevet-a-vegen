@@ -22,7 +22,7 @@
 
 static void menu_on_attach();
 static void menu_on_detach();
-static void menu_on_ui_render(SDL_Renderer* renderer);
+static void menu_on_ui_render();
 static void menu_on_window_resize(uint32_t width, uint32_t height);
 
 typedef struct menu_layer_t
@@ -59,7 +59,7 @@ void menu_layer_transition_to()
 	engine_attach_layer(&s_layer);
 }
 
-const float ui_padding = 15.0f;
+const int32_t ui_padding = 15;
 
 static void _menu_transition_to_game();
 static menu_state _menu_load_game();
@@ -83,9 +83,9 @@ void menu_on_detach()
 		free(s_menu_layer->state_data);
 }
 
-void menu_on_ui_render(SDL_Renderer* renderer)
+void menu_on_ui_render()
 {
-	sdl_renderer_draw_square(0, 0, (float)s_menu_layer->window_width, (float)s_menu_layer->window_height, vec4_create(0.2f, 0.2f, 0.2f, 1.0f));
+	sdl_renderer_draw_square(0, 0, s_menu_layer->window_width, s_menu_layer->window_height, vec4_create(0.2f, 0.2f, 0.2f, 1.0f));
 
 	menu_state new_state = s_menu_layer->state;
 

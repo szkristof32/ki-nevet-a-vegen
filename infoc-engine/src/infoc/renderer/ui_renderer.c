@@ -10,39 +10,39 @@
 
 static bool s_adjust_for_text_size = true;
 
-static vec2 _ui_get_position(float width, float height, item_placement placement_horiz, item_placement placement_vert, float x, float y);
-static bool _ui_is_hovered(float x, float y, float width, float height);
+static uvec2 _ui_get_position(uint32_t width, uint32_t height, item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y);
+static bool _ui_is_hovered(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-item_info ui_draw_text(const char* text, item_placement placement_horiz, item_placement placement_vert, float x, float y, bool big_text)
+item_info ui_draw_text(const char* text, item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y, bool big_text)
 {
-	float text_width, text_height;
+	uint32_t text_width, text_height;
 	sdl_renderer_get_text_size(text, &text_width, &text_height, big_text);
 
-	vec2 position = _ui_get_position(text_width, text_height, placement_horiz, placement_vert, x, y);
+	uvec2 position = _ui_get_position(text_width, text_height, placement_horiz, placement_vert, x, y);
 
 	sdl_renderer_draw_text(text, position.x, position.y, big_text);
 
 	bool hovered = _ui_is_hovered(x, y, text_width, text_height);
 
 	item_info info = { 0 };
-	info.positon = vec2_create(x, y);
-	info.size = vec2_create(text_width, text_height);
+	info.positon = (uvec2){ .x = x, .y = y };
+	info.size = (uvec2){ .x = text_width, .y = text_height };
 	info.hovered = hovered;
 
 	return info;
 }
 
-item_info ui_draw_button(const char* text, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_button(const char* text, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
-	float text_width, text_height;
+	uint32_t text_width, text_height;
 	sdl_renderer_get_text_size(text, &text_width, &text_height, false);
 
 	width = s_adjust_for_text_size ? max(text_width, width) : width;
 	height = s_adjust_for_text_size ? max(text_height, height) : height;
 
-	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
+	uvec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
 	x = pos.x;
 	y = pos.y;
 
@@ -51,29 +51,29 @@ item_info ui_draw_button(const char* text, float width, float height,
 
 	sdl_renderer_draw_square(x, y, width, height, colour);
 
-	sdl_renderer_draw_text(text, x + (width - text_width) / 2.0f, y + (height - text_height) / 2.0f, false);
+	sdl_renderer_draw_text(text, x + (width - text_width) / 2, y + (height - text_height) / 2, false);
 
 	item_info info = { 0 };
-	info.positon = vec2_create(x, y);
-	info.size = vec2_create(width, height);
+	info.positon = (uvec2){ .x = x, .y = y };
+	info.size = (uvec2){ .x = width, .y = height };
 	info.hovered = hovered;
 
 	return info;
 }
 
-item_info ui_draw_text_field(char* buffer, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_text_field(char* buffer, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 background_colour, bool cursor)
 {
 	window_t* window = engine_get_window();
 
-	float text_width, text_height;
+	uint32_t text_width, text_height;
 	sdl_renderer_get_text_size(buffer, &text_width, &text_height, false);
 
 	width = s_adjust_for_text_size ? max(text_width, width) : width;
 	height = s_adjust_for_text_size ? max(text_height, height) : height;
 
-	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
+	uvec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
 	x = pos.x;
 	y = pos.y;
 
@@ -81,9 +81,9 @@ item_info ui_draw_text_field(char* buffer, float width, float height,
 
 	sdl_renderer_draw_square(x, y, width, height, background_colour);
 
-	sdl_renderer_draw_text(buffer, x + (width - text_width) / 2.0f, y + (height - text_height) / 2.0f, false);
+	sdl_renderer_draw_text(buffer, x + (width - text_width) / 2, y + (height - text_height) / 2, false);
 	if (cursor)
-		sdl_renderer_draw_square(x + (width + text_width) / 2.0f, y + (height - text_height) / 2.0f, 2.0f, text_height, vec4_scalar(1.0f));
+		sdl_renderer_draw_square(x + (width + text_width) / 2, y + (height - text_height) / 2, 2, text_height, vec4_scalar(1.0f));
 
 	if (hovered && input_is_mouse_button_released(mouse_button_left))
 	{
@@ -95,26 +95,26 @@ item_info ui_draw_text_field(char* buffer, float width, float height,
 	}
 
 	item_info info = { 0 };
-	info.positon = vec2_create(x, y);
-	info.size = vec2_create(width, height);
+	info.positon = (uvec2){ .x = x, .y = y };
+	info.size = (uvec2){ .x = width, .y = height };
 	info.hovered = hovered;
 
 	return info;
 }
 
-item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bounds, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bounds, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
 	char number_text[16] = { 0 };
 	sprintf_s(number_text, sizeof(number_text), "%d", *number);
-	float text_width, text_height;
+	uint32_t text_width, text_height;
 	sdl_renderer_get_text_size(number_text, &text_width, &text_height, false);
 
 	width = s_adjust_for_text_size ? max(text_width, width) : width;
 	height = s_adjust_for_text_size ? max(text_height, height) : height;
 
-	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
+	uvec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
 	x = pos.x;
 	y = pos.y;
 
@@ -122,10 +122,10 @@ item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bo
 
 	sdl_renderer_draw_square(x, y, width, height, colour_normal);
 
-	sdl_renderer_draw_text(number_text, x + (width - text_width) / 2.0f, y + (height - text_height) / 2.0f, false);
+	sdl_renderer_draw_text(number_text, x + (width - text_width) / 2, y + (height - text_height) / 2, false);
 
 	s_adjust_for_text_size = false;
-	float control_size = min(width, height) / 2.0f;
+	uint32_t control_size = min(width, height) / 2;
 	item_info increase = ui_draw_button("+", control_size, control_size,
 		item_placement_beg, item_placement_beg, x + width - control_size, y,
 		colour_normal, colour_hovered);
@@ -142,18 +142,18 @@ item_info ui_draw_spinner(uint32_t* number, uint32_t min_bounds, uint32_t max_bo
 	s_adjust_for_text_size = true;
 
 	item_info info = { 0 };
-	info.positon = vec2_create(x, y);
-	info.size = vec2_create(width, height);
+	info.positon = (uvec2){ .x = x, .y = y };
+	info.size = (uvec2){ .x = width, .y = height };
 	info.hovered = hovered;
 
 	return info;
 }
 
-item_info ui_draw_checkbox(bool* checked, float width, float height,
-	item_placement placement_horiz, item_placement placement_vert, float x, float y,
+item_info ui_draw_checkbox(bool* checked, uint32_t width, uint32_t height,
+	item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y,
 	vec4 colour_normal, vec4 colour_hovered)
 {
-	vec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
+	uvec2 pos = _ui_get_position(width, height, placement_horiz, placement_vert, x, y);
 	x = pos.x;
 	y = pos.y;
 
@@ -161,10 +161,10 @@ item_info ui_draw_checkbox(bool* checked, float width, float height,
 
 	sdl_renderer_draw_square(x, y, width, height, colour_normal);
 
-	float dot_size = (float)ceil(min(width, height) * 0.65f);
+	uint32_t dot_size = (uint32_t)ceil(min(width, height) * 0.65f);
 	if (*checked)
 	{
-		sdl_renderer_draw_square(x + (width - dot_size) / 2.0f, y + (height - dot_size) / 2.0f,
+		sdl_renderer_draw_square(x + (width - dot_size) / 2, y + (height - dot_size) / 2,
 			dot_size, dot_size, vec4_sub(colour_normal, vec4_scalar(0.2f)));
 	}
 	if (hovered && input_is_mouse_button_released(mouse_button_left))
@@ -173,35 +173,35 @@ item_info ui_draw_checkbox(bool* checked, float width, float height,
 	}
 
 	item_info info = { 0 };
-	info.positon = vec2_create(x, y);
-	info.size = vec2_create(width, height);
+	info.positon = (uvec2){ .x = x, .y = y };
+	info.size = (uvec2){ .x = width, .y = height };
 	info.hovered = hovered;
 
 	return info;
 }
 
-vec2 _ui_get_position(float width, float height, item_placement placement_horiz, item_placement placement_vert, float x, float y)
+uvec2 _ui_get_position(uint32_t width, uint32_t height, item_placement placement_horiz, item_placement placement_vert, int32_t x, int32_t y)
 {
 	window_t* window = engine_get_window();
 
 	if (placement_horiz == item_placement_center)
-		x = (window->width - width) / 2.0f + x;
+		x = (window->width - width) / 2 + x;
 	else if (placement_horiz == item_placement_end)
 		x = window->width - width - x;
 	if (placement_vert == item_placement_center)
-		y = (window->height - height) / 2.0f + y;
+		y = (window->height - height) / 2 + y;
 	else if (placement_vert == item_placement_end)
 		y = window->height - height - y;
 
-	return vec2_create(x, y);
+	return (uvec2) { .x = x, .y = y };
 }
 
-bool _ui_is_hovered(float x, float y, float width, float height)
+bool _ui_is_hovered(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
 	window_t* window = engine_get_window();
 
-	float mouse_x = input_get_mouse_x() * window->width;
-	float mouse_y = input_get_mouse_y() * window->height;
+	uint32_t mouse_x = (uint32_t)(input_get_mouse_x() * (float)window->width);
+	uint32_t mouse_y = (uint32_t)(input_get_mouse_y() * (float)window->height);
 
 	return mouse_x >= x && mouse_x <= x + width && mouse_y >= y && mouse_y <= y + height;
 }

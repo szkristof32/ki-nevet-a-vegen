@@ -111,12 +111,12 @@ static const char* _get_player_name(player_enum index)
 	return "???";
 }
 
-const float text_padding = 10.0f;
-const float text_height = 10.0f;
+const uint32_t text_padding = 10;
+const uint32_t text_height = 10;
 
-extern float ui_padding;
+extern int32_t ui_padding;
 
-bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
+bool game_state_render_ui(game_state_t* game_state)
 {
 	char player_to_go[22] = { 0 };
 	sprintf_s(player_to_go, sizeof(player_to_go), "Next player: %s", _get_player_name(game_state->player_to_go));
@@ -129,7 +129,7 @@ bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 	{
 		char choose[35] = { 0 };
 		sprintf_s(choose, sizeof(choose), "You rolled: %d. Choose a piece!", game_state->rolled);
-		sdl_renderer_draw_text(choose, text_padding, 2.0f * (text_padding + text_height), false);
+		sdl_renderer_draw_text(choose, text_padding, 2 * (text_padding + text_height), false);
 	}
 
 	if (internal_state->state == game_state_game_over)
@@ -139,7 +139,7 @@ bool game_state_render_ui(game_state_t* game_state, SDL_Renderer* renderer)
 		sdl_renderer_draw_text(winner, 100, 100, false);
 	}
 
-	item_info roll_button = ui_draw_button("Roll", 100.0f, 100.0f,
+	item_info roll_button = ui_draw_button("Roll", 100, 100,
 		item_placement_end, item_placement_end, ui_padding, ui_padding,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 	internal_state->roll_button_hovered = roll_button.hovered;

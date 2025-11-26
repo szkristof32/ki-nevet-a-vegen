@@ -33,6 +33,7 @@ void _check_inputs(camera_controller_t* controller, bool enable_moving)
 	{
 		float zoom_level = input_get_mouse_scroll();
 		controller->distance_from_center -= zoom_level;
+		controller->distance_from_center = max(controller->distance_from_center, 0.5f);
 	}
 
 	if (input_is_mouse_button_down(mouse_button_left) && enable_moving)

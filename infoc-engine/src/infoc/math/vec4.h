@@ -140,3 +140,6 @@ vec4 vec4_normalise(vec4 vector);
 * @returns A boolean indicating if they are equal
 */
 bool vec4_eq(vec4 a, vec4 b);
+
+vec4 vec4_min(vec4 a, vec4 b);
+vec4 vec4_max(vec4 a, vec4 b);

@@ -2,10 +2,6 @@
 
 #include "defines.h"
 
-#include <SDL3/SDL_render.h>
-
-#undef bool
-
 /*
 * Layer
 */
@@ -14,7 +10,7 @@ typedef struct layer_t
 	void (*on_attach)(); /* Attach callback. Called when layer is pushed onto a layer stack */
 	void (*on_detach)(); /* Detach callback. Called when layer is popped from a layer stack */
 	void (*on_update)(float timestep); /* Update callback. Called when the game loop processes the layer */
-	void (*on_ui_render)(SDL_Renderer* renderer); /* UI render callback. Called when the game UI is rendererd */
+	void (*on_ui_render)(); /* UI render callback. Called when the game UI is rendererd */
 	void (*on_window_resize)(uint32_t width, uint32_t height); /* Window resize callback */
 	void* internal_state; /* Pointer to a block of memory owned by each layer */
 } layer_t;

@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern const float ui_padding;
+extern const int32_t ui_padding;
 
 typedef struct continue_menu_t
 {
@@ -49,12 +49,12 @@ menu_state draw_continue_menu(uint32_t window_width, uint32_t window_height, voi
 	menu_state new_state = menu_state_continue_menu;
 	continue_menu_t* menu_data = (continue_menu_t*)menu_data_ext;
 
-	float y = 85.0f;
+	uint32_t y = 85;
 
-	item_info title = ui_draw_text("Continue", item_placement_center, item_placement_beg, 0.0f, y, true);
-	y += title.size.y + 170.0f;
+	item_info title = ui_draw_text("Continue", item_placement_center, item_placement_beg, 0, y, true);
+	y += title.size.y + 170;
 
-	item_info new_game_button = ui_draw_button("Back", 150.0f, 50.0f,
+	item_info new_game_button = ui_draw_button("Back", 150, 50,
 		item_placement_beg, item_placement_beg, ui_padding, ui_padding,
 		vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 	if (new_game_button.hovered && input_is_mouse_button_released(mouse_button_left))
@@ -66,8 +66,8 @@ menu_state draw_continue_menu(uint32_t window_width, uint32_t window_height, voi
 	{
 		for (uint32_t i = 0; i < darray_count(menu_data->games); i++)
 		{
-			item_info exit_button = ui_draw_button(menu_data->games[i], 250.0f, 50.0f,
-				item_placement_center, item_placement_beg, 0.0f, y,
+			item_info exit_button = ui_draw_button(menu_data->games[i], 250, 50,
+				item_placement_center, item_placement_beg, 0, y,
 				vec4_create(0.87f, 0.74f, 0.54f, 1.0f), vec4_create(0.92f, 0.79f, 0.59f, 1.0f));
 			y += exit_button.size.y + ui_padding;
 			if (exit_button.hovered && input_is_mouse_button_released(mouse_button_left))

@@ -1,7 +1,7 @@
 #include "texture.h"
 
 #include "gl.h"
-#include "SDL3_image/SDL_image.h"
+#include <SDL_image.h>
 
 #undef bool
 
@@ -16,11 +16,11 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 
 	printf("Loading texture %s...\n", filepath);
 
-	SDL_Surface* texuture = IMG_Load(filepath);
-	check_error(!texuture, "Failed to load image from disk!");
+	SDL_Surface* texture = IMG_Load(filepath);
+	check_error(!texture, "Failed to load image from disk!");
 
-	out_texture->width = texuture->w;
-	out_texture->height = texuture->h;
+	out_texture->width = texture->w;
+	out_texture->height = texture->h;
 	out_texture->is_depth = false;
 
 	glTextureStorage2D(out_texture->texture_handle, 1, GL_RGBA8, out_texture->width, out_texture->height);
@@ -31,9 +31,9 @@ bool texture_create(const char* filepath, texture_t* out_texture)
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(out_texture->texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTextureSubImage2D(out_texture->texture_handle, 0, 0, 0, out_texture->width, out_texture->height, GL_RGBA, GL_UNSIGNED_BYTE, texuture->pixels);
+	glTextureSubImage2D(out_texture->texture_handle, 0, 0, 0, out_texture->width, out_texture->height, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
 
-	SDL_DestroySurface(texuture);
+	SDL_FreeSurface(texture);
 
 	return true;
 }

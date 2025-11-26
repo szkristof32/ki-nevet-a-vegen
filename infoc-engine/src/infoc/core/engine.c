@@ -11,7 +11,7 @@
 #include "infoc/renderer/static_renderer.h"
 #include "infoc/renderer/sdl_renderer.h"
 
-#include <SDL3/SDL.h>
+#include <SDL_timer.h>
 #include <string.h>
 
 typedef struct engine_t
@@ -116,7 +116,7 @@ void engine_run()
 		{
 			layer_t* layer = &s_engine.layer_stack.layers[i];
 			if (layer->on_ui_render)
-				layer->on_ui_render(sdl_renderer_get_handle());
+				layer->on_ui_render();
 		}
 		sdl_renderer_end_frame();
 

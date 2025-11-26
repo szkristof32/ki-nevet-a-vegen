@@ -6,7 +6,7 @@
 
 #include "context.h"
 
-#include <SDL3/SDL_render.h>
+#include <SDL_surface.h>
 
 #undef bool
 
@@ -45,7 +45,6 @@ void sdl_renderer_on_window_resize(uint32_t width, uint32_t height);
 *
 * @returns The SDL_Renderer handle
 */
-SDL_Renderer* sdl_renderer_get_handle();
 SDL_Surface* sdl_renderer_get_surface();
 
 /*
@@ -54,6 +53,6 @@ SDL_Surface* sdl_renderer_get_surface();
 * @param text The text to be rendered
 * @param x, y The coordinates of the text
 */
-void sdl_renderer_draw_text(const char* text, float x, float y, bool big_text);
-void sdl_renderer_get_text_size(const char* text, float* width, float* height, bool big_text);
-void sdl_renderer_draw_square(float x, float y, float width, float height, vec4 colour);
+void sdl_renderer_draw_text(const char* text, uint32_t x, uint32_t y, bool big_text);
+void sdl_renderer_get_text_size(const char* text, uint32_t* width, uint32_t* height, bool big_text);
+void sdl_renderer_draw_square(uint32_t x, uint32_t y, uint32_t width, uint32_t height, vec4 colour);
