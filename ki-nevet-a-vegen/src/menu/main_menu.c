@@ -12,7 +12,7 @@ menu_state draw_main_menu(uint32_t window_width, uint32_t window_height)
 
 	uint32_t y = 85;
 
-	item_info title = ui_draw_text("Mensch \u00e4rgere Dich nicht", item_placement_center, item_placement_beg, 0, y, true);
+	item_info title = ui_draw_text("Mensch ärgere Dich nicht", item_placement_center, item_placement_beg, 0, y, true);
 	y += title.size.y + 170;
 
 	item_info continue_button = ui_draw_button("Continue", 250, 50,

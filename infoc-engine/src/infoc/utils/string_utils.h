@@ -2,6 +2,8 @@
 
 #include "infoc/core/defines.h"
 
+#include <wchar.h>
+
 /*
 * Checks if a string starts with a given character sequence
 *
@@ -23,3 +25,5 @@ bool string_starts_with(const char* str, const char* beg);
 * @warning Since the function returns a darray, after use it should be freed with `darray_destroy`
 */
 char** string_split(char* str, const char* delim);
+
+wchar_t* string_to_wstring(const char* str);

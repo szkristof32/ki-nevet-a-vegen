@@ -7,6 +7,8 @@
 #include "shader.h"
 #include "vertex_array.h"
 
+#include "infoc/utils/string_utils.h"
+
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_image.h>
@@ -105,7 +107,10 @@ SDL_Surface* sdl_renderer_get_surface()
 void sdl_renderer_draw_text(const char* text, uint32_t x, uint32_t y, bool big_text)
 {
 	SDL_Color white = { 255, 255, 255 };
-	SDL_Surface* text_surface = TTF_RenderText_Solid(!big_text ? s_sdl_renderer->default_font : s_sdl_renderer->big_font, text, white);
+	// SDL_Surface* text_surface = TTF_RenderText_Solid(!big_text ? s_sdl_renderer->default_font : s_sdl_renderer->big_font, text, white);
+	wchar_t* wide_text = string_to_wstring(text);
+	SDL_Surface* text_surface = TTF_RenderUNICODE_Solid(!big_text ? s_sdl_renderer->default_font : s_sdl_renderer->big_font, wide_text, white);
+	free(wide_text);
 	if (text_surface == NULL)
 		return;
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(s_sdl_renderer->renderer, text_surface);
