@@ -5,18 +5,20 @@
 #include "mesh.h"
 #include "texture.h"
 
-/*
-* Renderable model
-*/
+/**
+ * Renderable model
+ */
 typedef struct model_t
 {
-	mesh_t mesh; /* Mesh */
-	texture_t model_texture; /* Texture */
+	/** Mesh */
+	mesh_t mesh;
+	/** Texture */
+	texture_t model_texture;
 } model_t;
 
-/*
-* Frees model resources
-*
-* @param model The model
-*/
+/**
+ * Frees model resources
+ *
+ * @param model The model
+ */
 void model_destroy(model_t* model);

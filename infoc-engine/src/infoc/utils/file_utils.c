@@ -13,7 +13,6 @@
 #include <dirent.h>
 #endif
 
-
 char* file_utils_read_file(const char* path)
 {
 	FILE* file = fopen(path, "rb");

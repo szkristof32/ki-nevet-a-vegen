@@ -6,70 +6,103 @@
 
 #include "infoc/math/vec2.h"
 
-/*
-* Game piece
-*/
+/**
+ * Game piece
+ */
 typedef struct piece_t
 {
-	uint32_t player_index; /* Owner player index (0=red, 1=blue, 2=green, 3=yellow) */
-	uint32_t position; /* Position on the board (0-39, 0=red starting position) */
-	uint32_t object_index; /* Corresponding game object index */
+	/** Owner player index (0=red, 1=blue, 2=green, 3=yellow) */
+	uint32_t player_index;
+	/** Position on the board (0-39, 0=red starting position) */
+	uint32_t position;
+	/** Corresponding game object index */
+	uint32_t object_index;
 } piece_t;
 
+/**
+ * Game board
+ */
 typedef struct board_t
 {
+	/** Pieces on the board */
 	piece_t pieces[40];
+	/** Pieces in the house (the goal of the game) */
 	piece_t pieces_in_house[4][4];
+	/** Board game object */
 	game_object_index_t game_object;
+	/** Game object references to the individual pieces */
 	game_object_index_t piece_objects[4 * 4];
 
-	scene_t* scene; /* Reference to the scene */
+	/** Reference to the scene */
+	scene_t* scene;
 } board_t;
 
-/*
-* Creates a game board
-*
-* @param scene A pointer to the scene
-* @param out_board A pointer to a `board_t` struct to be filled
-*
-* @returns A boolean indicating whether the operation was successful
-*
-* @warning The board does not own the scene, it should be freed elsewhere
-*/
+/**
+ * Creates a game board
+ *
+ * @param scene A pointer to the scene
+ * @param out_board A pointer to a `board_t` struct to be filled
+ *
+ * @returns A boolean indicating whether the operation was successful
+ *
+ * @warning The board does not own the scene, it should be freed elsewhere
+ */
 bool board_create(scene_t* scene, board_t* out_board);
-/*
-* Destroys a game board
-*
-* @param board A pointer to a valid `board_t` struct
-*
-* @warning Since the board doesn't own the scene, it should be freed elsewhere
-*/
+/**
+ * Destroys a game board
+ *
+ * @param board A pointer to a valid `board_t` struct
+ *
+ * @warning Since the board doesn't own the scene, it should be freed elsewhere
+ */
 void board_destroy(board_t* board);
 
+/**
+ * A piece that was captured in a move
+ */
 typedef struct captured_piece_t
 {
+	/** Game object handle */
 	game_object_index_t object_index;
+	/** The number of steps preceding the capture */
 	uint32_t step;
 } captured_piece_t;
 
+/**
+ * A move on the board
+ */
 typedef struct board_move_t
 {
+	/** Dynamic array of the positions of the moving piece */
 	vec3* positions;
+	/** Dynamic array of the pieces that were captured along the way */
 	captured_piece_t* captured_pieces;
 } board_move_t;
 
-/*
-* Generates the moves of the given piece
-*
-* @param board A pointer to a valid `board_t` struct
-* @param object_index The resulting index of the piece from the mouse picking
-* @param player_index The index of the current player (0=red, 1=blue, 2=green, 3=yellow)
-* @param move The number of squares the piece should move when uninterrupted
-*
-* @returns A dynamic array of the generated move positions
-*
-* @warning The returned dynamic array should be freed after use using `darray_destroy`
-*/
+/**
+ * Generates the moves of the given piece
+ *
+ * @param board A pointer to a valid `board_t` struct
+ * @param object_index The resulting index of the piece from the mouse picking
+ * @param player_index The index of the current player (0=red, 1=blue, 2=green, 3=yellow)
+ * @param move The number of squares the piece should move when uninterrupted
+ *
+ * @returns A `board_move_t` struct filled with relevant information
+ *
+ * @warning The returned dynamic arrays should be freed after use using `darray_destroy`
+ */
 board_move_t board_make_move(board_t* board, uint32_t object_index, uint32_t player_index, uint32_t move);
+/**
+ * Checks if a piece is in the house
+ *
+ * @param board A pointer to a valid `board_t` struct
+ * @param object_index The object index of the piece
+ */
 bool board_is_piece_in_house(board_t* board, uint32_t object_index);
+/**
+ * Gets the start position of a piece
+ *
+ * @param board A pointer to a valid `board_t` struct
+ * @param object_index The object index of the piece
+ */
 vec3 board_get_piece_start_position(board_t* board, game_object_index_t object_index);

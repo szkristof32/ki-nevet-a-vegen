@@ -2,11 +2,13 @@
 
 #include "game_object.h"
 
-/*
-* Camera
-*/
+/**
+ * Camera
+ */
 typedef struct camera_t
 {
-	vec3 position; /* Camera position */
-	mat4 view_matrix; /* Camera view matrix */
+	/** Camera position */
+	vec3 position;
+	/** Camera view matrix */
+	mat4 view_matrix;
 } camera_t;

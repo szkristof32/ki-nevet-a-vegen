@@ -2,15 +2,15 @@
 
 #include "infoc/core/defines.h"
 
-/*
-* Initialises the OpenGL loader
-*
-* @returns A boolean indicating whether the operation finished succesfully
-*/
+/**
+ * Initialises the OpenGL loader
+ *
+ * @returns A boolean indicating whether the operation finished succesfully
+ */
 bool opengl_init();
-/*
-* Shuts down the OpenGL manager and cleans up resources
-*/
+/**
+ * Shuts down the OpenGL manager and cleans up resources
+ */
 void opengl_shutdown();
 
 typedef unsigned char GLboolean;

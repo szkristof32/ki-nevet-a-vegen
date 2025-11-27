@@ -2,58 +2,71 @@
 
 #include "defines.h"
 
-/*
-* Window
-*/
+/**
+ * Window
+ */
 typedef struct window_t
 {
-	uint32_t width; /* Window width */
-	uint32_t height; /* Window height */
+	/** Window width */
+	uint32_t width;
+	/** Window height */
+	uint32_t height;
 
-	void* internal_state; /* Internal window state not exposed */
+	/** Internal window state not exposed */
+	void* internal_state;
 } window_t;
 
-/*
-* Creates a window
-*
-* @param width The width of the window
-* @param height The height of the window
-* @param title The title of the window
-* @param out_window A pointer to a `window_t` struct to be filled
-*
-* @returns A boolean inidicating whether the operation finished succesfully
-*/
+/**
+ * Creates a window
+ *
+ * @param width The width of the window
+ * @param height The height of the window
+ * @param title The title of the window
+ * @param out_window A pointer to a `window_t` struct to be filled
+ *
+ * @returns A boolean inidicating whether the operation finished succesfully
+ */
 bool window_create(uint32_t width, uint32_t height, const char* title, window_t* out_window);
-/*
-* Destroys a window
-*
-* @param window A pointer to a valid `window_t` struct
-*/
+/**
+ * Destroys a window
+ *
+ * @param window A pointer to a valid `window_t` struct
+ */
 void window_destroy(window_t* window);
 
-/*
-* Updates the window, calls the event callbacks
-*
-* @param window A pointer to a valid `window_t` struct
-*/
+/**
+ * Updates the window, calls the event callbacks
+ *
+ * @param window A pointer to a valid `window_t` struct
+ */
 void window_update(window_t* window);
-/*
-* Checks if the window has been signaled to close
-*
-* @param window A pointer to a valid `window_t` struct
-*
-* @returns A boolean indicating if the window should close
-*/
+/**
+ * Checks if the window has been signaled to close
+ *
+ * @param window A pointer to a valid `window_t` struct
+ *
+ * @returns A boolean indicating if the window should close
+ */
 bool window_should_close(const window_t* window);
 
-/*
-* Gets the internal handle of the window
-*
-* @param window A pointer to a valid `window_t` struct
-*
-* @returns The SDL handle of the window cast to `void*`
-*/
+/**
+ * Gets the internal handle of the window
+ *
+ * @param window A pointer to a valid `window_t` struct
+ *
+ * @returns The SDL handle of the window cast to `void*`
+ */
 void* window_get_handle(const window_t* window);
 
+/**
+ * Starts the SDL keyboard capturing
+ * 
+ * @param window A pointer to a valid `window_t` struct
+ */
 void window_start_text_input(const window_t* window);
+/**
+ * Stops the SDL keyboard capturing
+ *
+ * @param window A pointer to a valid `window_t` struct
+ */
 void window_stop_text_input(const window_t* window);
